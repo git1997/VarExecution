@@ -101,7 +101,9 @@ import com.caucho.vfs.TempBuffer;
 import com.caucho.vfs.WriteStream;
 import com.caucho.vfs.i18n.EncodingReader;
 
+import edu.iastate.hungnv.scope.ScopedValue;
 import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.util.Logging;
 
 /**
  * Represents the Quercus environment.
@@ -1906,13 +1908,6 @@ public class Env
                         boolean isAutoCreate,
                         boolean isOutputNotice)
   {
-	  // INST ADDED BY HUNG
-	  
-	  if (Env_.INSTRUMENT)
-		  return Env_.getValue(name, isAutoCreate, isOutputNotice, this);
-	  
-	  // END OF ADDED CODE
-	  
     EnvVar var = getEnvVar(name, isAutoCreate, isOutputNotice);
     
     if (var != null)
@@ -2891,16 +2886,16 @@ public class Env
    */
   public Value setValue(StringValue name, Value value)
   {
-	  // INST ADDED BY HUNG
-	  
-	  if (Env_.INSTRUMENT)
-		  return Env_.setValue(name, value, this);
-	  
-	  // END OF ADDED CODE
-	  
     EnvVar envVar = getEnvVar(name);
 
     envVar.set(value);
+    
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  Logging.LOGGER.info("Assign $" + name + " with " + (envVar.get() instanceof ScopedValue ? ((ScopedValue) envVar.get()).toStringWithScoping() : envVar.get().toString()));
+	  
+	  // END OF ADDED CODE
 
     return value;
   }
@@ -7055,13 +7050,6 @@ public class Env
    */
   public void close()
   {
-	  // INST ADDED BY HUNG
-	  
-	  if (Env_.INSTRUMENT)
-		  env_.close(this);
-	  
-	  // END OF ADDED CODE
-	  
     _quercus.completeEnv(this);
     
     /*
@@ -7084,6 +7072,14 @@ public class Env
     finally {
       cleanup();
     }
+    
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT)
+    	env_.close(this);
+  
+    // END OF ADDED CODE
+    
   }
 
   private void cleanup()

@@ -1,6 +1,7 @@
 package edu.iastate.hungnv.shadow;
 
 import com.caucho.quercus.env.Env;
+import com.caucho.quercus.env.NullValue;
 import com.caucho.quercus.env.Value;
 
 import edu.iastate.hungnv.constraint.Constraint;
@@ -64,7 +65,11 @@ public class ShadowInterpreter {
 				combinedReturnValue = MultiValue.createSwitchValue(combinedReturnValue, retValue);
 		}
 		
-		return combinedReturnValue;
+		if (combinedReturnValue == null) {
+			return NullValue.NULL; // TODO Debug why this happens 
+		}
+		else
+			return combinedReturnValue;
 	}
 
 }

@@ -107,8 +107,14 @@ public class BlockStatement extends Statement {
 
       // INST ADDED BY HUNG
       
-      if (Env_.INSTRUMENT)
+      if (Env_.INSTRUMENT) {
     	  Logging.LOGGER.info("Executing " + statement.getLocation().prettyPrint());
+    	  
+    	  String debugFile = "Objects.php";
+    	  int debugLine = 13;
+    	  if (statement.getLocation().getFileName().endsWith(debugFile) && statement.getLocation().getLineNumber() == debugLine)
+    		  System.out.println();
+      }
       
       // END OF ADDED CODE
       

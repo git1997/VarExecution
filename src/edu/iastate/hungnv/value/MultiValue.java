@@ -210,12 +210,19 @@ public abstract class MultiValue extends Value {
 	public static Value createChoiceValue(Constraint constraint, Value trueBranchValue, Value falseBranchValue) {
 		// TODO Optimize this task
 		
+		/*
+		 * Check #1: Tautology and contradiction
+		 */
 		if (constraint.isTautology())
 			return trueBranchValue;
 		
 		if (constraint.isContradiction())
 			return falseBranchValue;
 		
+		/*
+		 * Check #2: Handle one specific case. This check is already implied by check #3. Should be commented out if check 3 is activated.
+		 */
+		/*
 		// Handle specially for the case after executing the else branch of an if statement
 		// CHOICE(!cond, y, CHOICE(cond, x, z)) => CHOICE(cond, x, y) 
 		if (falseBranchValue instanceof Choice) {
@@ -224,7 +231,28 @@ public abstract class MultiValue extends Value {
 
 				return new Choice(((Choice) falseBranchValue).getConstraint(), ((Choice) falseBranchValue).getValue1(), trueBranchValue);
 		}
+		*/
 		
+		/*
+		 * Check # 3: Simplify the branches if possible
+		 */
+		if (trueBranchValue instanceof Choice) {
+			if (constraint.equivalentTo(((Choice) trueBranchValue).getConstraint()))
+				trueBranchValue = ((Choice) trueBranchValue).getValue1();
+			else if (constraint.oppositeOf(((Choice) trueBranchValue).getConstraint()))
+				trueBranchValue = ((Choice) trueBranchValue).getValue2();
+		}
+		
+		if (falseBranchValue instanceof Choice) {
+			if (constraint.equivalentTo(((Choice) falseBranchValue).getConstraint()))
+				falseBranchValue = ((Choice) falseBranchValue).getValue2();
+			else if (constraint.oppositeOf(((Choice) falseBranchValue).getConstraint()))
+				falseBranchValue = ((Choice) falseBranchValue).getValue1();
+		}
+		
+		/*
+		 * Return a Choice Value
+		 */
 		return new Choice(constraint, trueBranchValue, falseBranchValue);
 	}
 	

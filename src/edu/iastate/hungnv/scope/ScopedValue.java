@@ -123,6 +123,19 @@ public class ScopedValue extends Value {
 	 */
 	
 	/**
+	 * Updates the (regular) value in the current scope
+	 * This method is the same as ScopedValue.setValue(Value) except that it will issue a warning if the value is a ScopedValue
+	 * @param value		A regular value, not null
+	 */
+	public void updateValue(Value value) {
+		if (value instanceof ScopedValue) {
+			Logging.LOGGER.warning("In ScopedValue.updateValue(Value): value must not be a ScopedValue. Please debug.");
+		}
+		
+		this.value = value;
+	}
+	
+	/**
 	 * @return A string describing the ScopedValue (with scoping information)
 	 */
 	public String toStringWithScoping() {

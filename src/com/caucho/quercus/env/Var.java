@@ -44,6 +44,9 @@ import java.util.Map;
 
 import com.caucho.vfs.WriteStream;
 
+import edu.iastate.hungnv.scope.ScopedValue;
+import edu.iastate.hungnv.shadow.Env_;
+
 /**
  * Represents a PHP variable value.
  */
@@ -68,6 +71,13 @@ public class Var extends Value
   @Override
   public Value set(Value value)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null)
+    	value = Env.getInstance().getEnv_().addScopedValue(_value, value);
+    
+    // END OF ADDED CODE    
+	    
     // assert(! value.isVar());
     _value = value;
 
@@ -94,6 +104,13 @@ public class Var extends Value
     else {
       // XXX:
       
+        // INST ADDED BY HUNG
+        
+        if (Env_.INSTRUMENT && Env.getInstance() != null)
+        	value = Env.getInstance().getEnv_().addScopedValue(_value, value);
+        
+        // END OF ADDED CODE   
+        
       _value = value;
       
       return this;
@@ -105,6 +122,13 @@ public class Var extends Value
    */
   protected Value setRaw(Value value)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null)
+    	value = Env.getInstance().getEnv_().addScopedValue(_value, value);
+    
+    // END OF ADDED CODE   
+	    
     // quercus/0431
     _value = value;
 
@@ -510,6 +534,16 @@ public class Var extends Value
   @Override
   public Value toAutoArray()
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoArray());
+    	
+    	return this;
+    }
+    
+    // END OF ADDED CODE   
+	    
     _value = _value.toAutoArray();
     
     // php/03mg
@@ -706,6 +740,13 @@ public class Var extends Value
    */
   public final Value getRawValue()
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return Env_.removeScopedValue(_value);
+	  
+	  // END OF ADDED CODE
+	  
     return _value;
   }
 
@@ -716,6 +757,13 @@ public class Var extends Value
   @Override
   public final Value toValue()
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return Env_.removeScopedValue(_value);
+	  
+	  // END OF ADDED CODE
+	  
     return _value;
   }
 
@@ -725,6 +773,13 @@ public class Var extends Value
   @Override
   public Value toLocalValueReadOnly()
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return Env_.removeScopedValue(_value);
+	  
+	  // END OF ADDED CODE
+	  
     return _value;
   }
 
@@ -747,6 +802,13 @@ public class Var extends Value
   @Override
   public Value toLocalRef()
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return Env_.removeScopedValue(_value);
+	  
+	  // END OF ADDED CODE
+	  
     return _value;
   }
 
@@ -981,6 +1043,16 @@ public class Var extends Value
   @Override
   public Value preincr(int incr)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null) {
+    	_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.increment(incr));
+    	
+    	return _value;
+    }
+    
+    // END OF ADDED CODE  
+	    
     _value = _value.increment(incr);
 
     return _value;
@@ -994,6 +1066,16 @@ public class Var extends Value
   {
     Value value = _value;
 
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null) {
+    	_value = Env.getInstance().getEnv_().addScopedValue(_value, value.increment(incr));
+    	
+    	return value;
+    }
+    
+    // END OF ADDED CODE 
+    
     _value = value.increment(incr);
 
     return value;
@@ -1023,6 +1105,16 @@ public class Var extends Value
   @Override
   public Value preincr()
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null) {
+    	_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.preincr());
+    	
+    	return _value;
+    }
+    
+    // END OF ADDED CODE
+	    
     _value = _value.preincr();
 
     return _value;
@@ -1034,6 +1126,16 @@ public class Var extends Value
   @Override
   public Value predecr()
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null) {
+    	_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.predecr());
+    	
+    	return _value;
+    }
+    
+    // END OF ADDED CODE
+	    
     _value = _value.predecr();
 
     return _value;
@@ -1047,6 +1149,16 @@ public class Var extends Value
   {
     Value value = _value;
 
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null) {
+    	_value = Env.getInstance().getEnv_().addScopedValue(_value, value.postincr());
+    	
+    	return value;
+    }
+    
+    // END OF ADDED CODE
+    
     _value = value.postincr();
 
     return value;
@@ -1060,6 +1172,16 @@ public class Var extends Value
   {
     Value value = _value;
 
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null) {
+    	_value = Env.getInstance().getEnv_().addScopedValue(_value, value.postdecr());
+    	
+    	return value;
+    }
+    
+    // END OF ADDED CODE
+    
     _value = value.postdecr();
 
     return value;
@@ -1295,6 +1417,8 @@ public class Var extends Value
   @Override
   public Value getArray()
   {
+	  // TODO Handle scoping
+	  
     if (! _value.isset())
       _value = new ArrayValueImpl();
 
@@ -1307,6 +1431,8 @@ public class Var extends Value
   @Override
   public Value getObject(Env env)
   {
+	  // TODO Handle scoping
+	  
     if (! _value.isset())
       _value = env.createObject();
 
@@ -1328,6 +1454,8 @@ public class Var extends Value
   @Override
   public Var getVar(Value index)
   {
+	  // TODO Handle scoping
+	  
     // php/3d1a
     // php/34ab
     if (! _value.toBoolean())
@@ -1356,6 +1484,16 @@ public class Var extends Value
   @Override
   public Value getArray(Value index)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoArray());
+    	
+    	return _value.getArray(index);
+    }
+    
+    // END OF ADDED CODE
+	    
     // php/3d11
     _value = _value.toAutoArray();
 
@@ -1377,6 +1515,16 @@ public class Var extends Value
   @Override
   public Value getObject(Env env, Value index)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoArray());
+    	
+    	return _value.getObject(env, index);
+    }
+    
+    // END OF ADDED CODE
+	    
     // php/3d2p
     _value = _value.toAutoArray();
 
@@ -1389,6 +1537,12 @@ public class Var extends Value
   @Override
   public Value put(Value index, Value value)
   {
+    // INST ADDED BY HUNG
+    
+    // Note: Operations with array elements will be handled somewhere else.
+    
+    // END OF ADDED CODE
+	    
     // php/33m{g,h}
     // _value = _value.toAutoArray().append(index, value);
     _value = _value.append(index, value);
@@ -1410,6 +1564,12 @@ public class Var extends Value
   @Override
   public Value append(Value index, Value value)
   {
+    // INST ADDED BY HUNG
+    
+    // Note: Operations with array elements will be handled somewhere else.
+    
+    // END OF ADDED CODE
+	    
     // php/323g
     _value = _value.append(index, value);
 
@@ -1422,6 +1582,16 @@ public class Var extends Value
   @Override
   public Value put(Value value)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoArray());
+    	
+    	return _value.put(value);
+    }
+    
+    // END OF ADDED CODE
+	    
     _value = _value.toAutoArray();
 
     return _value.put(value);
@@ -1433,6 +1603,16 @@ public class Var extends Value
   @Override
   public Var putVar()
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoArray());
+    	
+    	return _value.putVar();
+    }
+    
+    // END OF ADDED CODE
+	    
     _value = _value.toAutoArray();
 
     return _value.putVar();
@@ -1475,6 +1655,16 @@ public class Var extends Value
   @Override
   public Var getFieldVar(Env env, StringValue name)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoObject(env));
+    	
+    	return _value.getFieldVar(env, name);
+    }
+    
+    // END OF ADDED CODE
+	    
     // php/3a0r
     _value = _value.toAutoObject(env);
 
@@ -1501,6 +1691,16 @@ public class Var extends Value
   @Override
   public Value getFieldArray(Env env, StringValue name)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoObject(env));
+    	
+    	return _value.getFieldArray(env, name);
+    }
+    
+    // END OF ADDED CODE
+	    
     // php/3d1q
     _value = _value.toAutoObject(env);
 
@@ -1513,6 +1713,16 @@ public class Var extends Value
   @Override
   public Value getFieldObject(Env env, StringValue name)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoObject(env));
+    	
+    	return _value.getFieldObject(env, name);
+    }
+    
+    // END OF ADDED CODE
+	    
     _value = _value.toAutoObject(env);
 
     return _value.getFieldObject(env, name);
@@ -1524,6 +1734,16 @@ public class Var extends Value
   @Override
   public Value putField(Env env, StringValue name, Value value)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+    	((ScopedValue) _value).updateValue(_value.toAutoObject(env));
+    	
+    	return _value.putField(env, name, value);
+    }
+    
+    // END OF ADDED CODE
+	    
     // php/3a0s
     _value = _value.toAutoObject(env);
 
@@ -1659,6 +1879,12 @@ public class Var extends Value
   @Override
   public Value setCharValueAt(long index, Value value)
   {
+    // INST ADDED BY HUNG
+    
+    // Note: Operations with array elements will be handled somewhere else.
+    
+    // END OF ADDED CODE
+	    
     // php/03mg
 
     _value = _value.setCharValueAt(index, value);
@@ -2131,6 +2357,13 @@ public class Var extends Value
 
   public Object writeReplace()
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return Env_.removeScopedValue(_value);
+	  
+	  // END OF ADDED CODE
+	  
     return _value;
   }
 }

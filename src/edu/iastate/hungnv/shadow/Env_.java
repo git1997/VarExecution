@@ -2,7 +2,6 @@ package edu.iastate.hungnv.shadow;
 
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.EnvVar;
-import com.caucho.quercus.env.NullValue;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
@@ -51,18 +50,20 @@ public class Env_ {
 	}
 	
 	public void close(Env env) {
-//		for (StringValue name : env.getEnv().keySet()) {
-//			EnvVar envVar = env.getEnv().get(name);
-//			Value value = envVar.get();
-//			if (value instanceof MultiValue)
-//				Logging.LOGGER.info("$" + name + " = " + value);
-//		}
+		Logging.LOGGER.info("Closing");
+		for (StringValue name : env.getEnv().keySet()) {
+			EnvVar envVar = env.getEnv().get(name);
+			Value value = envVar.get();
+			//if (value instanceof MultiValue)
+				Logging.LOGGER.info("$" + name + " = " + value);
+		}
 //		try {
-//			System.in.read();
-//		} catch (IOException e) {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+		Logging.LOGGER.info("Closing");
 	}
 	
 	/*
@@ -175,33 +176,6 @@ public class Env_ {
 	 * Shadowed methods
 	 */
 	  
-	/**
-	 * @see com.caucho.quercus.env.Env.setValue(StringValue, Value)
-	 */
-	public static Value setValue(StringValue name, Value value, Env env) {
-		EnvVar envVar = env.getEnvVar(name);
-		
-		value = env.getEnv_().addScopedValue(envVar.get(), value);
-		
-		Logging.LOGGER.info("Assign $" + name + " with " + (value instanceof ScopedValue ? ((ScopedValue) value).toStringWithScoping() : value.toString()));
-				
-		envVar.set(value);
-		
-		return value;
-	}
-	
-	/**
-	 * @see com.caucho.quercus.env.Env.getValue(StringValue, boolean, boolean)
-	 */
-	public static Value getValue(StringValue name, boolean isAutoCreate, boolean isOutputNotice, Env env) {
-	    EnvVar var = env.getEnvVar(name, isAutoCreate, isOutputNotice);
-	    
-	    if (var != null)
-	    	return Env_.removeScopedValue(var.get());
-	    else
-	    	return NullValue.NULL;
-	}
-	
 	/*
 	 * Experimental methods
 	 */

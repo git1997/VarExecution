@@ -63,6 +63,14 @@ public class Constraint {
 	public boolean equivalentTo(Constraint constraint) {
 		return (this.featureExpr.equivalentTo(constraint.featureExpr));
 	}
+	
+	/**
+	 * @param constraint
+	 * @return True if the two constraints are opposite of each other
+	 */
+	public boolean oppositeOf(Constraint constraint) {
+		return (this.featureExpr.equivalentTo(constraint.featureExpr.not()));
+	}
 
 	/**
 	 * @return A string describing the constraint

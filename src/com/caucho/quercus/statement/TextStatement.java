@@ -34,6 +34,9 @@ import com.caucho.quercus.QuercusException;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.util.Logging;
+
 import java.io.IOException;
 
 /**
@@ -60,6 +63,13 @@ public class TextStatement extends Statement {
   public Value execute(Env env)
   {
     try {
+    	// INST ADDED BY HUNG
+    	
+    	if (Env_.INSTRUMENT)
+    		Logging.LOGGER.info("Printing: " + _value.toString());
+    	
+    	// END OF ADDED CODE
+    	
       env.getOut().print(_value);
     }
     catch (RuntimeException e) {
