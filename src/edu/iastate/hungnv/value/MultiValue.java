@@ -66,6 +66,29 @@ public abstract class MultiValue extends Value {
 	 */
 	
 	/**
+	 * Returns all Quercus Values in the MultiValue whose constraints do not contradict the given constraint.
+	 * For example, given a Switch(Case(A => x), Case(!A => y)) and the constraint A, the returned Quercus value will be x.
+	 * @param constraint
+	 * @return
+	 */
+	public Switch flatten(Constraint constraint) {
+		Switch switch_ = new Switch();
+		for (Case case_ : this.flatten()) {
+			if (Constraint.createAndConstraint(constraint, case_.getConstraint()).isSatisfiable()) {
+				switch_.addCase(case_);
+			}
+		}
+		
+		return switch_;
+	}
+	
+	public MultiValue simplify() {
+		// TODO Combine same values, remove dead conditions
+		
+		return this;
+	}
+	
+	/**
 	 * Apply an operation on this MultiValue
 	 * @param operation	An operation on this MultiValue
 	 * @return			The value after applying the operation on this MultiValue
@@ -84,12 +107,6 @@ public abstract class MultiValue extends Value {
 		}
 		
 		return combinedRetValue;
-	}
-	
-	public MultiValue simplify() {
-		// TODO Combine same values, remove dead conditions
-		
-		return this;
 	}
 	
 	/*

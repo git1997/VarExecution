@@ -7,7 +7,7 @@ import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.MultiValue;
-import edu.iastate.hungnv.value.Null;
+import edu.iastate.hungnv.value.Undefined;
 
 /**
  * 
@@ -57,7 +57,7 @@ public class ShadowInterpreter {
 			if (retValue == null)
 				continue;
 			
-			retValue = MultiValue.createChoiceValue(constraint, retValue, Null.NULL);
+			retValue = MultiValue.createChoiceValue(constraint, retValue, Undefined.UNDEFINED);
 			
 			if (combinedReturnValue == null)
 				combinedReturnValue = retValue;

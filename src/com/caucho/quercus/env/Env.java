@@ -1013,7 +1013,7 @@ public class Env
     		
     // INST ADDED BY HUNG
   
-    if (Env_.INSTRUMENT)
+    // TODO Consider adding if (Env_.INSTRUMENT) 
     	env_.start(this);
   
     // END OF ADDED CODE
@@ -7075,7 +7075,7 @@ public class Env
     
     // INST ADDED BY HUNG
     
-    if (Env_.INSTRUMENT)
+    // TODO Consider adding if (Env_.INSTRUMENT) 
     	env_.close(this);
   
     // END OF ADDED CODE

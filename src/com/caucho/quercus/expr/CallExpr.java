@@ -39,6 +39,7 @@ import com.caucho.quercus.parser.QuercusParser;
 import com.caucho.quercus.function.AbstractFunction;
 import com.caucho.util.L10N;
 
+import edu.iastate.hungnv.debug.TraceViewer;
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.shadow.Functions;
 
@@ -190,6 +191,13 @@ public class CallExpr extends Expr {
    */
   private Value evalImpl(Env env, boolean isRef, boolean isCopy)
   {
+	  // INST ADDED BY HUNG
+	  try {
+		  if (Env_.INSTRUMENT) {
+	  		  TraceViewer.inst.enterFunction(_name, getLocation());
+		  }
+	  // END OF ADDED CODE
+	  
     if (_funId <= 0) {
       _funId = env.findFunctionId(_name);
     
@@ -261,6 +269,14 @@ public class CallExpr extends Expr {
       env.setCallingClass(oldCallingClass);
       // XXX: qa/1d14 env.setThis(oldThis);
     }
+    
+	  // INST ADDED BY HUNG
+	  } finally {
+		  if (Env_.INSTRUMENT) {
+	  		  TraceViewer.inst.exitFunction(_name, getLocation());
+		  }
+	  }
+	  // END OF ADDED CODE
   }
 
   // Return an array containing the Values to be

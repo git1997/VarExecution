@@ -38,6 +38,9 @@ import com.caucho.quercus.env.Value;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.util.L10N;
 
+import edu.iastate.hungnv.debug.TraceViewer;
+import edu.iastate.hungnv.shadow.Env_;
+
 import java.util.ArrayList;
 
 /**
@@ -94,7 +97,22 @@ public class ObjectMethodExpr extends AbstractMethodExpr {
     StringValue methodName = _methodName;
     int hash = methodName.hashCodeCaseInsensitive();
     
+	  // INST ADDED BY HUNG
+	  try {
+		  if (Env_.INSTRUMENT) {
+	  		  TraceViewer.inst.enterFunction(methodName.toString(), getLocation());
+		  }
+	  // END OF ADDED CODE
+		  
     return eval(env, obj, methodName, hash, _args);
+    
+	  // INST ADDED BY HUNG
+	  } finally {
+		  if (Env_.INSTRUMENT) {
+	  		  TraceViewer.inst.exitFunction(methodName.toString(), getLocation());
+		  }
+	  }
+	  // END OF ADDED CODE
   }
   
   public String toString()

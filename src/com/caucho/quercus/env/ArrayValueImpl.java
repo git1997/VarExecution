@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 import com.caucho.util.RandomUtil;
 
 import edu.iastate.hungnv.shadow.Env_;
-import edu.iastate.hungnv.value.Null;
+import edu.iastate.hungnv.value.Undefined;
 
 /**
  * Represents a PHP array value.
@@ -490,7 +490,7 @@ public class ArrayValueImpl extends ArrayValue
     
     if (Env_.INSTRUMENT && Env.getInstance() != null)
     	//value = Env.getInstance().getEnv_().addScopedValue(entry.getValue(), value); // Using this way, Array[i] == CHOICE(value, "") and "" may cause errors if used later
-    	value = Env.getInstance().getEnv_().addScopedValue(Null.NULL, value); // Use NULL so that Array[i] == CHOICE(value, NULL) and NULL will not be used
+    	value = Env.getInstance().getEnv_().addScopedValue(Undefined.UNDEFINED, value); // Use UNDEFINED so that Array[i] == CHOICE(value, UNDEFINED) and UNDEFINED will not be used
     
     // END OF ADDED CODE    		
     

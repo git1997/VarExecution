@@ -36,6 +36,7 @@ import com.caucho.quercus.env.Value;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.vfs.Path;
 
+import edu.iastate.hungnv.debug.TraceViewer;
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.shadow.FunIncludeOnceExpr_;
 
@@ -117,6 +118,13 @@ public class FunIncludeOnceExpr extends AbstractUnaryExpr {
 
     // return env.include(_dir, name);
     
+	  // INST ADDED BY HUNG
+	  try {
+		  if (Env_.INSTRUMENT) {
+	  		  TraceViewer.inst.enterFile(name.toString(), getLocation());
+		  }
+	  // END OF ADDED CODE  
+    
     env.pushCall(this, NullValue.NULL, new Value[] { name });
     
     try {
@@ -130,6 +138,14 @@ public class FunIncludeOnceExpr extends AbstractUnaryExpr {
     finally {
       env.popCall();
     }
+    
+	  // INST ADDED BY HUNG
+	  } finally {
+		  if (Env_.INSTRUMENT) {
+	  		  TraceViewer.inst.exitFile(name.toString(), getLocation());
+		  }
+	  }
+	  // END OF ADDED CODE
   }
 //END OF ADDED CODE	  
   

@@ -6,14 +6,14 @@ package edu.iastate.hungnv.value;
  *
  */
 @SuppressWarnings("serial")
-public class Null extends MultiValue {
+public class Undefined extends MultiValue {
 
-	public static final Null NULL = new Null();
+	public static final Undefined UNDEFINED = new Undefined();
 
 	/**
 	 * Private constructor
 	 */
-	private Null() {
+	private Undefined() {
 	}
 	
 	/*
@@ -31,7 +31,7 @@ public class Null extends MultiValue {
 	
 	@Override
 	public String toString() {
-		return "NULL";
+		return "UNDEFINED";
 	}
 	
 }

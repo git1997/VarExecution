@@ -1,10 +1,10 @@
 package edu.iastate.hungnv.shadow;
 
 import com.caucho.quercus.env.Env;
-import com.caucho.quercus.env.EnvVar;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.debug.ValueViewer;
 import edu.iastate.hungnv.scope.Scope;
 import edu.iastate.hungnv.scope.ScopedValue;
 import edu.iastate.hungnv.util.Logging;
@@ -50,20 +50,30 @@ public class Env_ {
 	}
 	
 	public void close(Env env) {
-		Logging.LOGGER.info("Closing");
+		Logging.LOGGER.info("Env closing...");
+		
+		//TraceViewer.inst.writeToXmlFile(TraceViewer.xmlFile);
+		
+		ValueViewer viewer = new ValueViewer();
 		for (StringValue name : env.getEnv().keySet()) {
-			EnvVar envVar = env.getEnv().get(name);
-			Value value = envVar.get();
-			//if (value instanceof MultiValue)
-				Logging.LOGGER.info("$" + name + " = " + value);
+			Value value = env.getEnv().get(name).get();
+			viewer.add(name.toString(), value);
 		}
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		Logging.LOGGER.info("Closing");
+		
+		viewer.writeToXmlFile(ValueViewer.xmlFile);
+		
+		Constraint PLUGIN1 = Constraint.createConstraint("GOOGLE");
+		Constraint PLUGIN2 = Constraint.createConstraint("FACEBOOK");
+		
+//		Constraint PLUGIN1 = Constraint.createConstraint("CAL");
+//		Constraint PLUGIN2 = Constraint.createConstraint("WEA");
+		
+//		viewer.writeToXmlFile(ValueViewer.xmlFile00, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), Constraint.createNotConstraint(PLUGIN2)));
+//		viewer.writeToXmlFile(ValueViewer.xmlFile01, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), PLUGIN2));
+//		viewer.writeToXmlFile(ValueViewer.xmlFile10, Constraint.createAndConstraint(PLUGIN1, Constraint.createNotConstraint(PLUGIN2)));
+//		viewer.writeToXmlFile(ValueViewer.xmlFile11, Constraint.createAndConstraint(PLUGIN1, PLUGIN2));
+
+		Logging.LOGGER.info("Env closed.");
 	}
 	
 	/*

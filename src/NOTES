@@ -20,6 +20,11 @@ com.caucho.quercus.expr.*			// Handle expressions
 	
 com.caucho.quercus.lib.*			// Handle library functions
 	ArrayModule			array_filter	// Handle array_filter	x
+	
+CallExpr			evalImpl		// Track execution trace	x
+FunIncludeExpr		eval_orig		// Track execution trace	x
+FunIncludeOnceExpr	eval_orig		// Track execution trace	x
+ObjectMethodExpr	eval			// Track execution trace	x
 
 BlockStatement		execute					// Print debug info			x
 Env					setValue, start, close	// Print debug info			x
