@@ -36,6 +36,20 @@ import edu.iastate.hungnv.util.Logging;
 public abstract class MultiValue extends Value {
 	
 	/*
+	 * Interfaces
+	 */
+	
+	public interface IOperation {
+		
+		/**
+		 * Apply an operation on a *Quercus* value
+		 * @param value		A Quercus value, not null
+		 * @return			The Quercus value after applying the operation on the given Quercus value
+		 */
+		public Value operate(Value value);
+	}	
+	
+	/*
 	 * Abstract methods
 	 */
 
@@ -49,6 +63,27 @@ public abstract class MultiValue extends Value {
 	/*
 	 * Methods
 	 */
+	
+	/**
+	 * Apply an operation on this MultiValue
+	 * @param operation	An operation on this MultiValue
+	 * @return			The value after applying the operation on this MultiValue
+	 */
+	public Value operate(IOperation operation) {
+		Switch combinedRetValue = new Switch();
+		
+		for (Case case_ : this.flatten()) {
+			Value flattenedValue = case_.getValue();
+			Constraint constraint = case_.getConstraint();
+			
+			// Eval basic case
+			Value retValue = operation.operate(flattenedValue);    
+			
+			combinedRetValue.addCase(new Case(constraint, retValue));
+		}
+		
+		return combinedRetValue;
+	}
 	
 	public MultiValue simplify() {
 		// TODO Combine same values, remove dead conditions
@@ -72,6 +107,20 @@ public abstract class MultiValue extends Value {
 		}
 		else 
 			return new Case(Constraint.TRUE, value).flatten();
+	}	
+	
+	/**
+	 * Apply an operation on a regular Value.
+	 * @param value		A regular value, not null
+	 * @param operation	An operation on a *Quercus* value
+	 * @return			The value after applying the operation on the given regular value
+	 */
+	public static Value operateOnValue(Value value, IOperation operation) {
+		if (value instanceof MultiValue) {
+			return ((MultiValue) value).operate(operation);
+		}
+		else
+			return operation.operate(value);
 	}
 	
 	/**
@@ -231,7 +280,7 @@ public abstract class MultiValue extends Value {
 		for (Case case_ : MultiValue.flatten(this)) {
 			Constraint constraint = case_.getConstraint();
 			
-			if (case_.getValue() == NullValue.NULL) // TODO Debug why NullValue occured?
+			if (case_.getValue() == NullValue.NULL) // TODO Debug why NullValue occured? (probably due to MultiValue.isset?)
 				continue;
 			
 			Value value = case_.getValue().callMethod(env, methodName, hash, args);
@@ -244,23 +293,13 @@ public abstract class MultiValue extends Value {
 	
 	@Override
 	public Value toAutoArray() {
-		Switch switch_ = new Switch();
-		
-		for (Case case_ : MultiValue.flatten(this)) {
-			Constraint constraint = case_.getConstraint();
-			Value value = case_.getValue().toAutoArray();
-			
-			switch_.addCase(new Case(constraint, value));
-		}
-		
-		return switch_;
+		return operate(new IOperation() {
+			@Override
+			public Value operate(Value value) {
+				return value.toAutoArray();
+			}
+		});
 	}
-	
-	@Override
-	public int cmp(Value rValue) {
-		// TODO Revise
-	    return 1;
-	}	
 	
 	  //
 	  // Properties
@@ -780,63 +819,63 @@ public abstract class MultiValue extends Value {
 	    return this == rValue.toValue();
 	  }
 
-//	  /**
-//	   * Returns a negative/positive integer if this Value is
-//	   * lessthan/greaterthan rValue.
-//	   */
-//	  @Override
-//	  public int cmp(Value rValue)
-//	  {
-//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-//
-//	    // This is tricky: implemented according to Table 15-5 of
-//	    // http://us2.php.net/manual/en/language.operators.comparison.php
-//
-//	    Value lVal = toValue();
-//	    Value rVal = rValue.toValue();
-//
-//	    if (lVal instanceof StringValue && rVal instanceof NullValue)
-//	      return ((StringValue) lVal).cmpString(StringValue.EMPTY);
-//
-//	    if (lVal instanceof NullValue && rVal instanceof StringValue)
-//	      return StringValue.EMPTY.cmpString((StringValue) rVal);
-//
-//	    if (lVal instanceof StringValue && rVal instanceof StringValue)
-//	      return ((StringValue) lVal).cmpString((StringValue) rVal);
-//
-//	    if (lVal instanceof NullValue
-//	        || lVal instanceof BooleanValue
-//	        || rVal instanceof NullValue
-//	        || rVal instanceof BooleanValue)
-//	    {
-//	      boolean lBool = toBoolean();
-//	      boolean rBool    = rValue.toBoolean();
-//
-//	      if (!lBool && rBool) return -1;
-//	      if (lBool && !rBool) return 1;
-//	      return 0;
-//	    }
-//
-//	    if (lVal.isObject() && rVal.isObject())
-//	      return ((ObjectValue) lVal).cmpObject((ObjectValue) rVal);
-//
-//	    if ((lVal instanceof StringValue
-//	         || lVal instanceof NumberValue
-//	         || lVal instanceof ResourceValue)
-//	        && (rVal instanceof StringValue
-//	            || rVal instanceof NumberValue
-//	            || rVal instanceof ResourceValue))
-//	      return NumberValue.compareNum(lVal, rVal);
-//
-//	    if (lVal instanceof ArrayValue) return 1;
-//	    if (rVal instanceof ArrayValue) return -1;
-//	    if (lVal instanceof ObjectValue) return 1;
-//	    if (rVal instanceof ObjectValue) return -1;
-//
-//	    // XXX: proper default case?
-//	    throw new RuntimeException(
-//	      "values are incomparable: " + lVal + " <=> " + rVal);
-//	  }
+	  /**
+	   * Returns a negative/positive integer if this Value is
+	   * lessthan/greaterthan rValue.
+	   */
+	  @Override
+	  public int cmp(Value rValue)
+	  {
+		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+
+	    // This is tricky: implemented according to Table 15-5 of
+	    // http://us2.php.net/manual/en/language.operators.comparison.php
+
+	    Value lVal = toValue();
+	    Value rVal = rValue.toValue();
+
+	    if (lVal instanceof StringValue && rVal instanceof NullValue)
+	      return ((StringValue) lVal).cmpString(StringValue.EMPTY);
+
+	    if (lVal instanceof NullValue && rVal instanceof StringValue)
+	      return StringValue.EMPTY.cmpString((StringValue) rVal);
+
+	    if (lVal instanceof StringValue && rVal instanceof StringValue)
+	      return ((StringValue) lVal).cmpString((StringValue) rVal);
+
+	    if (lVal instanceof NullValue
+	        || lVal instanceof BooleanValue
+	        || rVal instanceof NullValue
+	        || rVal instanceof BooleanValue)
+	    {
+	      boolean lBool = toBoolean();
+	      boolean rBool    = rValue.toBoolean();
+
+	      if (!lBool && rBool) return -1;
+	      if (lBool && !rBool) return 1;
+	      return 0;
+	    }
+
+	    if (lVal.isObject() && rVal.isObject())
+	      return ((ObjectValue) lVal).cmpObject((ObjectValue) rVal);
+
+	    if ((lVal instanceof StringValue
+	         || lVal instanceof NumberValue
+	         || lVal instanceof ResourceValue)
+	        && (rVal instanceof StringValue
+	            || rVal instanceof NumberValue
+	            || rVal instanceof ResourceValue))
+	      return NumberValue.compareNum(lVal, rVal);
+
+	    if (lVal instanceof ArrayValue) return 1;
+	    if (rVal instanceof ArrayValue) return -1;
+	    if (lVal instanceof ObjectValue) return 1;
+	    if (rVal instanceof ObjectValue) return -1;
+
+	    // XXX: proper default case?
+	    throw new RuntimeException(
+	      "values are incomparable: " + lVal + " <=> " + rVal);
+	  }
 
 	  /**
 	   * Returns true for less than
@@ -3850,6 +3889,7 @@ public abstract class MultiValue extends Value {
 	  public void generate(PrintWriter out)
 	    throws IOException
 	  {
+		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");  
 	  }
 
 	  protected static void printJavaChar(PrintWriter out, char ch)
@@ -3960,6 +4000,8 @@ public abstract class MultiValue extends Value {
 	                             IdentityHashMap<Value, String> valueSet)
 	    throws IOException
 	  {
+		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+		
 	    out.print("resource(" + toString() + ")");
 	  }
 
@@ -3993,12 +4035,16 @@ public abstract class MultiValue extends Value {
 	                            IdentityHashMap<Value, String> valueSet)
 	    throws IOException
 	  {
+		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+		  
 	    out.print(toString());
 	  }
 
 	  protected void printDepth(WriteStream out, int depth)
 	    throws IOException
 	  {
+		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+		  
 	    for (int i = 0; i < depth; i++)
 	      out.print(' ');
 	  }

@@ -73,4 +73,9 @@ public class Concat extends MultiValue {
 		return value1.toString() + value2.toString();
 	}
 	
+	@Override
+	public boolean isset() {
+		return true;
+	}
+	
 }

@@ -1008,6 +1008,14 @@ public class Env
       listener.startup(this);
     
     _quercus.startEnv(this);
+    		
+    // INST ADDED BY HUNG
+  
+    if (Env_.INSTRUMENT)
+    	env_.start(this);
+  
+    // END OF ADDED CODE
+    
   }
   
   /**
@@ -7047,6 +7055,13 @@ public class Env
    */
   public void close()
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  env_.close(this);
+	  
+	  // END OF ADDED CODE
+	  
     _quercus.completeEnv(this);
     
     /*

@@ -125,6 +125,10 @@ public class JavaInvoker_ {
 			      javaArgs[k++] = rest;
 			    }
 			    else if (_marshalArgs.length < args.length) {
+			    	// INST ADDED BY HUNG
+			    	if (!Env_.INSTRUMENT || !_name.equals("debug_backtrace")) // Quick fix so that Quercus won't show spurious warnings (these warnings are caused by incorrect implementation of Quercus, not by the PHP code).
+			    	// END OF ADDED CODE
+			    		
 			      // php/153o
 			      env.warning(L.l(
 			        "function '{0}' called with {1} arguments, "

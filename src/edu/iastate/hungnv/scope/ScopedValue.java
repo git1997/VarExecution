@@ -5,26 +5,18 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import com.caucho.quercus.QuercusException;
-import com.caucho.quercus.QuercusRuntimeException;
 import com.caucho.quercus.env.ArrayValue;
-import com.caucho.quercus.env.ArrayValueImpl;
 import com.caucho.quercus.env.BinaryBuilderValue;
-import com.caucho.quercus.env.BooleanValue;
 import com.caucho.quercus.env.Callable;
-import com.caucho.quercus.env.CallbackError;
 import com.caucho.quercus.env.CopyRoot;
 import com.caucho.quercus.env.DoubleValue;
 import com.caucho.quercus.env.Env;
@@ -32,22 +24,15 @@ import com.caucho.quercus.env.FieldVisibility;
 import com.caucho.quercus.env.LargeStringBuilderValue;
 import com.caucho.quercus.env.LongValue;
 import com.caucho.quercus.env.NullValue;
-import com.caucho.quercus.env.NumberValue;
-import com.caucho.quercus.env.ObjectValue;
 import com.caucho.quercus.env.QuercusClass;
-import com.caucho.quercus.env.QuercusLanguageException;
-import com.caucho.quercus.env.ResourceValue;
 import com.caucho.quercus.env.SerializeMap;
 import com.caucho.quercus.env.StringBuilderValue;
-import com.caucho.quercus.env.StringInputStream;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.UnicodeBuilderValue;
-import com.caucho.quercus.env.UnsetValue;
 import com.caucho.quercus.env.Value;
 import com.caucho.quercus.env.ValueType;
 import com.caucho.quercus.env.Var;
 import com.caucho.quercus.function.AbstractFunction;
-import com.caucho.quercus.marshal.Marshal;
 import com.caucho.vfs.WriteStream;
 
 import edu.iastate.hungnv.util.Logging;
@@ -165,9 +150,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public String getClassName()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getType();
+		  return value.getClassName();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getType();
 	  }
 
 	  /**
@@ -176,9 +163,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public QuercusClass getQuercusClass()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return null;
+		  return value.getQuercusClass();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return null;
 	  }
 
 	  /**
@@ -187,17 +176,19 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getCalledClass(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    QuercusClass qClass = getQuercusClass();
-
-	    if (qClass != null)
-	      return env.createString(qClass.getName());
-	    else {
-	      env.warning(L.l("get_called_class() must be called in a class context"));
-
-	      return BooleanValue.FALSE;
-	    }
+		  return value.getCalledClass(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    QuercusClass qClass = getQuercusClass();
+//
+//	    if (qClass != null)
+//	      return env.createString(qClass.getName());
+//	    else {
+//	      env.warning(L.l("get_called_class() must be called in a class context"));
+//
+//	      return BooleanValue.FALSE;
+//	    }
 	  }
 
 	  //
@@ -210,9 +201,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isA(String name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isA(name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -235,8 +228,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void checkProtected(Env env, String className)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
+		  value.checkProtected(env, className);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
 	  }
 
 	  /**
@@ -245,8 +240,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void checkPrivate(Env env, String className)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
+		  value.checkPrivate(env, className);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
 	  }
 
 	  /**
@@ -255,9 +252,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public ValueType getValueType()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return ValueType.VALUE;
+		  return value.getValueType();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return ValueType.VALUE;
 	  }
 
 	  /**
@@ -266,9 +265,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isArray()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isArray();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -277,9 +278,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isDoubleConvertible()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isDoubleConvertible();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -288,9 +291,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isLongConvertible()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isLongConvertible();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -299,9 +304,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isLong()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isLong();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -310,9 +317,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isDouble()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isDouble();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -321,9 +330,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isNull()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isNull();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -332,9 +343,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isNumberConvertible()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return isLongConvertible() || isDoubleConvertible();
+		  return value.isNumberConvertible();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return isLongConvertible() || isDoubleConvertible();
 	  }
 
 	  /**
@@ -343,9 +356,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isNumeric()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isNumeric();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -354,9 +369,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isObject()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isObject();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /*
@@ -365,9 +382,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isResource()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isResource();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -376,9 +395,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isString()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isString();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -387,9 +408,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isBinary()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isBinary();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -398,9 +421,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isUnicode()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isUnicode();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -409,9 +434,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isBoolean()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isBoolean();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -420,9 +447,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isDefault()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isDefault();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  //
@@ -435,9 +464,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toBooleanMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_BOOLEAN;
+		  return value.toBooleanMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_BOOLEAN;
 	  }
 
 	  /**
@@ -446,9 +477,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toByteMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_INCOMPATIBLE;
+		  return value.toByteMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_INCOMPATIBLE;
 	  }
 
 	  /**
@@ -457,9 +490,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toShortMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_INCOMPATIBLE;
+		  return value.toShortMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_INCOMPATIBLE;
 	  }
 
 	  /**
@@ -468,9 +503,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toIntegerMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_INCOMPATIBLE;
+		  return value.toIntegerMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_INCOMPATIBLE;
 	  }
 
 	  /**
@@ -479,9 +516,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toLongMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_INCOMPATIBLE;
+		  return value.toLongMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_INCOMPATIBLE;
 	  }
 
 	  /**
@@ -490,9 +529,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toDoubleMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_INCOMPATIBLE;
+		  return value.toDoubleMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_INCOMPATIBLE;
 	  }
 
 	  /**
@@ -501,9 +542,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toFloatMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toDoubleMarshalCost() + 10;
+		  return value.toFloatMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toDoubleMarshalCost() + 10;
 	  }
 
 	  /**
@@ -512,9 +555,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toCharMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_CHAR;
+		  return value.toCharMarshalCost();
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_CHAR;
 	  }
 
 	  /**
@@ -523,9 +567,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toStringMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_STRING;
+		  return value.toStringMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_STRING;
 	  }
 
 	  /**
@@ -534,9 +580,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toByteArrayMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_BYTE_ARRAY;
+		  return value.toByteArrayMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_BYTE_ARRAY;
 	  }
 
 	  /**
@@ -545,9 +593,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toCharArrayMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_CHAR_ARRAY;
+		  return value.toCharArrayMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_CHAR_ARRAY;
 	  }
 
 	  /**
@@ -556,9 +606,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toJavaObjectMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_JAVA_OBJECT;
+		  return value.toJavaObjectMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_JAVA_OBJECT;
 	  }
 
 	  /**
@@ -567,9 +619,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toBinaryValueMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_STRING + 1;
+		  return value.toBinaryValueMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_STRING + 1;
 	  }
 
 	  /**
@@ -578,9 +632,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toStringValueMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_STRING + 1;
+		  return value.toStringValueMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_STRING + 1;
 	  }
 
 	  /**
@@ -589,9 +645,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toUnicodeValueMarshalCost()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return Marshal.COST_TO_STRING + 1;
+		  return value.toUnicodeValueMarshalCost();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return Marshal.COST_TO_STRING + 1;
 	  }
 
 	  //
@@ -604,9 +662,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isset()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return true;
+		  return value.isset();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return true;
 	  }
 
 	  /**
@@ -615,9 +675,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isEmpty()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isEmpty();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -626,9 +688,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean hasCurrent()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.hasCurrent();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -637,9 +701,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value eqValue(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return eq(rValue) ? BooleanValue.TRUE : BooleanValue.FALSE;
+		  return value.eqValue(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return eq(rValue) ? BooleanValue.TRUE : BooleanValue.FALSE;
 	  }
 
 	  /**
@@ -648,18 +714,20 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean eq(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (rValue.isArray())
-	      return rValue.eq(this);
-	    else if (rValue instanceof BooleanValue)
-	      return toBoolean() == rValue.toBoolean();
-	    else if (isLongConvertible() && rValue.isLongConvertible())
-	      return toLong() == rValue.toLong();
-	    else if (isNumberConvertible() || rValue.isNumberConvertible())
-	      return toDouble() == rValue.toDouble();
-	    else
-	      return toString().equals(rValue.toString());
+		  return value.eq(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (rValue.isArray())
+//	      return rValue.eq(this);
+//	    else if (rValue instanceof BooleanValue)
+//	      return toBoolean() == rValue.toBoolean();
+//	    else if (isLongConvertible() && rValue.isLongConvertible())
+//	      return toLong() == rValue.toLong();
+//	    else if (isNumberConvertible() || rValue.isNumberConvertible())
+//	      return toDouble() == rValue.toDouble();
+//	    else
+//	      return toString().equals(rValue.toString());
 	  }
 
 	  /**
@@ -668,9 +736,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean eql(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this == rValue.toValue();
+		  return value.eql(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this == rValue.toValue();
 	  }
 
 	  /**
@@ -680,55 +750,57 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int cmp(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    // This is tricky: implemented according to Table 15-5 of
-	    // http://us2.php.net/manual/en/language.operators.comparison.php
-
-	    Value lVal = toValue();
-	    Value rVal = rValue.toValue();
-
-	    if (lVal instanceof StringValue && rVal instanceof NullValue)
-	      return ((StringValue) lVal).cmpString(StringValue.EMPTY);
-
-	    if (lVal instanceof NullValue && rVal instanceof StringValue)
-	      return StringValue.EMPTY.cmpString((StringValue) rVal);
-
-	    if (lVal instanceof StringValue && rVal instanceof StringValue)
-	      return ((StringValue) lVal).cmpString((StringValue) rVal);
-
-	    if (lVal instanceof NullValue
-	        || lVal instanceof BooleanValue
-	        || rVal instanceof NullValue
-	        || rVal instanceof BooleanValue)
-	    {
-	      boolean lBool = toBoolean();
-	      boolean rBool    = rValue.toBoolean();
-
-	      if (!lBool && rBool) return -1;
-	      if (lBool && !rBool) return 1;
-	      return 0;
-	    }
-
-	    if (lVal.isObject() && rVal.isObject())
-	      return ((ObjectValue) lVal).cmpObject((ObjectValue) rVal);
-
-	    if ((lVal instanceof StringValue
-	         || lVal instanceof NumberValue
-	         || lVal instanceof ResourceValue)
-	        && (rVal instanceof StringValue
-	            || rVal instanceof NumberValue
-	            || rVal instanceof ResourceValue))
-	      return NumberValue.compareNum(lVal, rVal);
-
-	    if (lVal instanceof ArrayValue) return 1;
-	    if (rVal instanceof ArrayValue) return -1;
-	    if (lVal instanceof ObjectValue) return 1;
-	    if (rVal instanceof ObjectValue) return -1;
-
-	    // XXX: proper default case?
-	    throw new RuntimeException(
-	      "values are incomparable: " + lVal + " <=> " + rVal);
+		  return value.cmp(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    // This is tricky: implemented according to Table 15-5 of
+//	    // http://us2.php.net/manual/en/language.operators.comparison.php
+//
+//	    Value lVal = toValue();
+//	    Value rVal = rValue.toValue();
+//
+//	    if (lVal instanceof StringValue && rVal instanceof NullValue)
+//	      return ((StringValue) lVal).cmpString(StringValue.EMPTY);
+//
+//	    if (lVal instanceof NullValue && rVal instanceof StringValue)
+//	      return StringValue.EMPTY.cmpString((StringValue) rVal);
+//
+//	    if (lVal instanceof StringValue && rVal instanceof StringValue)
+//	      return ((StringValue) lVal).cmpString((StringValue) rVal);
+//
+//	    if (lVal instanceof NullValue
+//	        || lVal instanceof BooleanValue
+//	        || rVal instanceof NullValue
+//	        || rVal instanceof BooleanValue)
+//	    {
+//	      boolean lBool = toBoolean();
+//	      boolean rBool    = rValue.toBoolean();
+//
+//	      if (!lBool && rBool) return -1;
+//	      if (lBool && !rBool) return 1;
+//	      return 0;
+//	    }
+//
+//	    if (lVal.isObject() && rVal.isObject())
+//	      return ((ObjectValue) lVal).cmpObject((ObjectValue) rVal);
+//
+//	    if ((lVal instanceof StringValue
+//	         || lVal instanceof NumberValue
+//	         || lVal instanceof ResourceValue)
+//	        && (rVal instanceof StringValue
+//	            || rVal instanceof NumberValue
+//	            || rVal instanceof ResourceValue))
+//	      return NumberValue.compareNum(lVal, rVal);
+//
+//	    if (lVal instanceof ArrayValue) return 1;
+//	    if (rVal instanceof ArrayValue) return -1;
+//	    if (lVal instanceof ObjectValue) return 1;
+//	    if (rVal instanceof ObjectValue) return -1;
+//
+//	    // XXX: proper default case?
+//	    throw new RuntimeException(
+//	      "values are incomparable: " + lVal + " <=> " + rVal);
 	  }
 
 	  /**
@@ -737,9 +809,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean lt(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return cmp(rValue) < 0;
+		  return value.lt(rValue);
+				  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return cmp(rValue) < 0;
 	  }
 
 	  /**
@@ -748,9 +822,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean leq(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return cmp(rValue) <= 0;
+		  return value.leq(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return cmp(rValue) <= 0;
 	  }
 
 	  /**
@@ -759,9 +835,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean gt(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return cmp(rValue) > 0;
+		  return value.gt(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return cmp(rValue) > 0;
 	  }
 
 	  /**
@@ -770,9 +848,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean geq(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return cmp(rValue) >= 0;
+		  return value.geq(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return cmp(rValue) >= 0;
 	  }
 
 	  //
@@ -785,9 +865,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean toBoolean()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return true;
+		  return value.toBoolean();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return true;
 	  }
 
 	  /**
@@ -796,9 +878,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public long toLong()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toBoolean() ? 1 : 0;
+		  return value.toLong();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toBoolean() ? 1 : 0;
 	  }
 
 	  /**
@@ -807,9 +891,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int toInt()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return (int) toLong();
+		  return value.toInt();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return (int) toLong();
 	  }
 
 	  /**
@@ -818,9 +904,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public double toDouble()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return 0;
+		  return value.toDouble();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return 0;
 	  }
 
 	  /**
@@ -829,14 +917,16 @@ public class ScopedValue extends Value {
 	  @Override
 	  public char toChar()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    String s = toString();
-
-	    if (s == null || s.length() < 1)
-	      return 0;
-	    else
-	      return s.charAt(0);
+		  return value.toChar();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    String s = toString();
+//
+//	    if (s == null || s.length() < 1)
+//	      return 0;
+//	    else
+//	      return s.charAt(0);
 	  }
 
 	  /**
@@ -847,9 +937,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toString(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toStringValue();
+		  return value.toString(env);
+				  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toStringValue();
 	  }
 
 	  /**
@@ -858,9 +950,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toArray()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new ArrayValueImpl().append(this);
+		  return value.toArray();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new ArrayValueImpl().append(this);
 	  }
 
 	  /**
@@ -901,9 +995,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toAutoObject(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.toAutoObject(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -912,13 +1008,15 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toObject(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    ObjectValue obj = env.createObject();
-
-	    obj.putField(env, env.createString("scalar"), this);
-
-	    return obj;
+		  return value.toObject(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    ObjectValue obj = env.createObject();
+//
+//	    obj.putField(env, env.createString("scalar"), this);
+//
+//	    return obj;
 	  }
 
 	  /**
@@ -927,9 +1025,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Object toJavaObject()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return null;
+		  return value.toJavaObject();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return null;
 	  }
 
 	  /**
@@ -938,12 +1038,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Object toJavaObject(Env env, @SuppressWarnings("rawtypes") Class type)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.warning(L.l("Can't convert {0} to Java {1}",
-	                    getClass().getName(), type.getName()));
-
-	    return null;
+		  return value.toJavaObject(env, type);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.warning(L.l("Can't convert {0} to Java {1}",
+//	                    getClass().getName(), type.getName()));
+//
+//	    return null;
 	  }
 
 	  /**
@@ -952,12 +1054,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Object toJavaObjectNotNull(Env env, @SuppressWarnings("rawtypes") Class type)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.warning(L.l("Can't convert {0} to Java {1}",
-	                    getClass().getName(), type.getName()));
-
-	    return null;
+		  return value.toJavaObjectNotNull(env, type);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.warning(L.l("Can't convert {0} to Java {1}",
+//	                    getClass().getName(), type.getName()));
+//
+//	    return null;
 	  }
 
 	  /**
@@ -966,9 +1070,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Boolean toJavaBoolean()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toBoolean() ? Boolean.TRUE : Boolean.FALSE;
+		  return value.toJavaBoolean();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toBoolean() ? Boolean.TRUE : Boolean.FALSE;
 	  }
 
 	  /**
@@ -977,9 +1083,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Byte toJavaByte()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Byte((byte) toLong());
+		  return value.toJavaByte();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Byte((byte) toLong());
 	  }
 
 	  /**
@@ -988,9 +1096,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Short toJavaShort()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Short((short) toLong());
+		  return value.toJavaShort();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Short((short) toLong());
 	  }
 
 	  /**
@@ -999,9 +1109,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Integer toJavaInteger()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Integer((int) toLong());
+		  return value.toJavaInteger();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Integer((int) toLong());
 	  }
 
 	  /**
@@ -1010,9 +1122,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Long toJavaLong()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Long((int) toLong());
+		  return value.toJavaLong();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Long((int) toLong());
 	  }
 
 	  /**
@@ -1021,9 +1135,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Float toJavaFloat()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Float((float) toDouble());
+		  return value.toJavaFloat();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Float((float) toDouble());
 	  }
 
 	  /**
@@ -1032,9 +1148,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Double toJavaDouble()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Double(toDouble());
+		  return value.toJavaDouble();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Double(toDouble());
 	  }
 
 	  /**
@@ -1043,9 +1161,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Character toJavaCharacter()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Character(toChar());
+		  return value.toJavaCharacter();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Character(toChar());
 	  }
 
 	  /**
@@ -1054,9 +1174,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public String toJavaString()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toString();
+		  return value.toJavaString();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toString();
 	  }
 
 	  /**
@@ -1065,12 +1187,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Collection<?> toJavaCollection(Env env, Class<?> type)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.warning(L.l("Can't convert {0} to Java {1}",
-	            getClass().getName(), type.getName()));
-
-	    return null;
+		  return value.toJavaCollection(env, type);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.warning(L.l("Can't convert {0} to Java {1}",
+//	            getClass().getName(), type.getName()));
+//
+//	    return null;
 	  }
 
 	  /**
@@ -1079,12 +1203,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public List<?> toJavaList(Env env, Class<?> type)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.warning(L.l("Can't convert {0} to Java {1}",
-	            getClass().getName(), type.getName()));
-
-	    return null;
+		  return value.toJavaList(env, type);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.warning(L.l("Can't convert {0} to Java {1}",
+//	            getClass().getName(), type.getName()));
+//
+//	    return null;
 	  }
 
 	  /**
@@ -1093,12 +1219,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Map<?,?> toJavaMap(Env env, Class<?> type)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.warning(L.l("Can't convert {0} to Java {1}",
-	            getClass().getName(), type.getName()));
-
-	    return null;
+		  return value.toJavaMap(env, type);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.warning(L.l("Can't convert {0} to Java {1}",
+//	            getClass().getName(), type.getName()));
+//
+//	    return null;
 	  }
 
 	  /**
@@ -1107,13 +1235,15 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Calendar toJavaCalendar()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Calendar cal = Calendar.getInstance();
-
-	    cal.setTimeInMillis(toLong());
-
-	    return cal;
+		  return value.toJavaCalendar();
+				  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Calendar cal = Calendar.getInstance();
+//
+//	    cal.setTimeInMillis(toLong());
+//
+//	    return cal;
 	  }
 
 	  /**
@@ -1122,9 +1252,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Date toJavaDate()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Date(toLong());
+		  return value.toJavaDate();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Date(toLong());
 	  }
 
 	  /**
@@ -1133,15 +1265,17 @@ public class ScopedValue extends Value {
 	  @Override
 	  public URL toJavaURL(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    try {
-	      return new URL(toString());
-	    }
-	    catch (MalformedURLException e) {
-	      env.warning(L.l(e.getMessage()));
-	      return null;
-	    }
+		  return value.toJavaURL(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    try {
+//	      return new URL(toString());
+//	    }
+//	    catch (MalformedURLException e) {
+//	      env.warning(L.l(e.getMessage()));
+//	      return null;
+//	    }
 	  }
 
 	  /**
@@ -1150,9 +1284,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public BigDecimal toBigDecimal()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new BigDecimal(toString());
+		  return value.toBigDecimal();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new BigDecimal(toString());
 	  }
 
 	  /**
@@ -1161,9 +1297,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public BigInteger toBigInteger()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new BigInteger(toString());
+		  return value.toBigInteger();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new BigInteger(toString());
 	  }
 
 	  /**
@@ -1172,12 +1310,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public QuercusException toException(Env env, String file, int line)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    putField(env, env.createString("file"), env.createString(file));
-	    putField(env, env.createString("line"), LongValue.create(line));
-
-	    return new QuercusLanguageException(this);
+		  return value.toException(env, file, line);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    putField(env, env.createString("file"), env.createString(file));
+//	    putField(env, env.createString("line"), LongValue.create(line));
+//
+//	    return new QuercusLanguageException(this);
 	  }
 
 	  /**
@@ -1186,9 +1326,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toValue()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.toValue();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1210,9 +1352,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toRef()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.toRef();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1225,9 +1369,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toLocalValueReadOnly()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.toLocalValueReadOnly();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1240,9 +1386,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toLocalValue()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.toLocalValue();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1255,9 +1403,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toLocalRef()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.toLocalRef();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1270,9 +1420,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Var toLocalVar()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toLocalRef().toVar();
+		  return value.toLocalVar();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toLocalRef().toVar();
 	  }
 
 	  /**
@@ -1285,9 +1437,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Var toLocalVarDeclAsRef()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Var(this);
+		  return value.toLocalVarDeclAsRef();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Var(this);
 	  }
 	  
 	  /**
@@ -1296,9 +1450,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toLocalThis(QuercusClass qClass)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.toLocalThis(qClass);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1324,9 +1480,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Var toVar()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Var(this);
+		  return value.toVar();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Var(this);
 	  }
 
 	  /**
@@ -1339,15 +1497,17 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value toArgRef()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Env.getCurrent()
-	      .warning(L.l(
-	        "'{0}' is an invalid reference, because only "
-	        + "variables may be passed by reference.",
-	        this));
-
-	    return NullValue.NULL;
+		  return value.toArgRef();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Env.getCurrent()
+//	      .warning(L.l(
+//	        "'{0}' is an invalid reference, because only "
+//	        + "variables may be passed by reference.",
+//	        this));
+//
+//	    return NullValue.NULL;
 	  }
 
 	  /**
@@ -1356,9 +1516,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toStringValue()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toStringValue(Env.getInstance());
+		  return value.toStringValue();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toStringValue(Env.getInstance());
 	  }
 
 	  /*
@@ -1367,9 +1529,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toStringValue(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toStringBuilder(env);
+		  return value.toStringValue(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toStringBuilder(env);
 	  }
 
 	  /**
@@ -1380,9 +1544,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toUnicode(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toUnicodeValue(env);
+		  return value.toUnicode(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toUnicodeValue(env);
 	  }
 
 	  /**
@@ -1392,9 +1558,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toUnicodeValue()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toUnicodeValue(Env.getInstance());
+		  return value.toUnicodeValue();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toUnicodeValue(Env.getInstance());
 	  }
 
 	  /**
@@ -1404,10 +1572,12 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toUnicodeValue(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    // php/0ci0
-	    return new UnicodeBuilderValue(env.createString(toString()));
+		  return value.toUnicodeValue(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    // php/0ci0
+//	    return new UnicodeBuilderValue(env.createString(toString()));
 	  }
 
 	  /**
@@ -1416,9 +1586,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toBinaryValue()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toBinaryValue(Env.getInstance());
+		  return value.toBinaryValue();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toBinaryValue(Env.getInstance());
 	  }
 
 	  /**
@@ -1427,9 +1599,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toBinaryValue(String charset)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toBinaryValue();
+		  return value.toBinaryValue(charset);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toBinaryValue();
 	  }
 
 	  /**
@@ -1438,35 +1612,37 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toBinaryValue(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    StringValue bb = env.createBinaryBuilder();
-
-	    bb.append(this);
-
-	    return bb;
-
-	      /*
-	    try {
-	      int length = 0;
-	      while (true) {
-	        bb.ensureCapacity(bb.getLength() + 256);
-
-	        int sublen = is.read(bb.getBuffer(),
-	                             bb.getOffset(),
-	                             bb.getLength() - bb.getOffset());
-
-	        if (sublen <= 0)
-	          return bb;
-	        else {
-	          length += sublen;
-	          bb.setOffset(length);
-	        }
-	      }
-	    } catch (IOException e) {
-	      throw new QuercusException(e);
-	    }
-	      */
+		  return value.toBinaryValue(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    StringValue bb = env.createBinaryBuilder();
+//
+//	    bb.append(this);
+//
+//	    return bb;
+//
+//	      /*
+//	    try {
+//	      int length = 0;
+//	      while (true) {
+//	        bb.ensureCapacity(bb.getLength() + 256);
+//
+//	        int sublen = is.read(bb.getBuffer(),
+//	                             bb.getOffset(),
+//	                             bb.getLength() - bb.getOffset());
+//
+//	        if (sublen <= 0)
+//	          return bb;
+//	        else {
+//	          length += sublen;
+//	          bb.setOffset(length);
+//	        }
+//	      }
+//	    } catch (IOException e) {
+//	      throw new QuercusException(e);
+//	    }
+//	      */
 	  }
 
 	  /**
@@ -1478,9 +1654,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public InputStream toInputStream()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new StringInputStream(toString());
+		  return value.toInputStream();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new StringInputStream(toString());
 	  }
 
 	  /**
@@ -1489,9 +1667,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toStringBuilder()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toStringBuilder(Env.getInstance());
+		  return value.toStringBuilder();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toStringBuilder(Env.getInstance());
 	  }
 
 	  /**
@@ -1500,9 +1680,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toStringBuilder(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return env.createUnicodeBuilder().appendUnicode(this);
+		  return value.toStringBuilder(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return env.createUnicodeBuilder().appendUnicode(this);
 	  }
 
 	  /**
@@ -1511,9 +1693,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toStringBuilder(Env env, Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toStringBuilder(env).appendUnicode(value);
+		  return this.value.toStringBuilder(env, value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toStringBuilder(env).appendUnicode(value);
 	  }
 
 	  /**
@@ -1522,9 +1706,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue toStringBuilder(Env env, StringValue value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toStringBuilder(env).appendUnicode(value);
+		  return this.value.toStringBuilder(env, value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toStringBuilder(env).appendUnicode(value);
 	  }
 
 	  /**
@@ -1533,9 +1719,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue copyStringBuilder()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toStringBuilder();
+		  return value.copyStringBuilder();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toStringBuilder();
 	  }
 
 	  /**
@@ -1544,9 +1732,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public LongValue toLongValue()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return LongValue.create(toLong());
+		  return value.toLongValue();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return LongValue.create(toLong());
 	  }
 
 	  /**
@@ -1555,9 +1745,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public DoubleValue toDoubleValue()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new DoubleValue(toDouble());
+		  return value.toDoubleValue();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new DoubleValue(toDouble());
 	  }
 	  
 	  /**
@@ -1566,9 +1758,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isCallable(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isCallable(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 	  
 	  /**
@@ -1577,9 +1771,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public String getCallableName()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return null;
+		  return value.getCallableName();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return null;
 	  }
 	  
 	  /**
@@ -1588,12 +1784,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Callable toCallable(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.warning(L.l("Callable: '{0}' is not a valid callable argument",
-	                    toString()));
-
-	    return new CallbackError(toString());
+		  return value.toCallable(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.warning(L.l("Callable: '{0}' is not a valid callable argument",
+//	                    toString()));
+//
+//	    return new CallbackError(toString());
 	  }
 
 	  //
@@ -1606,9 +1804,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue appendTo(UnicodeBuilderValue sb)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return sb.append(toString());
+		  return value.appendTo(sb);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return sb.append(toString());
 	  }
 
 	  /**
@@ -1617,9 +1817,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue appendTo(StringBuilderValue sb)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return sb.append(toString());
+		  return value.appendTo(sb);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return sb.append(toString());
 	  }
 
 	  /**
@@ -1628,9 +1830,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue appendTo(BinaryBuilderValue sb)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return sb.appendBytes(toString());
+		  return value.appendTo(sb);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return sb.appendBytes(toString());
 	  }
 
 	  /**
@@ -1639,9 +1843,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public StringValue appendTo(LargeStringBuilderValue sb)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return sb.append(toString());
+		  return value.appendTo(sb);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return sb.append(toString());
 	  }
 
 	  /**
@@ -1650,9 +1856,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value copy()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.copy();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1661,9 +1869,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value copyArrayItem()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return copy();
+		  return value.copyArrayItem();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return copy();
 	  }
 
 	  /**
@@ -1672,11 +1882,13 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value copyReturn()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    // php/3a5d
-
-	    return this;
+		  return value.copyReturn();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    // php/3a5d
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1696,9 +1908,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value copy(Env env, IdentityHashMap<Value,Value> map)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.copy(env, map);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1707,9 +1921,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value copyTree(Env env, CopyRoot root)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.copyTree(env, root);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1718,9 +1934,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value clone(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.clone(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -1729,9 +1947,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value copySaveFunArg()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return copy();
+		  return value.copySaveFunArg();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return copy();
 	  }
 
 	  /**
@@ -1740,9 +1960,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public String getType()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return "value";
+		  return value.getType();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return "value";
 	  }
 
 	  /*
@@ -1751,9 +1973,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public String getResourceType()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return null;
+		  return value.getResourceType();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return null;
 	  }
 
 	  /**
@@ -1762,9 +1986,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value key()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return BooleanValue.FALSE;
+		  return value.key();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return BooleanValue.FALSE;
 	  }
 
 	  /**
@@ -1773,9 +1999,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value current()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return BooleanValue.FALSE;
+		  return value.current();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return BooleanValue.FALSE;
 	  }
 
 	  /**
@@ -1784,9 +2012,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value next()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return BooleanValue.FALSE;
+		  return value.next();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return BooleanValue.FALSE;
 	  }
 
 	  /**
@@ -1795,9 +2025,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value prev()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return BooleanValue.FALSE;
+		  return value.prev();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return BooleanValue.FALSE;
 	  }
 
 	  /**
@@ -1806,9 +2038,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value end()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return BooleanValue.FALSE;
+		  return value.end();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return BooleanValue.FALSE;
 	  }
 
 	  /**
@@ -1817,9 +2051,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value reset()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return BooleanValue.FALSE;
+		  return value.reset();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return BooleanValue.FALSE;
 	  }
 
 	  /**
@@ -1828,9 +2064,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value shuffle()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return BooleanValue.FALSE;
+		  return value.shuffle();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return BooleanValue.FALSE;
 	  }
 
 	  /**
@@ -1839,11 +2077,13 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value pop(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.warning("cannot pop a non-array");
-
-	    return NullValue.NULL;
+		  return value.pop(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.warning("cannot pop a non-array");
+//
+//	    return NullValue.NULL;
 	  }
 
 	  /**
@@ -1852,9 +2092,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public AbstractFunction findFunction(String methodName)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return null;
+		  return value.findFunction(methodName);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return null;
 	  }
 
 	  //
@@ -1867,15 +2109,17 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value call(Env env, Value []args)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Callable call = toCallable(env);
-
-	    if (call != null)
-	      return call.call(env, args);
-	    else
-	      return env.warning(L.l("{0} is not a valid function",
-	                             this));
+		  return value.call(env, args);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Callable call = toCallable(env);
+//
+//	    if (call != null)
+//	      return call.call(env, args);
+//	    else
+//	      return env.warning(L.l("{0} is not a valid function",
+//	                             this));
 	  }
 
 	  /**
@@ -1884,15 +2128,17 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value callRef(Env env, Value []args)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    AbstractFunction fun = env.getFunction(this);
-
-	    if (fun != null)
-	      return fun.callRef(env, args);
-	    else
-	      return env.warning(L.l("{0} is not a valid function",
-	                             this));
+		  return value.callRef(env, args);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    AbstractFunction fun = env.getFunction(this);
+//
+//	    if (fun != null)
+//	      return fun.callRef(env, args);
+//	    else
+//	      return env.warning(L.l("{0} is not a valid function",
+//	                             this));
 	  }
 
 	  /**
@@ -1901,39 +2147,43 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value callCopy(Env env, Value []args)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    AbstractFunction fun = env.getFunction(this);
-
-	    if (fun != null)
-	      return fun.callCopy(env, args);
-	    else
-	      return env.warning(L.l("{0} is not a valid function",
-	                             this));
+		  return value.callCopy(env, args);
+				  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    AbstractFunction fun = env.getFunction(this);
+//
+//	    if (fun != null)
+//	      return fun.callCopy(env, args);
+//	    else
+//	      return env.warning(L.l("{0} is not a valid function",
+//	                             this));
 	  }
 
 	  /**
 	   * Evaluates the function.
 	   */
 	  @Override
-	  public Value call(Env env) // TODO Revise
+	  public Value call(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-		
-		  return super.call(env);
-	    //return call(env, NULL_ARG_VALUES);
+		  return value.call(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//		
+//		return call(env, NULL_ARG_VALUES);
 	  }
 
 	  /**
 	   * Evaluates the function.
 	   */
 	  @Override
-	  public Value callRef(Env env) // TODO Revise
+	  public Value callRef(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-		
-		  return super.callRef(env);
-	    //return callRef(env, NULL_ARG_VALUES);
+		  return value.callRef(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//		
+//		return callRef(env, NULL_ARG_VALUES);
 	  }
 
 	  /**
@@ -1942,9 +2192,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value call(Env env, Value a1)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return call(env, new Value[] { a1 });
+		  return value.call(env, a1);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return call(env, new Value[] { a1 });
 	  }
 
 	  /**
@@ -1953,9 +2205,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value callRef(Env env, Value a1)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callRef(env, new Value[] { a1 });
+		  return value.callRef(env, a1);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callRef(env, new Value[] { a1 });
 	  }
 
 	  /**
@@ -1964,9 +2218,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value call(Env env, Value a1, Value a2)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return call(env, new Value[] { a1, a2 });
+		  return value.call(env, a1, a2);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return call(env, new Value[] { a1, a2 });
 	  }
 
 	  /**
@@ -1975,9 +2231,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value callRef(Env env, Value a1, Value a2)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callRef(env, new Value[] { a1, a2 });
+		  return value.callRef(env, a1, a2);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callRef(env, new Value[] { a1, a2 });
 	  }
 
 	  /**
@@ -1986,9 +2244,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value call(Env env, Value a1, Value a2, Value a3)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return call(env, new Value[] { a1, a2, a3 });
+		  return value.call(env, a1, a2, a3);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return call(env, new Value[] { a1, a2, a3 });
 	  }
 
 	  /**
@@ -1997,9 +2257,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value callRef(Env env, Value a1, Value a2, Value a3)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callRef(env, new Value[] { a1, a2, a3 });
+		  return value.callRef(env, a1, a2, a3);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callRef(env, new Value[] { a1, a2, a3 });
 	  }
 
 	  /**
@@ -2008,9 +2270,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value call(Env env, Value a1, Value a2, Value a3, Value a4)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return call(env, new Value[] { a1, a2, a3, a4 });
+		  return value.call(env, a1, a2, a3, a4);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return call(env, new Value[] { a1, a2, a3, a4 });
 	  }
 
 	  /**
@@ -2019,9 +2283,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value callRef(Env env, Value a1, Value a2, Value a3, Value a4)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callRef(env, new Value[] { a1, a2, a3, a4 });
+		  return value.callRef(env, a1, a2, a3, a4);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callRef(env, new Value[] { a1, a2, a3, a4 });
 	  }
 
 	  /**
@@ -2030,9 +2296,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value call(Env env, Value a1, Value a2, Value a3, Value a4, Value a5)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return call(env, new Value[] { a1, a2, a3, a4, a5 });
+		  return value.call(env, a1, a2, a3, a4, a5);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return call(env, new Value[] { a1, a2, a3, a4, a5 });
 	  }
 
 	  /**
@@ -2042,9 +2310,11 @@ public class ScopedValue extends Value {
 	  public Value callRef(Env env,
 	                       Value a1, Value a2, Value a3, Value a4, Value a5)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callRef(env, new Value[] { a1, a2, a3, a4, a5 });
+		  return value.callRef(env, a1, a2, a3, a4, a5);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callRef(env, new Value[] { a1, a2, a3, a4, a5 });
 	  }
 
 	  //
@@ -2059,17 +2329,19 @@ public class ScopedValue extends Value {
 	                          StringValue methodName, int hash,
 	                          Value []args)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (isNull()) {
-	      return env.error(L.l("Method call '{0}' is not allowed for a null value.",
-	                           methodName));
-	    }
-	    else {
-	      return env.error(L.l("'{0}' is an unknown method of {1}.",
-	                           methodName,
-	                           toDebugString()));
-	    }
+		  return value.callMethod(env, methodName, hash, args);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (isNull()) {
+//	      return env.error(L.l("Method call '{0}' is not allowed for a null value.",
+//	                           methodName));
+//	    }
+//	    else {
+//	      return env.error(L.l("'{0}' is an unknown method of {1}.",
+//	                           methodName,
+//	                           toDebugString()));
+//	    }
 	  }
 
 	  /**
@@ -2096,9 +2368,11 @@ public class ScopedValue extends Value {
 	                             StringValue methodName, int hash,
 	                             Value []args)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethod(env, methodName, hash, args);
+		  return value.callMethodRef(env, methodName, hash, args);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethod(env, methodName, hash, args);
 	  }
 
 	  /**
@@ -2120,12 +2394,13 @@ public class ScopedValue extends Value {
 	   * Evaluates a method with 0 args.
 	   */
 	  @Override
-	  public Value callMethod(Env env, StringValue methodName, int hash) // TODO Revise
+	  public Value callMethod(Env env, StringValue methodName, int hash)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-		
-		  return super.callMethod(env, methodName, hash);
-//	    return callMethod(env, methodName, hash, NULL_ARG_VALUES);
+		  return value.callMethod(env, methodName, hash);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//		
+//		return callMethod(env, methodName, hash, NULL_ARG_VALUES);
 	  }
 
 	  /**
@@ -2145,12 +2420,13 @@ public class ScopedValue extends Value {
 	   * Evaluates a method with 0 args.
 	   */
 	  @Override
-	  public Value callMethodRef(Env env, StringValue methodName, int hash) // TODO Revise
+	  public Value callMethodRef(Env env, StringValue methodName, int hash)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-		
-		  return callMethodRef(env, methodName, hash);
-//	    return callMethodRef(env, methodName, hash, NULL_ARG_VALUES);
+		  return value.callMethodRef(env, methodName, hash);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//		
+//		return callMethodRef(env, methodName, hash, NULL_ARG_VALUES);
 	  }
 
 	  /**
@@ -2174,9 +2450,11 @@ public class ScopedValue extends Value {
 	                          StringValue methodName, int hash,
 	                          Value a1)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethod(env, methodName, hash, new Value[] { a1 });
+		  return value.callMethod(env, methodName, hash, a1);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethod(env, methodName, hash, new Value[] { a1 });
 	  }
 
 	  /**
@@ -2202,9 +2480,11 @@ public class ScopedValue extends Value {
 	                             StringValue methodName, int hash,
 	                             Value a1)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethodRef(env, methodName, hash, new Value[] { a1 });
+		  return value.callMethodRef(env, methodName, hash, a1);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethodRef(env, methodName, hash, new Value[] { a1 });
 	  }
 
 	  /**
@@ -2230,9 +2510,11 @@ public class ScopedValue extends Value {
 	                          StringValue methodName, int hash,
 	                          Value a1, Value a2)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethod(env, methodName, hash, new Value[] { a1, a2 });
+		  return value.callMethod(env, methodName, hash, a1, a2);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethod(env, methodName, hash, new Value[] { a1, a2 });
 	  }
 
 	  /**
@@ -2259,9 +2541,11 @@ public class ScopedValue extends Value {
 	                             StringValue methodName, int hash,
 	                             Value a1, Value a2)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethodRef(env, methodName, hash, new Value[] { a1, a2 });
+		  return value.callMethodRef(env, methodName, hash, a1, a2);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethodRef(env, methodName, hash, new Value[] { a1, a2 });
 	  }
 
 	  /**
@@ -2288,9 +2572,11 @@ public class ScopedValue extends Value {
 	                          StringValue methodName, int hash,
 	                          Value a1, Value a2, Value a3)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethod(env, methodName, hash, new Value[] { a1, a2, a3 });
+		  return value.callMethod(env, methodName, hash, a1, a2, a3);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethod(env, methodName, hash, new Value[] { a1, a2, a3 });
 	  }
 
 	  /**
@@ -2317,9 +2603,11 @@ public class ScopedValue extends Value {
 	                             StringValue methodName, int hash,
 	                             Value a1, Value a2, Value a3)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethodRef(env, methodName, hash, new Value[] { a1, a2, a3 });
+		  return value.callMethodRef(env, methodName, hash, a1, a2, a3);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethodRef(env, methodName, hash, new Value[] { a1, a2, a3 });
 	  }
 
 	  /**
@@ -2346,10 +2634,12 @@ public class ScopedValue extends Value {
 	                          StringValue methodName, int hash,
 	                          Value a1, Value a2, Value a3, Value a4)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethod(env, methodName, hash,
-	                      new Value[] { a1, a2, a3, a4 });
+		  return value.callMethod(env, methodName, hash, a1, a2, a3, a4);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethod(env, methodName, hash,
+//	                      new Value[] { a1, a2, a3, a4 });
 	  }
 
 	  /**
@@ -2376,10 +2666,12 @@ public class ScopedValue extends Value {
 	                             StringValue methodName, int hash,
 	                             Value a1, Value a2, Value a3, Value a4)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethodRef(env, methodName, hash,
-	                         new Value[] { a1, a2, a3, a4 });
+		  return value.callMethodRef(env, methodName, hash, a1, a2, a3, a4);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethodRef(env, methodName, hash,
+//	                         new Value[] { a1, a2, a3, a4 });
 	  }
 
 	  /**
@@ -2406,10 +2698,12 @@ public class ScopedValue extends Value {
 	                          StringValue methodName, int hash,
 	                          Value a1, Value a2, Value a3, Value a4, Value a5)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethod(env, methodName, hash,
-	                      new Value[] { a1, a2, a3, a4, a5 });
+		  return value.callMethod(env, methodName, hash, a1, a2, a3, a4, a5);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethod(env, methodName, hash,
+//	                      new Value[] { a1, a2, a3, a4, a5 });
 	  }
 
 	  /**
@@ -2436,10 +2730,12 @@ public class ScopedValue extends Value {
 	                             StringValue methodName, int hash,
 	                             Value a1, Value a2, Value a3, Value a4, Value a5)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return callMethodRef(env, methodName, hash,
-	                         new Value[] { a1, a2, a3, a4, a5 });
+		  return value.callMethodRef(env, methodName, hash, a1, a2, a3, a4, a5);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return callMethodRef(env, methodName, hash,
+//	                         new Value[] { a1, a2, a3, a4, a5 });
 	  }
 
 	  /**
@@ -2501,9 +2797,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value neg()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return LongValue.create(- toLong());
+		  return value.neg();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return LongValue.create(- toLong());
 	  }
 
 	  /**
@@ -2512,9 +2810,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value pos()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return LongValue.create(toLong());
+		  return value.pos();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return LongValue.create(toLong());
 	  }
 
 	  /**
@@ -2523,12 +2823,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value add(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (getValueType().isLongAdd() && rValue.getValueType().isLongAdd())
-	      return LongValue.create(toLong() + rValue.toLong());
-
-	    return DoubleValue.create(toDouble() + rValue.toDouble());
+		  return value.add(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (getValueType().isLongAdd() && rValue.getValueType().isLongAdd())
+//	      return LongValue.create(toLong() + rValue.toLong());
+//
+//	    return DoubleValue.create(toDouble() + rValue.toDouble());
 	  }
 
 	  /**
@@ -2537,9 +2839,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value add(long lLong)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new DoubleValue(lLong + toDouble());
+		  return value.add(lLong);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new DoubleValue(lLong + toDouble());
 	  }
 
 	  /**
@@ -2548,9 +2852,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value preincr(int incr)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return increment(incr);
+		  return value.preincr(incr);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return increment(incr);
 	  }
 
 	  /**
@@ -2559,9 +2865,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value postincr(int incr)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return increment(incr);
+		  return value.postincr(incr);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return increment(incr);
 	  }
 
 	  /**
@@ -2570,9 +2878,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value addOne()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return add(1);
+		  return value.addOne();
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return add(1);
 	  }
 
 	  /**
@@ -2581,9 +2890,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value subOne()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return sub(1);
+		  return value.subOne();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return sub(1);
 	  }
 
 	  /**
@@ -2592,9 +2903,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value preincr()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return increment(1);
+		  return value.preincr();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return increment(1);
 	  }
 
 	  /**
@@ -2603,9 +2916,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value postincr()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return increment(1);
+		  return value.postincr();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return increment(1);
 	  }
 
 	  /**
@@ -2614,9 +2929,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value predecr()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return increment(-1);
+		  return value.predecr();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return increment(-1);
 	  }
 
 	  /**
@@ -2625,9 +2942,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value postdecr()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return increment(-1);
+		  return value.postdecr();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return increment(-1);
 	  }
 
 	  /**
@@ -2636,11 +2955,13 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value increment(int incr)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    long lValue = toLong();
-
-	    return LongValue.create(lValue + incr);
+		  return value.increment(incr);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    long lValue = toLong();
+//
+//	    return LongValue.create(lValue + incr);
 	  }
 
 	  /**
@@ -2649,12 +2970,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value sub(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (getValueType().isLongAdd() && rValue.getValueType().isLongAdd())
-	      return LongValue.create(toLong() - rValue.toLong());
-
-	    return DoubleValue.create(toDouble() - rValue.toDouble());
+		  return value.sub(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (getValueType().isLongAdd() && rValue.getValueType().isLongAdd())
+//	      return LongValue.create(toLong() - rValue.toLong());
+//
+//	    return DoubleValue.create(toDouble() - rValue.toDouble());
 	  }
 
 	  /**
@@ -2663,9 +2986,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value sub(long rLong)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new DoubleValue(toDouble() - rLong);
+		  return value.sub(rLong);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new DoubleValue(toDouble() - rLong);
 	  }
 
 
@@ -2675,12 +3000,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value sub_rev(long lLong)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (getValueType().isLongAdd())
-	      return LongValue.create(lLong - toLong());
-	    else
-	      return new DoubleValue(lLong - toDouble());
+		  return value.sub_rev(lLong);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (getValueType().isLongAdd())
+//	      return LongValue.create(lLong - toLong());
+//	    else
+//	      return new DoubleValue(lLong - toDouble());
 	  }
 
 	  /**
@@ -2689,12 +3016,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value mul(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (getValueType().isLongAdd() && rValue.getValueType().isLongAdd())
-	      return LongValue.create(toLong() * rValue.toLong());
-	    else
-	      return new DoubleValue(toDouble() * rValue.toDouble());
+		  return value.mul(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (getValueType().isLongAdd() && rValue.getValueType().isLongAdd())
+//	      return LongValue.create(toLong() * rValue.toLong());
+//	    else
+//	      return new DoubleValue(toDouble() * rValue.toDouble());
 	  }
 
 	  /**
@@ -2703,12 +3032,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value mul(long r)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (isLongConvertible())
-	      return LongValue.create(toLong() * r);
-	    else
-	      return new DoubleValue(toDouble() * r);
+		  return value.mul(r);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (isLongConvertible())
+//	      return LongValue.create(toLong() * r);
+//	    else
+//	      return new DoubleValue(toDouble() * r);
 	  }
 
 	  /**
@@ -2717,19 +3048,21 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value div(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (getValueType().isLongAdd() && rValue.getValueType().isLongAdd()) {
-	      long l = toLong();
-	      long r = rValue.toLong();
-
-	      if (r != 0 && l % r == 0)
-	        return LongValue.create(l / r);
-	      else
-	        return new DoubleValue(toDouble() / rValue.toDouble());
-	    }
-	    else
-	      return new DoubleValue(toDouble() / rValue.toDouble());
+		  return value.div(rValue);
+				  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (getValueType().isLongAdd() && rValue.getValueType().isLongAdd()) {
+//	      long l = toLong();
+//	      long r = rValue.toLong();
+//
+//	      if (r != 0 && l % r == 0)
+//	        return LongValue.create(l / r);
+//	      else
+//	        return new DoubleValue(toDouble() / rValue.toDouble());
+//	    }
+//	    else
+//	      return new DoubleValue(toDouble() / rValue.toDouble());
 	  }
 
 	  /**
@@ -2738,14 +3071,16 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value div(long r)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    long l = toLong();
-
-	    if (r != 0 && l % r == 0)
-	      return LongValue.create(l / r);
-	    else
-	      return new DoubleValue(toDouble() / r);
+		  return value.div(r);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    long l = toLong();
+//
+//	    if (r != 0 && l % r == 0)
+//	      return LongValue.create(l / r);
+//	    else
+//	      return new DoubleValue(toDouble() / r);
 	  }
 
 	  /**
@@ -2754,12 +3089,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value mod(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    double lDouble = toDouble();
-	    double rDouble = rValue.toDouble();
-
-	    return LongValue.create((long) lDouble % rDouble);
+		  return value.mod(rValue);
+				  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    double lDouble = toDouble();
+//	    double rDouble = rValue.toDouble();
+//
+//	    return LongValue.create((long) lDouble % rDouble);
 	  }
 
 	  /**
@@ -2768,12 +3105,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value lshift(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    long lLong = toLong();
-	    long rLong = rValue.toLong();
-
-	    return LongValue.create(lLong << rLong);
+		  return value.lshift(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    long lLong = toLong();
+//	    long rLong = rValue.toLong();
+//
+//	    return LongValue.create(lLong << rLong);
 	  }
 
 	  /**
@@ -2782,12 +3121,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value rshift(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    long lLong = toLong();
-	    long rLong = rValue.toLong();
-
-	    return LongValue.create(lLong >> rLong);
+		  return value.rshift(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    long lLong = toLong();
+//	    long rLong = rValue.toLong();
+//
+//	    return LongValue.create(lLong >> rLong);
 	  }
 
 	  /*
@@ -2796,9 +3137,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value bitAnd(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return LongValue.create(toLong() & rValue.toLong());
+		  return value.bitAnd(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return LongValue.create(toLong() & rValue.toLong());
 	  }
 
 	  /*
@@ -2807,9 +3150,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value bitOr(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return LongValue.create(toLong() | rValue.toLong());
+		  return value.bitOr(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return LongValue.create(toLong() | rValue.toLong());
 	  }
 
 	  /**
@@ -2818,9 +3163,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value bitXor(Value rValue)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return LongValue.create(toLong() ^ rValue.toLong());
+		  return value.bitXor(rValue);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return LongValue.create(toLong() ^ rValue.toLong());
 	  }
 
 	  /**
@@ -2829,12 +3176,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value abs()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    if (getValueType().isDoubleCmp())
-	      return new DoubleValue(Math.abs(toDouble()));
-	    else
-	      return LongValue.create(Math.abs(toLong()));
+		  return value.abs();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    if (getValueType().isDoubleCmp())
+//	      return new DoubleValue(Math.abs(toDouble()));
+//	    else
+//	      return LongValue.create(Math.abs(toLong()));
 	  }
 
 	  /**
@@ -2843,9 +3192,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public long nextIndex(long oldIndex)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return oldIndex;
+		  return value.nextIndex(oldIndex);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return oldIndex;
 	  }
 
 	  //
@@ -2858,9 +3209,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int length()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toStringValue().length();
+		  return value.length();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toStringValue().length();
 	  }
 
 	  //
@@ -2873,9 +3226,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int getSize()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return 1;
+		  return value.getSize();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return 1;
 	  }
 
 	  /**
@@ -2884,9 +3239,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int getCount(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return 1;
+		  return value.getCount(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return 1;
 	  }
 
 	  /**
@@ -2895,9 +3252,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int getCountRecursive(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getCount(env);
+		  return value.getCountRecursive(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getCount(env);
 	  }
 
 	  /**
@@ -2906,9 +3265,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Iterator<Map.Entry<Value, Value>> getIterator(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getBaseIterator(env);
+		  return value.getIterator(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getBaseIterator(env);
 	  }
 
 	  /**
@@ -2917,11 +3278,13 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Iterator<Map.Entry<Value, Value>> getBaseIterator(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Set<Map.Entry<Value, Value>> emptySet = Collections.emptySet();
-
-	    return emptySet.iterator();
+		  return value.getBaseIterator(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Set<Map.Entry<Value, Value>> emptySet = Collections.emptySet();
+//
+//	    return emptySet.iterator();
 	  }
 
 	  /**
@@ -2933,18 +3296,20 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Iterator<Value> getKeyIterator(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    final Iterator<Map.Entry<Value, Value>> iter = getIterator(env);
-
-	    return new Iterator<Value>() {
-	      @Override
-	  public boolean hasNext() { return iter.hasNext(); }
-	      @Override
-	  public Value next()      { return iter.next().getKey(); }
-	      @Override
-	  public void remove()     { iter.remove(); }
-	    };
+		  return value.getKeyIterator(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    final Iterator<Map.Entry<Value, Value>> iter = getIterator(env);
+//
+//	    return new Iterator<Value>() {
+//	      @Override
+//	  public boolean hasNext() { return iter.hasNext(); }
+//	      @Override
+//	  public Value next()      { return iter.next().getKey(); }
+//	      @Override
+//	  public void remove()     { iter.remove(); }
+//	    };
 	  }
 
 	  /**
@@ -2953,9 +3318,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value []getKeyArray(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return NULL_VALUE_ARRAY;
+		  return value.getKeyArray(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return NULL_VALUE_ARRAY;
 	  }
 
 	  /**
@@ -2964,9 +3331,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value []getValueArray(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return NULL_VALUE_ARRAY;
+		  return value.getValueArray(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return NULL_VALUE_ARRAY;
 	  }
 
 	  /**
@@ -2978,18 +3347,20 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Iterator<Value> getValueIterator(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    final Iterator<Map.Entry<Value, Value>> iter = getIterator(env);
-
-	    return new Iterator<Value>() {
-	      @Override
-	  public boolean hasNext() { return iter.hasNext(); }
-	      @Override
-	  public Value next()      { return iter.next().getValue(); }
-	      @Override
-	  public void remove()     { iter.remove(); }
-	    };
+		  return value.getValueIterator(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    final Iterator<Map.Entry<Value, Value>> iter = getIterator(env);
+//
+//	    return new Iterator<Value>() {
+//	      @Override
+//	  public boolean hasNext() { return iter.hasNext(); }
+//	      @Override
+//	  public Value next()      { return iter.next().getValue(); }
+//	      @Override
+//	  public void remove()     { iter.remove(); }
+//	    };
 	  }
 
 	  //
@@ -3002,9 +3373,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getField(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return NullValue.NULL;
+		  return value.getField(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return NullValue.NULL;
 	  }
 
 	  /**
@@ -3013,9 +3386,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Var getFieldVar(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getField(env, name).toVar();
+		  return value.getFieldVar(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getField(env, name).toVar();
 	  }
 
 	  /**
@@ -3024,9 +3399,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getFieldArg(Env env, StringValue name, boolean isTop)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getFieldVar(env, name);
+		  return value.getFieldArg(env, name, isTop);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getFieldVar(env, name);
 	  }
 
 	  /**
@@ -3035,9 +3412,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getFieldArgRef(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getFieldVar(env, name);
+		  return value.getFieldArgRef(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getFieldVar(env, name);
 	  }
 
 	  /**
@@ -3047,17 +3426,19 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getFieldObject(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value v = getField(env, name);
-
-	    if (! v.isset()) {
-	      v = env.createObject();
-
-	      putField(env, name, v);
-	    }
-
-	    return v;
+		  return value.getFieldObject(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value v = getField(env, name);
+//
+//	    if (! v.isset()) {
+//	      v = env.createObject();
+//
+//	      putField(env, name, v);
+//	    }
+//
+//	    return v;
 	  }
 
 	  /**
@@ -3067,24 +3448,26 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getFieldArray(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value v = getField(env, name);
-
-	    Value array = v.toAutoArray();
-
-	    if (v != array) {
-	      putField(env, name, array);
-
-	      return array;
-	    }
-	    else if (array.isString()) {
-	      // php/0484
-	      return getFieldVar(env, name);
-	    }
-	    else {
-	      return v;
-	    }
+		  return value.getFieldArray(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value v = getField(env, name);
+//
+//	    Value array = v.toAutoArray();
+//
+//	    if (v != array) {
+//	      putField(env, name, array);
+//
+//	      return array;
+//	    }
+//	    else if (array.isString()) {
+//	      // php/0484
+//	      return getFieldVar(env, name);
+//	    }
+//	    else {
+//	      return v;
+//	    }
 	  }
 
 	  /**
@@ -3114,8 +3497,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void setFieldInit(boolean isInit)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
+		  value.setFieldInit(isInit);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
 	  }
 
 	  /**
@@ -3125,9 +3510,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isFieldInit()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isFieldInit();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -3136,9 +3523,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean issetField(StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.issetField(name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -3147,8 +3536,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void unsetField(StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
+		  value.unsetField(name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
 	  }
 
 	  /**
@@ -3157,8 +3548,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void unsetArray(Env env, StringValue name, Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
+		  value.unsetArray(env, name, index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
 	  }
 
 	  /**
@@ -3167,8 +3560,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void unsetThisArray(Env env, StringValue name, Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
+		  value.unsetThisArray(env, name, index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
 	  }
 
 	  /**
@@ -3177,9 +3572,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getThisField(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getField(env, name);
+		  return value.getThisField(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getField(env, name);
 	  }
 
 	  /**
@@ -3188,9 +3585,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Var getThisFieldVar(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getThisField(env, name).toVar();
+		  return value.getThisFieldVar(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getThisField(env, name).toVar();
 	  }
 
 	  /**
@@ -3199,9 +3598,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getThisFieldArg(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getThisFieldVar(env, name);
+		  return value.getThisFieldArg(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getThisFieldVar(env, name);
 	  }
 
 	  /**
@@ -3210,9 +3611,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getThisFieldArgRef(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return getThisFieldVar(env, name);
+		  return value.getThisFieldArgRef(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return getThisFieldVar(env, name);
 	  }
 
 	  /**
@@ -3222,17 +3625,19 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getThisFieldObject(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value v = getThisField(env, name);
-
-	    if (! v.isset()) {
-	      v = env.createObject();
-
-	      putThisField(env, name, v);
-	    }
-
-	    return v;
+		  return value.getThisFieldObject(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value v = getThisField(env, name);
+//
+//	    if (! v.isset()) {
+//	      v = env.createObject();
+//
+//	      putThisField(env, name, v);
+//	    }
+//
+//	    return v;
 	  }
 
 	  /**
@@ -3242,19 +3647,21 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getThisFieldArray(Env env, StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value v = getThisField(env, name);
-
-	    Value array = v.toAutoArray();
-
-	    if (v == array)
-	      return v;
-	    else {
-	      putField(env, name, array);
-
-	      return array;
-	    }
+		  return value.getThisFieldArray(env, name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value v = getThisField(env, name);
+//
+//	    Value array = v.toAutoArray();
+//
+//	    if (v == array)
+//	      return v;
+//	    else {
+//	      putField(env, name, array);
+//
+//	      return array;
+//	    }
 	  }
 
 	  /**
@@ -3265,9 +3672,11 @@ public class ScopedValue extends Value {
 	                        Value value,
 	                        FieldVisibility visibility)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    putThisField(Env.getInstance(), key, value);
+		  this.value.initField(key, value, visibility);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    putThisField(Env.getInstance(), key, value);
 	  }
 
 	  /**
@@ -3276,9 +3685,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value putThisField(Env env, StringValue name, Value object)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return putField(env, name, object);
+		  return this.value.putThisField(env, name, object);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return putField(env, name, object);
 	  }
 
 	  /**
@@ -3291,13 +3702,15 @@ public class ScopedValue extends Value {
 	                            Value index,
 	                            Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value result = array.append(index, value);
-
-	    putThisField(env, name, result);
-
-	    return value;
+		  return this.value.putThisField(env, name, array, index, value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value result = array.append(index, value);
+//
+//	    putThisField(env, name, result);
+//
+//	    return value;
 	  }
 
 	  /**
@@ -3306,9 +3719,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean issetThisField(StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return issetField(name);
+		  return value.issetThisField(name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return issetField(name);
 	  }
 
 	  /**
@@ -3317,9 +3732,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void unsetThisField(StringValue name)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    unsetField(name);
+		  value.unsetThisField(name);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    unsetField(name);
 	  }
 
 	  //
@@ -3329,9 +3746,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value putField(Env env, String name, Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return putThisField(env, env.createString(name), value);
+		  return this.value.putField(env, name, value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return putThisField(env, env.createString(name), value);
 	  }
 
 	  /**
@@ -3353,14 +3772,16 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Var getVar(Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value value = get(index);
-
-	    if (value.isVar())
-	      return (Var) value;
-	    else
-	      return new Var(value);
+		  return value.getVar(index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value value = get(index);
+//
+//	    if (value.isVar())
+//	      return (Var) value;
+//	    else
+//	      return new Var(value);
 	  }
 
 	  /**
@@ -3369,9 +3790,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getRef(Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return get(index);
+		  return value.getRef(index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return get(index);
 	  }
 
 	  /**
@@ -3380,9 +3803,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getArg(Value index, boolean isTop)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return get(index);
+		  return value.getArg(index, isTop);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return get(index);
 	  }
 
 	  /**
@@ -3391,9 +3816,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getDirty(Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return get(index);
+		  return value.getDirty(index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return get(index);
 	  }
 
 	  /**
@@ -3403,9 +3830,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getArray()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return this;
+		  return value.getArray();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return this;
 	  }
 
 	  /**
@@ -3415,11 +3844,13 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getArray(Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value var = getVar(index);
-	    
-	    return var.toAutoArray();
+		  return value.getArray(index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value var = getVar(index);
+//	    
+//	    return var.toAutoArray();
 	  }
 
 	  /**
@@ -3429,9 +3860,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getObject(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return NullValue.NULL;
+		  return value.getObject(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return NullValue.NULL;
 	  }
 
 	  /**
@@ -3441,25 +3874,29 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value getObject(Env env, Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value var = getVar(index);
-	    
-	    if (var.isset())
-	      return var.toValue();
-	    else {
-	      var.set(env.createObject());
-	      
-	      return var.toValue();
-	    }
+		  return value.getObject(env, index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value var = getVar(index);
+//	    
+//	    if (var.isset())
+//	      return var.toValue();
+//	    else {
+//	      var.set(env.createObject());
+//	      
+//	      return var.toValue();
+//	    }
 	  }
 
 	  @Override
 	  public boolean isVar()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isVar();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 	  
 	  /**
@@ -3468,9 +3905,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value set(Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return value;
+		  return this.value.set(value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return value;
 	  }
 
 	  /**
@@ -3479,12 +3918,14 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value put(Value index, Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Env.getCurrent().warning(L.l("{0} cannot be used as an array",
-	                                 toDebugString()));
-	    
-	    return value;
+		  return this.value.put(index, value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Env.getCurrent().warning(L.l("{0} cannot be used as an array",
+//	                                 toDebugString()));
+//	    
+//	    return value;
 	  }
 
 	  /**
@@ -3509,15 +3950,17 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value put(Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    /*
-	    Env.getCurrent().warning(L.l("{0} cannot be used as an array",
-	                                 toDebugString()));
-	                                 */
-
-	    
-	    return value;
+		  return this.value.put(value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    /*
+//	    Env.getCurrent().warning(L.l("{0} cannot be used as an array",
+//	                                 toDebugString()));
+//	                                 */
+//
+//	    
+//	    return value;
 	  }
 
 	  /**
@@ -3528,14 +3971,16 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value append(Value index, Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value array = toAutoArray();
-	    
-	    if (array.isArray())
-	      return array.append(index, value);
-	    else
-	      return array;
+		  return this.value.append(index, value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value array = toAutoArray();
+//	    
+//	    if (array.isArray())
+//	      return array.append(index, value);
+//	    else
+//	      return array;
 	  }
 
 	  /**
@@ -3544,9 +3989,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Var putVar()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return new Var();
+		  return value.putVar();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return new Var();
 	  }
 
 	  /**
@@ -3555,13 +4002,15 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value putObject(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    Value value = env.createObject();
-
-	    put(value);
-
-	    return value;
+		  return value.putObject(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    Value value = env.createObject();
+//
+//	    put(value);
+//
+//	    return value;
 	  }
 
 	  /**
@@ -3570,9 +4019,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean isset(Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return false;
+		  return value.isset(index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return false;
 	  }
 
 	  /**
@@ -3581,9 +4032,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public boolean keyExists(Value key)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return isset(key);
+		  return value.keyExists(key);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return isset(key);
 	  }
 
 	  /**
@@ -3596,9 +4049,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value containsKey(Value key)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return null;
+		  return value.containsKey(key);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return null;
 	  }
 
 	  /**
@@ -3607,9 +4062,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value remove(Value index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return UnsetValue.UNSET;
+		  return value.remove(index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return UnsetValue.UNSET;
 	  }
 
 	  /**
@@ -3619,13 +4076,15 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Object valuesToArray(Env env, @SuppressWarnings("rawtypes") Class elementType)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.error(L.l("Can't assign {0} with type {1} to {2}[]",
-	                  this,
-	                  this.getClass(),
-	                  elementType));
-	    return null;
+		  return value.valuesToArray(env, elementType);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.error(L.l("Can't assign {0} with type {1} to {2}[]",
+//	                  this,
+//	                  this.getClass(),
+//	                  elementType));
+//	    return null;
 	  }
 
 	  /**
@@ -3634,9 +4093,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value charValueAt(long index)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return NullValue.NULL;
+		  return value.charValueAt(index);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return NullValue.NULL;
 	  }
 
 	  /**
@@ -3645,9 +4106,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value setCharValueAt(long index, Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return NullValue.NULL;
+		  return this.value.setCharValueAt(index, value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return NullValue.NULL;
 	  }
 
 	  /**
@@ -3657,9 +4120,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void print(Env env)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.print(toString(env));
+		  value.print(env);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.print(toString(env));
 	  }
 
 	  /**
@@ -3669,13 +4134,15 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void print(Env env, WriteStream out)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    try {
-	      out.print(toString(env));
-	    } catch (IOException e) {
-	      throw new QuercusRuntimeException(e);
-	    }
+		  value.print(env, out);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    try {
+//	      out.print(toString(env));
+//	    } catch (IOException e) {
+//	      throw new QuercusRuntimeException(e);
+//	    }
 	  }
 
 	  /**
@@ -3690,11 +4157,13 @@ public class ScopedValue extends Value {
 	                        StringBuilder sb,
 	                        SerializeMap serializeMap)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    serializeMap.incrementIndex();
-
-	    serialize(env, sb);
+		  value.serialize(env, sb, serializeMap);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    serializeMap.incrementIndex();
+//
+//	    serialize(env, sb);
 	  }
 
 	  /**
@@ -3703,11 +4172,13 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void jsonEncode(Env env, StringValue sb)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    env.warning(L.l("type is unsupported; json encoded as null"));
-
-	    sb.append("null");
+		  value.jsonEncode(env, sb);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    env.warning(L.l("type is unsupported; json encoded as null"));
+//
+//	    sb.append("null");
 	  }
 
 	  /**
@@ -3716,9 +4187,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void serialize(Env env, StringBuilder sb)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    throw new UnsupportedOperationException(getClass().getName());
+		  value.serialize(env, sb);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    throw new UnsupportedOperationException(getClass().getName());
 	  }
 
 	  /**
@@ -3727,9 +4200,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void varExport(StringBuilder sb)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    throw new UnsupportedOperationException(getClass().getName());
+		  value.varExport(sb);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    throw new UnsupportedOperationException(getClass().getName());
 	  }
 
 	  /**
@@ -3738,8 +4213,10 @@ public class ScopedValue extends Value {
 	  @Override
 	  public void setJavaObject(Value value)
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
+		  this.value.setJavaObject(value);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
 	  }
 
 	  //
@@ -3755,6 +4232,9 @@ public class ScopedValue extends Value {
 	  public void generate(PrintWriter out)
 	    throws IOException
 	  {
+		  value.generate(out);
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
 	  }
 
 	  protected static void printJavaChar(PrintWriter out, char ch)
@@ -3822,17 +4302,21 @@ public class ScopedValue extends Value {
 	  @Override
 	  public String toInternString()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toString().intern();
+		  return value.toInternString();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toString().intern();
 	  }
 
 	  @Override
 	  public String toDebugString()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return toString();
+		  return value.toDebugString();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return toString();
 	  }
 
 	  //@Override
@@ -3865,6 +4349,8 @@ public class ScopedValue extends Value {
 	                             IdentityHashMap<Value, String> valueSet)
 	    throws IOException
 	  {
+		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+		  
 	    out.print("resource(" + toString() + ")");
 	  }
 
@@ -3898,12 +4384,16 @@ public class ScopedValue extends Value {
 	                            IdentityHashMap<Value, String> valueSet)
 	    throws IOException
 	  {
+		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+		  
 	    out.print(toString());
 	  }
 
 	  protected void printDepth(WriteStream out, int depth)
 	    throws IOException
 	  {
+		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+		  
 	    for (int i = 0; i < depth; i++)
 	      out.print(' ');
 	  }
@@ -3911,17 +4401,21 @@ public class ScopedValue extends Value {
 	  @Override
 	  public int getHashCode()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return hashCode();
+		  return value.getHashCode();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return hashCode();
 	  }
 
 	  @Override
 	  public int hashCode()
 	  {
-		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
-
-	    return 1021;
+		  return value.hashCode();
+		  
+//		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
+//
+//	    return 1021;
 	  }
 
 }

@@ -44,6 +44,28 @@ public class Env_ {
 	}
 	
 	/*
+	 * Handling starting and closing events of the Env
+	 */
+	
+	public void start(Env env) {
+	}
+	
+	public void close(Env env) {
+//		for (StringValue name : env.getEnv().keySet()) {
+//			EnvVar envVar = env.getEnv().get(name);
+//			Value value = envVar.get();
+//			if (value instanceof MultiValue)
+//				Logging.LOGGER.info("$" + name + " = " + value);
+//		}
+//		try {
+//			System.in.read();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	}
+	
+	/*
 	 * Handling scopes
 	 */
 	

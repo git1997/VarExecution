@@ -63,6 +63,9 @@ import com.caucho.quercus.module.AbstractQuercusModule;
 import com.caucho.util.L10N;
 import com.caucho.util.RandomUtil;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.lib.ArrayModule_;
+
 /**
  * PHP array routines.
  */
@@ -622,6 +625,13 @@ public class ArrayModule
                                    ArrayValue array,
                                    @Optional Value callbackName)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return ArrayModule_.array_filter(env, array, callbackName);
+	  
+	  // END OF ADDED CODE
+	  
     if (array == null)
       return NullValue.NULL;
 
@@ -672,6 +682,63 @@ public class ArrayModule
 
     return filteredArray;
   }
+  
+// INST ADDED BY HUNG
+  public static Value array_filter_orig(Env env,
+                                   ArrayValue array,
+                                   @Optional Value callbackName)
+  {
+    if (array == null)
+      return NullValue.NULL;
+
+    ArrayValue filteredArray = new ArrayValueImpl();
+
+    if (! callbackName.isDefault()) {
+      Callable callback = callbackName.toCallable(env);
+      
+      if (callback == null || ! callback.isValid(env)) {
+        return NullValue.NULL;
+      }
+
+      try {
+        Iterator<Map.Entry<Value,Value>> iter = array.getIterator(env);
+
+        while (iter.hasNext()) {
+          Map.Entry<Value,Value> entry = iter.next();
+          
+          Value key = entry.getKey();
+          Value value;
+          
+          if (entry instanceof ArrayValue.Entry)
+            value = ((ArrayValue.Entry) entry).getRawValue();
+          else
+            value = entry.getValue();
+ 
+          // php/1740          
+          boolean isMatch 
+            = callback.callArray(env, array, key, value).toBoolean();
+          
+          if (isMatch)
+            filteredArray.put(key, value);
+        }
+      }
+      catch (Exception t) {
+        log.log(Level.WARNING, t.toString(), t);
+        env.warning("An error occurred while invoking the filter callback");
+
+        return NullValue.NULL;
+      }
+    }
+    else {
+      for (Map.Entry<Value, Value> entry : array.entrySet()) {
+        if (entry.getValue().toBoolean())
+          filteredArray.put(entry.getKey(), entry.getValue());
+      }
+    }
+
+    return filteredArray;
+  }
+// END OF ADDED CODE
 
   /**
    * Returns an array with the given array's keys as values and its values as
