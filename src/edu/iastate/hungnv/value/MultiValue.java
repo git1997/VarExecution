@@ -25,6 +25,7 @@ import com.caucho.quercus.marshal.Marshal;
 import com.caucho.vfs.WriteStream;
 
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.shadow.ShadowInterpreter;
 import edu.iastate.hungnv.util.Logging;
 
 /**
@@ -273,22 +274,17 @@ public abstract class MultiValue extends Value {
 	
 	@Override
 	public Value callMethod(Env env,
-	                          StringValue methodName, int hash,
-	                          Value []args) {
-		Switch switch_ = new Switch();
-		
-		for (Case case_ : MultiValue.flatten(this)) {
-			Constraint constraint = case_.getConstraint();
-			
-			if (case_.getValue() == NullValue.NULL) // TODO Debug why NullValue occured? (probably due to MultiValue.isset?)
-				continue;
-			
-			Value value = case_.getValue().callMethod(env, methodName, hash, args);
-			
-			switch_.addCase(new Case(constraint, value));
-		}
-		
-		return switch_;
+	                          final StringValue methodName, final int hash,
+	                          final Value []args) {
+		return ShadowInterpreter.eval(this, new ShadowInterpreter.IBasicCaseHandler() {
+			@Override
+			public Value evalBasicCase(Value value, Env env) {
+				if (value instanceof NullValue) // TODO Revise what to do when this happens (probably due to unimplemented MultiValue.isset?)
+					return null;
+					
+				return value.callMethod(env, methodName, hash, args);
+			}
+		}, env);
 	}
 	
 	@Override
@@ -300,6 +296,11 @@ public abstract class MultiValue extends Value {
 			}
 		});
 	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}	
 	
 	  //
 	  // Properties
@@ -4057,12 +4058,12 @@ public abstract class MultiValue extends Value {
 	    return hashCode();
 	  }
 
-	  @Override
-	  public int hashCode()
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    return 1021;
-	  }
+//	  @Override
+//	  public int hashCode()
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    return 1021;
+//	  }
 	
 }

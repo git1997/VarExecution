@@ -87,7 +87,7 @@ public class FunIncludeOnceExpr extends AbstractUnaryExpr {
 	  // INST ADDED BY HUNG
 	  
 	  if (Env_.INSTRUMENT)
-		  return FunIncludeOnceExpr_.eval(env, this, _expr, _dir, _isRequire);
+		  return FunIncludeOnceExpr_.eval(env, this);
 	  
 	  // END OF ADDED CODE
 	  
@@ -109,6 +109,29 @@ public class FunIncludeOnceExpr extends AbstractUnaryExpr {
       env.popCall();
     }
   }
+  
+//INST ADDED BY HUNG
+  public Value eval_orig(Env env, Value exprValue)
+  {
+    StringValue name = exprValue.toStringValue();
+
+    // return env.include(_dir, name);
+    
+    env.pushCall(this, NullValue.NULL, new Value[] { name });
+    
+    try {
+      if (_dir != null)
+        return env.includeOnce(_dir, name, _isRequire);
+      else if (_isRequire)
+        return env.requireOnce(name);
+      else
+        return env.includeOnce(name);
+    }
+    finally {
+      env.popCall();
+    }
+  }
+//END OF ADDED CODE	  
   
   public boolean isRequire()
   {

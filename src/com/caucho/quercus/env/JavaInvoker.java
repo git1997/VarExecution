@@ -633,15 +633,16 @@ abstract public class JavaInvoker
                           Value qThis,
                           Value []args)
   {
-    if (! _isInit)
-      init();
-    
+	    
 	  // INST ADDED BY HUNG
 	  
 	  if (Env_.INSTRUMENT)
-		  return JavaInvoker_.callMethod(env, qClass, qThis, args, this, _param, _hasEnv, _hasThis, _marshalArgs, _defaultExprs, _name, _minArgumentLength, L, _hasRestArgs, NULL_VALUES, _isRestReference, _unmarshalReturn);
+		  return JavaInvoker_.callMethod(env, qClass, qThis, args, this);
 	  
-	  // END OF ADDED CODE    
+	  // END OF ADDED CODE  
+	  
+    if (! _isInit)
+      init();  
 
     int len = _param.length;
 
@@ -731,6 +732,110 @@ abstract public class JavaInvoker
 
     return value;
   }
+  
+// INST ADDED BY HUNG
+  public Value callMethod_orig(Env env,
+                          QuercusClass qClass,
+                          Value qThis,
+                          Value []args)
+  {
+    if (! _isInit)
+        init();	  
+	  
+    int len = _param.length;
+
+    Object []javaArgs = new Object[len];
+
+    int k = 0;
+
+    if (_hasEnv)
+      javaArgs[k++] = env;
+
+    Object obj = null;
+
+    if (_hasThis) {
+      obj = qThis != null ? qThis.toJavaObject() : null;
+      javaArgs[k++] = qThis;
+    }
+    else if (! isStatic() && ! isConstructor()) {
+      obj = qThis != null ? qThis.toJavaObject() : null;
+    }
+    
+    String warnMessage = null;
+    for (int i = 0; i < _marshalArgs.length; i++) {
+      if (i < args.length && args[i] != null)
+        javaArgs[k] = _marshalArgs[i].marshal(env, args[i], _param[k]);
+      else if (_defaultExprs[i] != null) {
+        javaArgs[k] = _marshalArgs[i].marshal(env,
+                                              _defaultExprs[i],
+                                              _param[k]);
+      } else {
+        warnMessage = L.l(
+          "function '{0}' has {1} required arguments, "
+          + "but only {2} were provided",
+          _name,
+          _minArgumentLength,
+          args.length);
+
+        //return NullValue.NULL;
+
+        javaArgs[k] = _marshalArgs[i].marshal(env, NullValue.NULL, _param[k]);
+      }
+
+      /*
+      if (javaArgs[k] != null)
+        System.out.println("ARG: " + javaArgs[k] + " " + _marshalArgs[i]);
+      */
+
+      k++;
+    }
+
+    if (warnMessage != null)
+      env.warning(warnMessage);
+
+    if (_hasRestArgs) {
+      Value []rest;
+
+      int restLen = args.length - _marshalArgs.length;
+
+      if (restLen <= 0)
+        rest = NULL_VALUES;
+      else {
+        rest = new Value[restLen];
+
+        for (int i = _marshalArgs.length; i < args.length; i++) {
+          if (_isRestReference) {
+            rest[i - _marshalArgs.length] = args[i].toLocalVarDeclAsRef();
+          }
+          else
+            rest[i - _marshalArgs.length] = args[i].toValue();
+        }
+      }
+
+      javaArgs[k++] = rest;
+    }
+    else if (_marshalArgs.length < args.length) {
+
+    	// INST ADDED BY HUNG
+    	if (!Env_.INSTRUMENT || !_name.equals("debug_backtrace")) // Quick fix so that Quercus won't show spurious warnings (these warnings are caused by incorrect implementation of Quercus, not by the PHP code).
+    	// END OF ADDED CODE
+    		
+      // php/153o
+      env.warning(L.l(
+        "function '{0}' called with {1} arguments, "
+        + "but only expects {2} arguments",
+        _name,
+        args.length,
+        _marshalArgs.length));
+    }
+
+    Object result = invoke(obj, javaArgs);
+
+    Value value = _unmarshalReturn.unmarshal(env, result);
+
+    return value;
+  }
+// END OF ADDED CODE
 
   abstract public Object invoke(Object obj, Object []args);
 

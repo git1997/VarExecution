@@ -89,7 +89,7 @@ public class FunIncludeExpr extends AbstractUnaryExpr {
 	  // INST ADDED BY HUNG
 	  
 	  if (Env_.INSTRUMENT)
-		  return FunIncludeExpr_.eval(env, this, _expr, _dir, _isRequire);
+		  return FunIncludeExpr_.eval(env, this);
 	  
 	  // END OF ADDED CODE
 	  
@@ -102,6 +102,20 @@ public class FunIncludeExpr extends AbstractUnaryExpr {
       env.popCall();
     }
   }
+  
+// INST ADDED BY HUNG
+  public Value eval_orig(Env env, Value exprValue)
+  {
+    StringValue name = exprValue.toStringValue();
+      
+    env.pushCall(this, NullValue.NULL, new Value[] { name });
+    try {
+      return env.include(_dir, name, _isRequire, false);
+    } finally {
+      env.popCall();
+    }
+  }
+// END OF ADDED CODE	
   
   public String toString()
   {

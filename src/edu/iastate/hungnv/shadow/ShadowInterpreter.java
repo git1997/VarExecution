@@ -20,6 +20,7 @@ public class ShadowInterpreter {
 		/**
 		 * Execute the code with a given Quercus value.
 		 * @param value	A Quercus value, not null
+		 * @return 		The result of the execution, or null if the execution result should be discarded
 		 */
 		public Value evalBasicCase(Value value, Env env);
 	}
@@ -51,6 +52,9 @@ public class ShadowInterpreter {
 			
 			if (!constraintAlwaysTrue)
 			   	env.getEnv_().exitScope();
+			
+			if (retValue == null)
+				continue;
 			
 			retValue = MultiValue.createChoiceValue(constraint, retValue, Null.NULL);
 			
