@@ -191,7 +191,7 @@ public class EjbHandler extends JavaeeInjectionHandler {
     String name = ejb.name();
     String mappedName = ejb.mappedName();
     String beanName = ejb.beanName();
-    String lookupName = ejb.lookup();
+    String lookupName = ""; // ejb.lookup(); // TODO: MODIFIED BY HUNG
 
     // ejb/2005
     if (! Object.class.equals(ejb.beanInterface())) {
