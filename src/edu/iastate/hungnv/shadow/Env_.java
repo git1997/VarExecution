@@ -2,6 +2,7 @@ package edu.iastate.hungnv.shadow;
 
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.EnvVar;
+import com.caucho.quercus.env.NullValue;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
@@ -9,7 +10,6 @@ import edu.iastate.hungnv.scope.Scope;
 import edu.iastate.hungnv.scope.ScopedValue;
 import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.MultiValue;
-import edu.iastate.hungnv.value.NullValue;
 
 /**
  * 
@@ -17,6 +17,9 @@ import edu.iastate.hungnv.value.NullValue;
  *
  */
 public class Env_ {
+	
+	// Turn on or off instrumentation mode
+	public static final boolean INSTRUMENT = true;
 	
 	// The current scope
 	private Scope scope;
@@ -58,16 +61,17 @@ public class Env_ {
 	 * Also combine the values that have been modified in the current scope with their original values in the outer scope. 
 	 */
 	public void exitScope() {
-		// Combine the values that have been modified in the current scope with their original values in the outer scope
 		Scope outerScope = scope.getOuterScope();
-		
+
+		// Combine the values that have been modified in the current scope with their original values in the outer scope
 		for (ScopedValue scopedValue : scope.getDirtyValues()) {
 			Constraint scopeConstraint = scope.getConstraint();
+
 			Value inScopeValue = scopedValue.getValue();
 			Value outScopeValue = scopedValue.getOuterScopedValue().getValue();
 			
 			scopedValue.setScope(outerScope);
-			scopedValue.setValue(MultiValue.createVariationalValue(scopeConstraint, inScopeValue, outScopeValue));
+			scopedValue.setValue(MultiValue.createChoiceValue(scopeConstraint, inScopeValue, outScopeValue));
 			
 			if (scopedValue.getOuterScopedValue().getScope() == outerScope)
 				scopedValue.setOuterScopedValue(scopedValue.getOuterScopedValue().getOuterScopedValue());
@@ -143,7 +147,7 @@ public class Env_ {
 		if (Env_.hasStarted()) {
 			value = addScopedValue(envVar.get(), value);
 			
-			Logging.LOGGER.info("Assign " + name + " with " + ((ScopedValue) value).toStringWithScoping());
+			Logging.LOGGER.info("Assign $" + name + " with " + ((ScopedValue) value).toStringWithScoping());
 		}
 				
 		envVar.set(value);

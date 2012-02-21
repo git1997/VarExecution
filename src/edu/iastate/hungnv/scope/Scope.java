@@ -15,7 +15,7 @@ public class Scope {
 	public static final Scope GLOBAL = new Scope(Constraint.TRUE, null);
 	
 	// Pointer to the outer scope
-	private Scope outerScope;	// Can be null	
+	private Scope outerScope;	// Can be null (if the current scope is Global)
 	
 	// The constraint of the current scope
 	private Constraint constraint;		
@@ -26,7 +26,7 @@ public class Scope {
 	/**
 	 * Constructor
 	 * @param constraint
-	 * @param outerScope	Can be null
+	 * @param outerScope	Can be null (if the current scope is Global)
 	 */
 	public Scope(Constraint constraint, Scope outerScope) {
 		this.constraint = constraint;
@@ -65,7 +65,7 @@ public class Scope {
 	 */
 	@Override
 	public String toString() {
-		return (constraint.equals(Constraint.TRUE) ? "GLOBAL" : constraint.toString());
+		return (this == GLOBAL ? "GLOBAL" : constraint.toString());
 	}
 	
 }

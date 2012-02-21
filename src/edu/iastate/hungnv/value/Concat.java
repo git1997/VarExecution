@@ -1,7 +1,5 @@
 package edu.iastate.hungnv.value;
 
-import java.util.Map;
-
 import com.caucho.quercus.env.ConstStringValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
@@ -44,15 +42,22 @@ public class Concat extends MultiValue {
 	 */
 	
 	@Override
-	public Value getRepresentativeValue() {
-		return new ConstStringValue(value1.toString() + value2.toString());
-	}
-	
-	@Override
-	public Map<Value, Constraint> getAllPossibleValues() {
+	public Switch flatten() {
 		// TODO Revise
+		Switch switch_ = new Switch();
 		
-		return MultiValue.getAllPossibleValues(new ConstStringValue(value1.toString() + value2.toString()));
+		Switch cases1 = MultiValue.flatten(value1);
+		Switch cases2 = MultiValue.flatten(value2);
+		
+		for (Case case1 : cases1)
+		for (Case case2 : cases2) {
+			Value value = new ConstStringValue(case1.getValue().toString() + case2.getValue().toString());
+			Constraint constraint = Constraint.createAndConstraint(case1.getConstraint(), case2.getConstraint());
+			
+			switch_.addCase(new Case(constraint, value));
+		}
+		
+		return switch_;
 	}
 	
 	/*

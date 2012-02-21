@@ -1,5 +1,9 @@
 package edu.iastate.hungnv.constraint;
 
+import de.fosd.typechef.featureexpr.FeatureExpr;
+import de.fosd.typechef.featureexpr.FeatureExprFactory;
+import de.fosd.typechef.featureexpr.bdd.BDDFeatureExprFactory$;
+
 /**
  * 
  * @author HUNG
@@ -7,30 +11,34 @@ package edu.iastate.hungnv.constraint;
  */
 public abstract class Constraint {
 	
-	public static final Constraint TRUE = new SimpleConstraint("TRUE");
+	public static final Constraint TRUE = new SimpleConstraint(true);
 	
-	/*
-	 * Abstract methods
-	 */
+	// The FeatureExpr representing this constraint
+	protected FeatureExpr featureExpr;
 	
-	/**
-	 * @return A string describing the constraint
-	 */
-	@Override
-	public abstract String toString();
+	// Use the JavaBDD library instead of Sat4j 
+	{
+		FeatureExprFactory.setDefault(BDDFeatureExprFactory$.MODULE$);
+	}
 	
 	/*
 	 * Methods
 	 */
 	
 	/**
-	 * @param constraint
-	 * @return True if the two constraints are the same
+	 * @return A string describing the constraint
 	 */
-	public boolean equals(Constraint constraint) {
-		// TODO Revise
-		
-		return (this == constraint);
+	@Override
+	public String toString() {
+		return featureExpr.toString();
+	}
+	
+	/**
+	 * @param constraint
+	 * @return True if the two constraints are equivalent
+	 */
+	public boolean equivalentTo(Constraint constraint) {
+		return (this.featureExpr.equivalentTo(constraint.featureExpr));
 	}
 	
 	/*
@@ -42,19 +50,11 @@ public abstract class Constraint {
 	}
 	
 	public static Constraint createNotConstraint(Constraint constraint) {
-		if (constraint instanceof NotConstraint)
-			return ((NotConstraint) constraint).getConstraint();
-		else
-			return new NotConstraint(constraint);
+		return new NotConstraint(constraint);
 	}
 	
 	public static Constraint createAndConstraint(Constraint constraint1, Constraint constraint2) {
-		if (constraint1.equals(Constraint.TRUE))
-			return constraint2;
-		else if (constraint2.equals(Constraint.TRUE))
-			return constraint1;
-		else
-			return new AndConstraint(constraint1, constraint2);
+		return new AndConstraint(constraint1, constraint2);
 	}
 	
 }

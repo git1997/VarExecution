@@ -1,8 +1,5 @@
 package edu.iastate.hungnv.value;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
 
@@ -51,32 +48,28 @@ public class Choice extends MultiValue {
 	 */
 	
 	@Override
-	public Value getRepresentativeValue() {
-		if (value1 instanceof MultiValue)
-			return ((MultiValue) value1).getRepresentativeValue();
-		else
-			return value1;
-	}
-	
-	@Override
-	public Map<Value, Constraint> getAllPossibleValues() {
-		Map<Value, Constraint> map = new HashMap<Value, Constraint>();
+	public Switch flatten() {
+		Switch switch_ = new Switch();
 		
-		Map<Value, Constraint> map1 = MultiValue.getAllPossibleValues(value1);
-		Map<Value, Constraint> map2 = MultiValue.getAllPossibleValues(value2);
+		Switch cases1 = MultiValue.flatten(value1);
+		Switch cases2 = MultiValue.flatten(value2);
 		
-		for (Value value : map1.keySet()) {
-			Constraint constraint = map1.get(value);
-			map.put(value, Constraint.createAndConstraint(this.constraint, constraint));
+		for (Case case_ : cases1) {
+			Value value = case_.getValue();
+			Constraint constraint = Constraint.createAndConstraint(this.constraint, case_.getConstraint());
+			
+			switch_.addCase(new Case(constraint, value));
 		}
 		
 		Constraint notConstraint = Constraint.createNotConstraint(this.constraint);
-		for (Value value : map2.keySet()) {
-			Constraint constraint = map2.get(value);
-			map.put(value, Constraint.createAndConstraint(notConstraint, constraint));
+		for (Case case_ : cases2) {
+			Value value = case_.getValue();
+			Constraint constraint = Constraint.createAndConstraint(notConstraint, case_.getConstraint());
+			
+			switch_.addCase(new Case(constraint, value));
 		}
 		
-		return map;
+		return switch_;
 	}
 	
 	/*
@@ -86,6 +79,11 @@ public class Choice extends MultiValue {
 	@Override
 	public String toString() {
 		return "CHOICE(" + constraint.toString() + ", " + value1.toString() + ", " + value2.toString() + ")";
+	}
+	
+	@Override
+	public Value get(Value index) {
+		return MultiValue.createChoiceValue(constraint, value1.get(index), value2.get(index));
 	}
 	
 }

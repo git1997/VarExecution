@@ -117,4 +117,9 @@ public class ScopedValue extends Value {
 	    return value.putField(env, name, object);
 	}
 	
+	@Override
+	public Value get(Value index) {
+		return value.get(index);
+	}
+	
 }

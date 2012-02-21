@@ -1,6 +1,5 @@
 package edu.iastate.hungnv.shadow;
 
-import java.util.Map;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.NullValue;
 import com.caucho.quercus.env.StringValue;
@@ -10,7 +9,9 @@ import com.caucho.quercus.expr.FunIncludeExpr;
 import com.caucho.vfs.Path;
 
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.MultiValue;
+import edu.iastate.hungnv.value.Null;
 
 /**
  * 
@@ -22,29 +23,43 @@ public class FunIncludeExpr_ {
 	/**
 	 * @see com.caucho.quercus.expr.FunIncludeExpr.eval(Env)
 	 */
-	public static Value eval(Env env, FunIncludeExpr expr, Expr _expr, Path _dir, boolean _isRequire) {
-		Value val = _expr.eval(env);
+	public static Value eval(Env env,
+								FunIncludeExpr _this,
+								Expr _expr, Path _dir, boolean _isRequire) {
 		
-		Map<Value, Constraint> map = MultiValue.getAllPossibleValues(val);
-		
-		for (Value value: map.keySet()) {
-			Constraint constraint = map.get(value);
+		Value combinedReturnValue = null;
+		Value retValue = null;
+
+		for (Case case_ : MultiValue.flatten(_expr.eval(env))) {
+			Value flattenedValue = case_.getValue();
+			Constraint constraint = case_.getConstraint();
 			
-			StringValue name = value.toStringValue();
-	      
-			env.pushCall(expr, NullValue.NULL, new Value[] { name });
-		    try {
-		    	env.getEnv_().enterNewScope(constraint);
-		      
-		    	env.include(_dir, name, _isRequire, false);
-		    	
-		    	env.getEnv_().exitScope();
-		    } finally {
-		      env.popCall();
-		    }
+			env.getEnv_().enterNewScope(constraint);
+		
+			//----- BEGIN OF ORIGINAL CODE -----
+		
+				StringValue name = flattenedValue.toStringValue(); // INST Original: StringValue name = _expr.eval(env).toStringValue();
+			      
+			    env.pushCall(_this, NullValue.NULL, new Value[] { name });
+			    try {
+			      retValue = env.include(_dir, name, _isRequire, false); // INST Original: return env.include(_dir, name, _isRequire, false);  
+			    } finally {
+			      env.popCall();
+			    }
+			    
+			//----- END OF ORIGINAL CODE -----
+			    
+			env.getEnv_().exitScope();
+			
+			retValue = MultiValue.createChoiceValue(constraint, retValue, Null.NULL);
+			
+			if (combinedReturnValue == null)
+				combinedReturnValue = retValue;
+			else
+				combinedReturnValue = MultiValue.createSwitchValue(combinedReturnValue, retValue);
 		}
 		
-		return null; // TODO Handle returned value
+		return combinedReturnValue;
 	}
 	  
 }

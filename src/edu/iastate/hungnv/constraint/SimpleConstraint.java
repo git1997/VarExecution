@@ -1,37 +1,28 @@
 package edu.iastate.hungnv.constraint;
 
+import de.fosd.typechef.featureexpr.FeatureExprFactory;
+
 /**
  * 
  * @author HUNG
  *
  */
 public class SimpleConstraint extends Constraint {
-
-	private String constraint;
+	
+	/**
+	 * Constructor
+	 * @param bool
+	 */
+	public SimpleConstraint(boolean bool) {
+		this.featureExpr = (bool ? FeatureExprFactory.True() : FeatureExprFactory.False());
+	}
 
 	/**
 	 * Constructor
 	 * @param constraint
 	 */
 	public SimpleConstraint(String constraint) {
-		this.constraint = constraint;
+		this.featureExpr = FeatureExprFactory.createDefinedExternal(constraint);
 	}
 	
-	/*
-	 * Getters and setters
-	 */
-	
-	public String getConstraint() {
-		return constraint;
-	}
-	
-	/*
-	 * Methods
-	 */
-	
-	@Override
-	public String toString() {
-		return constraint;
-	}
-
 }
