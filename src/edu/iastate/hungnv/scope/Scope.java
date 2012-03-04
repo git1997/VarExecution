@@ -38,12 +38,16 @@ public class Scope {
 	 */
 	
 	/**
-	 * @return The outer scope, can be null
+	 * @return The outer scope, can be null (if the current scope is Global)
 	 */
 	public Scope getOuterScope() {
 		return outerScope;
 	}
 
+	/**
+	 * @return The constraint of the current scope
+	 * @see edu.iastate.hungnv.scope.Scope.getAggregatedConstraint()
+	 */
 	public Constraint getConstraint() {
 		return constraint;
 	}
@@ -59,6 +63,20 @@ public class Scope {
 	/*
 	 * Methods
 	 */
+	
+	/**
+	 * @return The aggregated constraint of the current scope and all its outer scopes.
+	 */
+	public Constraint getAggregatedConstraint() {
+		Constraint aggregatedConstraint = constraint;
+
+		Scope curScope = this;
+		while ((curScope = curScope.getOuterScope()) != null) {
+			aggregatedConstraint = Constraint.createAndConstraint(curScope.getConstraint(), aggregatedConstraint);
+		}
+		
+		return aggregatedConstraint;
+	}
 	
 	/**
 	 * @return A string describing the scope

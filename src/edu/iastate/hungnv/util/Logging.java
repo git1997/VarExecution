@@ -20,17 +20,19 @@ public class Logging {
 	 * Logging properties
 	 */
 	
-	private static final Level logLevel = Level.ALL;
+	private static final Level LOG_LEVEL = Level.ALL;
 	
-	private static final String logFile = "C:/Eclipse/workspace/javaEE/quercus/logs/log.txt";
+	private static final String LOG_FILE = "C:/Eclipse/workspace/javaEE/quercus/logs/log.txt";
+	
+	private static final boolean SHOW_LOCATION = true;
 	
 	/*
 	 * Logging objects
 	 */
 	
-	public static Logger CONSOLE_LOGGER = createConsoleLogger(System.out, logLevel);
+	public static Logger CONSOLE_LOGGER = createConsoleLogger(System.out, LOG_LEVEL);
 	
-	public static Logger FILE_LOGGER = createFileLogger(logFile, logLevel);
+	public static Logger FILE_LOGGER = createFileLogger(LOG_FILE, LOG_LEVEL);
 	
 	public static Logger LOGGER = CONSOLE_LOGGER;
 	
@@ -97,10 +99,12 @@ public class Logging {
 		public String format(LogRecord record) {
 			StringBuffer buf = new StringBuffer();
 			
-//			buf.append(record.getSourceClassName());
-//			buf.append(' ');
-//			buf.append(record.getSourceMethodName());
-//			buf.append(System.lineSeparator());
+			if (SHOW_LOCATION) {
+				buf.append(record.getSourceClassName());
+				buf.append(' ');
+				buf.append(record.getSourceMethodName());
+				buf.append(System.lineSeparator());
+			}
 			
 			buf.append(record.getLevel());
 			buf.append(": ");

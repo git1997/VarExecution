@@ -9,16 +9,26 @@ import de.fosd.typechef.featureexpr.bdd.BDDFeatureExprFactory$;
  * @author HUNG
  *
  */
-public abstract class Constraint {
-	
-	public static final Constraint TRUE = new SimpleConstraint(true);
-	
-	// The FeatureExpr representing this constraint
-	protected FeatureExpr featureExpr;
+public class Constraint {
 	
 	// Use the JavaBDD library instead of Sat4j 
-	{
+	static {
 		FeatureExprFactory.setDefault(BDDFeatureExprFactory$.MODULE$);
+	}
+	
+	public static final Constraint TRUE	 = new Constraint(FeatureExprFactory.True());
+	
+	public static final Constraint FALSE = new Constraint(FeatureExprFactory.False());
+	
+	// The FeatureExpr representing this constraint
+	private FeatureExpr featureExpr;
+	
+	/**
+	 * Private constructor
+	 * @param featureExpr
+	 */
+	private Constraint(FeatureExpr featureExpr) {
+		this.featureExpr = featureExpr;
 	}
 	
 	/*
@@ -26,11 +36,24 @@ public abstract class Constraint {
 	 */
 	
 	/**
-	 * @return A string describing the constraint
+	 * @return True if the constraint is satisfiable
 	 */
-	@Override
-	public String toString() {
-		return featureExpr.toString();
+	public boolean isSatisfiable() {
+		return featureExpr.isSatisfiable();
+	}
+	
+	/**
+	 * @return True if the constraint is a tautology
+	 */
+	public boolean isTautology() {
+		return featureExpr.isTautology();
+	}
+	
+	/**
+	 * @return True if the constraint is a contradiction
+	 */
+	public boolean isContradiction() {
+		return featureExpr.isContradiction();
 	}
 	
 	/**
@@ -40,21 +63,33 @@ public abstract class Constraint {
 	public boolean equivalentTo(Constraint constraint) {
 		return (this.featureExpr.equivalentTo(constraint.featureExpr));
 	}
+
+	/**
+	 * @return A string describing the constraint
+	 */
+	@Override
+	public String toString() {
+		return featureExpr.toString();
+	}
 	
 	/*
 	 * Static methods
 	 */
 	
 	public static Constraint createConstraint(String constraint) {
-		return new SimpleConstraint(constraint);
+		return new Constraint(FeatureExprFactory.createDefinedExternal(constraint));
 	}
 	
 	public static Constraint createNotConstraint(Constraint constraint) {
-		return new NotConstraint(constraint);
+		return new Constraint(constraint.featureExpr.not());
 	}
 	
 	public static Constraint createAndConstraint(Constraint constraint1, Constraint constraint2) {
-		return new AndConstraint(constraint1, constraint2);
+		return new Constraint(constraint1.featureExpr.and(constraint2.featureExpr));
+	}
+	
+	public static Constraint createOrConstraint(Constraint constraint1, Constraint constraint2) {
+		return new Constraint(constraint1.featureExpr.or(constraint2.featureExpr));
 	}
 	
 }
