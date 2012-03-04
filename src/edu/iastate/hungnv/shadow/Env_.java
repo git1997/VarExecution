@@ -48,6 +48,14 @@ public class Env_ {
 	 */
 	
 	/**
+	 * @return True if the new scope has a satisfiable aggregated constraint
+	 */
+	public boolean canEnterNewScope(Constraint constraint) {
+		Constraint aggregatedConstraint = Constraint.createAndConstraint(scope.getAggregatedConstraint(), constraint);
+		return aggregatedConstraint.isSatisfiable();
+	}
+	
+	/**
 	 * Enters a new scope with a given constraint.
 	 * @param constraint
 	 */
