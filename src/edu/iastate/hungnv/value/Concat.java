@@ -66,7 +66,10 @@ public class Concat extends MultiValue {
 	
 	@Override
 	public String toString() {
-		return "CONCAT(" + value1.toString() + ", " + value2.toString() + ")";
+		// TODO Revise
+		
+		//return "CONCAT(" + value1.toString() + ", " + value2.toString() + ")";
+		return value1.toString() + value2.toString();
 	}
 	
 }

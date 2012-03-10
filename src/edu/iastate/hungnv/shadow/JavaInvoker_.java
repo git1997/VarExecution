@@ -42,7 +42,10 @@ public class JavaInvoker_ {
 			args = ((FlattenedValueArray) case_.getValue()).get();
 			Constraint constraint = case_.getConstraint();
 			
-			env.getEnv_().enterNewScope(constraint);
+			boolean constraintAlwaysTrue = constraint.isTautology();
+			
+			if (!constraintAlwaysTrue)
+				env.getEnv_().enterNewScope(constraint);
 		
 			//----- BEGIN OF ORIGINAL CODE -----
 		  
@@ -136,7 +139,8 @@ public class JavaInvoker_ {
 	    
 			//----- END OF ORIGINAL CODE -----
 			
-			env.getEnv_().exitScope();
+			if (!constraintAlwaysTrue)
+				env.getEnv_().exitScope();
 			
 			retValue = MultiValue.createChoiceValue(constraint, retValue, Null.NULL);
 			

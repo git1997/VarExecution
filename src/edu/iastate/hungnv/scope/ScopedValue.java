@@ -122,4 +122,9 @@ public class ScopedValue extends Value {
 		return value.get(index);
 	}
 	
+	@Override
+	public Value toKey() {
+		return value.toKey();
+	}
+	
 }

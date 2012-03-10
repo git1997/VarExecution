@@ -191,13 +191,34 @@ public abstract class MultiValue extends Value {
 	 */
 	
 	@Override
-	public void print(Env env)
-	{
+	public void print(Env env) {
 		// TODO Revise
 		
 		new ConstStringValue(toString()).print(env);
 		Logging.LOGGER.info("Printing: " + toString());
 	}
+	
+	@Override
+	public Value toValue() {
+	    return this;
+	}
+	
+	@Override
+	public Value toKey() {
+		// TODO Revise
+
+		return new ConstStringValue(toString()).toKey();
+	}
+	
+	@Override
+	public Value copy() {
+		return this;
+	}
+	
+	@Override
+	public Value copyReturn() {
+		return this;
+	}	
 	
 	  //
 	  // Properties
@@ -1220,27 +1241,27 @@ public abstract class MultiValue extends Value {
 	    return new QuercusLanguageException(this);
 	  }
 
-	  /**
-	   * Converts to a raw value.
-	   */
-	  @Override
-	  public Value toValue()
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//	  /**
+//	   * Converts to a raw value.
+//	   */
+//	  @Override
+//	  public Value toValue()
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    return this;
+//	  }
 
-	    return this;
-	  }
-
-	  /**
-	   * Converts to a key.
-	   */
-	  @Override
-	  public Value toKey()
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    throw new QuercusRuntimeException(L.l("{0} is not a valid key", this));
-	  }
+//	  /**
+//	   * Converts to a key.
+//	   */
+//	  @Override
+//	  public Value toKey()
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    throw new QuercusRuntimeException(L.l("{0} is not a valid key", this));
+//	  }
 
 	  /**
 	   * Convert to a ref.
@@ -1680,16 +1701,16 @@ public abstract class MultiValue extends Value {
 	    return sb.append(toString());
 	  }
 
-	  /**
-	   * Copy for assignment.
-	   */
-	  @Override
-	  public Value copy()
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    return this;
-	  }
+//	  /**
+//	   * Copy for assignment.
+//	   */
+//	  @Override
+//	  public Value copy()
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    return this;
+//	  }
 
 	  /**
 	   * Copy as an array item
@@ -1702,18 +1723,18 @@ public abstract class MultiValue extends Value {
 	    return copy();
 	  }
 
-	  /**
-	   * Copy as a return value
-	   */
-	  @Override
-	  public Value copyReturn()
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    // php/3a5d
-
-	    return this;
-	  }
+//	  /**
+//	   * Copy as a return value
+//	   */
+//	  @Override
+//	  public Value copyReturn()
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    // php/3a5d
+//
+//	    return this;
+//	  }
 
 	  /**
 	   * Copy for serialization

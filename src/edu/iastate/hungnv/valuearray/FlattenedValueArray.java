@@ -26,6 +26,9 @@ public class FlattenedValueArray extends Value {
 	 * Getters and setters
 	 */
 	
+	/**
+	 * @return Array of Quercus values
+	 */
 	public Value[] get() {
 		return Arrays.copyOf(values, values.length);
 	}

@@ -21,6 +21,11 @@ public abstract class AbstractBinaryExpr_ {
 	 */
 	public Value eval(Env env, Expr leftExpr, Expr rightExpr) {
 		Value leftValue = leftExpr.eval(env);
+		
+		Value result = earlyEval(leftValue);
+		if (result != null)
+			return result;
+		
 		Value rightValue = rightExpr.eval(env);
 
 		Switch switch_ = new Switch();
@@ -35,6 +40,17 @@ public abstract class AbstractBinaryExpr_ {
 		}
 		
 		return switch_;
+	}
+	
+	/**
+	 * Evaluates a binary expression based on the left value only.
+	 * For example, if the binary expression is C1 AND C2 and C1 is FALSE, then (C1 AND C2) is FALSE regardless of C2.
+	 * Returns null if the left value alone is not enough to determine the value of the expression.
+	 * @param leftValue 	The left value of the binary expression
+	 * @return The value of the binary expression based on the left value, or null if it cannot be determined.
+	 */
+	protected Value earlyEval(Value leftValue) {
+		return null;
 	}
 	
 	/**

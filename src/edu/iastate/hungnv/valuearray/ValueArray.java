@@ -30,6 +30,9 @@ public class ValueArray extends Value {
 	 * Getters and setters
 	 */
 	
+	/**
+	 * @return Array of regular values
+	 */
 	public Value[] get() {
 		return Arrays.copyOf(values, values.length);
 	}

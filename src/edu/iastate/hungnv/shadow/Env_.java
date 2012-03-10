@@ -101,12 +101,19 @@ public class Env_ {
 	/**
 	 * Creates a ScopedValue (with scoping information) when an oldValue is updated to a newValue, 
 	 * 		so that the oldValue can be cached for later use.
+	 * If the current scope is GLOBAL, return a regular value (this is to avoid 
+	 * 		creating too many ScopedValues for values in the GLOBAL scope).
 	 * @param oldValue	A regular value or a ScopedValue, not null
 	 * @param newValue	A regular value, not null
-	 * @return a ScopedValue with scoping information
+	 * @return a ScopedValue with scoping information, or a regular value if the current scope is GLOBAL
 	 */
-	public static ScopedValue addScopedValue(Value oldValue, Value newValue) {
-		Env_ env_ = Env.getInstance().getEnv_();
+	public Value addScopedValue(Value oldValue, Value newValue) {
+		if (newValue instanceof ScopedValue) {
+			Logging.LOGGER.warning("In Env_.addScopedValue: newValue must not be a ScopedValue. Please debug.");
+		}
+		
+		if (this.getScope() == Scope.GLOBAL)
+			return newValue;
 		
 		ScopedValue oldScopedValue;
 		if (oldValue instanceof ScopedValue)
@@ -114,7 +121,7 @@ public class Env_ {
 		else
 			oldScopedValue = new ScopedValue(Scope.GLOBAL, oldValue, null);
 		
-		Scope curentScope = env_.getScope();
+		Scope curentScope = this.getScope();
 		Value currentValue = newValue;
 		
 		ScopedValue outerScopedValue;
@@ -152,11 +159,9 @@ public class Env_ {
 	public static Value setValue(StringValue name, Value value, Env env) {
 		EnvVar envVar = env.getEnvVar(name);
 		
-		if (Env_.hasStarted()) {
-			value = addScopedValue(envVar.get(), value);
-			
-			Logging.LOGGER.info("Assign $" + name + " with " + ((ScopedValue) value).toStringWithScoping());
-		}
+		value = env.getEnv_().addScopedValue(envVar.get(), value);
+		
+		Logging.LOGGER.info("Assign $" + name + " with " + (value instanceof ScopedValue ? ((ScopedValue) value).toStringWithScoping() : value.toString()));
 				
 		envVar.set(value);
 		
@@ -178,12 +183,5 @@ public class Env_ {
 	/*
 	 * Experimental methods
 	 */
-	
-	/**
-	 * Returns true if the program has started execution
-	 */
-	public static boolean hasStarted() {
-		return (Env.getInstance() != null);
-	}
 	
 }

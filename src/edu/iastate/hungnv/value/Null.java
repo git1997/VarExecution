@@ -1,7 +1,5 @@
 package edu.iastate.hungnv.value;
 
-import com.caucho.quercus.env.Value;
-
 /**
  * 
  * @author HUNG
@@ -36,9 +34,4 @@ public class Null extends MultiValue {
 		return "NULL";
 	}
 	
-	@Override
-	public Value get(Value index) {
-		return NULL;
-	}
-
 }
