@@ -34,6 +34,9 @@ import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 import com.caucho.quercus.expr.Expr;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.IfStatement_;
+
 /**
  * Represents an if statement.
  */
@@ -80,6 +83,13 @@ public class IfStatement extends Statement {
    */
   public Value execute(Env env)
   {
+	// INST ADDED BY HUNG
+	  
+	if (Env_.INSTRUMENT)	  
+	  return IfStatement_.execute(env, _test, _trueBlock, _falseBlock);
+	  
+	// END OF ADDED CODE
+	  
     if (_test.evalBoolean(env)) {
       return _trueBlock.execute(env);
     }

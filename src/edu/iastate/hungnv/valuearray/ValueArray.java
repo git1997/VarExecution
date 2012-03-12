@@ -69,8 +69,11 @@ public class ValueArray extends Value {
 				flattenedValues[i] = curCase.getValue();
 				constraint = Constraint.createAndConstraint(constraint, curCase.getConstraint());
 			}
-			Case newCase = new Case(constraint, new FlattenedValueArray(flattenedValues));
-			arraySwitch.addCase(newCase);
+			
+			if (constraint.isSatisfiable()) { // This check is required
+				Case newCase = new Case(constraint, new FlattenedValueArray(flattenedValues));
+				arraySwitch.addCase(newCase);
+			}
 			
 			// Update curCursor
 			int i;

@@ -34,6 +34,8 @@ import com.caucho.quercus.marshal.Marshal;
 import com.caucho.quercus.marshal.MarshalFactory;
 import com.caucho.vfs.WriteStream;
 
+import edu.iastate.hungnv.shadow.Env_;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -2076,6 +2078,13 @@ abstract public class ArrayValue extends Value {
         Value next = _current.getValue();
         _current = _current._next;
 
+        // INST ADDED BY HUNG
+        
+        if (Env_.INSTRUMENT)
+        	return Env_.removeScopedValue(next);
+        
+        // END OF ADDED CODE
+        
         return next;
       }
       else

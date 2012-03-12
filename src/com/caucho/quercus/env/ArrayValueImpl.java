@@ -40,6 +40,9 @@ import java.util.logging.Logger;
 
 import com.caucho.util.RandomUtil;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.value.Null;
+
 /**
  * Represents a PHP array value.
  */
@@ -483,6 +486,14 @@ public class ArrayValueImpl extends ArrayValue
     // php/0434
     // Var oldVar = entry._var;
 
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT && Env.getInstance() != null)
+    	//value = Env.getInstance().getEnv_().addScopedValue(entry.getValue(), value); // Using this way, Array[i] == CHOICE(value, "") and "" may cause errors if used later
+    	value = Env.getInstance().getEnv_().addScopedValue(Null.NULL, value); // Use NULL so that Array[i] == CHOICE(value, NULL) and NULL will not be used
+    
+    // END OF ADDED CODE    		
+    
     entry.set(value);
 
     return this;
@@ -798,6 +809,17 @@ public class ArrayValueImpl extends ArrayValue
         // return entry._value.toValue(); // php/39a1
 
         // 4.0.4 - _value.toValue() is marginally faster than _var
+    	
+    	  // INST ADDED BY HUNG
+    	  
+    	  if (Env_.INSTRUMENT) {
+    		  Value retValue = entry.toValue();
+    	  
+    		  return Env_.removeScopedValue(retValue);
+    	  }
+    	  
+    	  // END OF ADDED CODE
+    	  
         return entry.toValue();
 
       }

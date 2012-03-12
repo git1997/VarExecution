@@ -97,4 +97,13 @@ public class Location {
   {
     return "Location[" + _fileName + ":" + _lineNumber + "]";
   }
+  
+  // INST ADDED BY HUNG
+  
+  public String prettyPrint() {
+	  String rootPath = "C:\\Eclipse\\workspace\\javaEE\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0\\wtpwebapps\\quercus\\WebApps\\";
+	  return _fileName.substring(rootPath.length()) + " @ line " + _lineNumber;
+  }
+  
+  // END OF ADDED CODE
 }

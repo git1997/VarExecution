@@ -36,6 +36,8 @@ import com.caucho.util.Primes;
 import com.caucho.util.Alarm;
 import com.caucho.vfs.WriteStream;
 
+import edu.iastate.hungnv.shadow.Env_;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -205,6 +207,14 @@ public class ObjectExtValue extends ObjectValue
   public final Value getField(Env env, StringValue name)
   {
     Value returnValue = getFieldExt(env, name);
+    
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT)
+    	returnValue = Env_.removeScopedValue(returnValue);
+    
+    // END OF ADDED CODE
+    
     if(returnValue == UnsetValue.UNSET)
     {
         // __get didn't work, lets look in the class itself
@@ -463,6 +473,13 @@ public class ObjectExtValue extends ObjectValue
       oldValue.set(value);
     }
     else {
+    	// INST ADDED BY HUNG
+    	
+    	if (Env_.INSTRUMENT)
+    		value = env.getEnv_().addScopedValue(oldValue, value);
+    	
+    	// END OF ADDED CODE
+    	
       entry._value = value;
     }
 

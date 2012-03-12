@@ -34,6 +34,9 @@ import com.caucho.quercus.env.BooleanValue;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.UnaryNotExpr_;
+
 /**
  * Represents a PHP boolean negation
  */
@@ -61,6 +64,13 @@ public class UnaryNotExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new UnaryNotExpr_().eval(env, _expr);
+	 
+	  // END OF ADDED CODE
+	  
     return _expr.evalBoolean(env) ? BooleanValue.FALSE : BooleanValue.TRUE;
   }
 

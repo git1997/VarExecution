@@ -12,13 +12,13 @@ import edu.iastate.hungnv.constraint.Constraint;
 @SuppressWarnings("serial")
 public class Case extends MultiValue {
 	
-	private Constraint constraint;
-	private Value value;	// A Quercus value, not null
+	private Constraint constraint;	// The constraint must be satisfiable
+	private Value value;			// A Quercus value, not null
 	
 	/**
 	 * Constructor
-	 * @param constraint
-	 * @param value		A Quercus value, not null
+	 * @param constraint	The constraint must be satisfiable
+	 * @param value			A Quercus value, not null
 	 */
 	public Case(Constraint constraint, Value value) {
 		this.constraint = constraint;
@@ -29,10 +29,16 @@ public class Case extends MultiValue {
 	 * Getters and setters
 	 */
 	
+	/**
+	 * @return The constraint (must be satisfiable)
+	 */
 	public Constraint getConstraint() {
 		return constraint;
 	}
 
+	/**
+	 * @return The Quercus value (not null)
+	 */
 	public Value getValue() {
 		return value;
 	}

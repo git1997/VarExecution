@@ -34,6 +34,9 @@ import com.caucho.quercus.env.BooleanValue;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.BinaryAndExpr_;
+
 /**
  * Represents a logical and expression.
  */
@@ -65,6 +68,13 @@ public class BinaryAndExpr extends AbstractBinaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new BinaryAndExpr_().eval(env, _left, _right);
+	  
+	  // END OF ADDED CODE
+	  
     if (_left.evalBoolean(env) && _right.evalBoolean(env))
       return BooleanValue.TRUE;
     else

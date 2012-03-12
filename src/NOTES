@@ -1,0 +1,21 @@
+ArrayValue.ValueIterator				next		// Handle arrays				x		
+ArrayValueImpl				append		get			// Handle arrays				x
+Env							setValue	getValue	// Handle variables' values		x		
+ObjectExtValue				putField	getField	// Handle objects				x			
+
+CallExpr			evalImpl	// Handle user-defined function calls	x	
+FunIncludeExpr		eval		// Handle includes						x	
+FunIncludeOnceExpr	eval		// Handle includes						x	
+IfStatement			execute		// Handle branching						x	
+JavaInvoker			callMethod	// Handle library function calls		x			
+
+com.caucho.quercus.expr.*		// Handle expressions		
+	BinaryAndExpr		eval		// Handle &&			x	
+	BinaryAppendExpr	eval		// Handle Concat		x
+	BinaryEqExpr		eval		// Handle ==			x				
+	BinaryEqualsExpr	eval		// Handle ===			x			
+	BinaryOrExpr		eval		// Handle ||			x			
+	UnaryNotExpr		eval		// Handle !==			x
+
+BlockStatement		execute		// Print debug info			x
+Location			printPrint	// Print debug info			x

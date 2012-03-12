@@ -33,6 +33,9 @@ import com.caucho.quercus.Location;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.util.Logging;
+
 import java.util.ArrayList;
 
 /**
@@ -102,6 +105,13 @@ public class BlockStatement extends Statement {
     for (int i = 0; i < _statements.length; i++) {
       Statement statement = _statements[i];
 
+      // INST ADDED BY HUNG
+      
+      if (Env_.INSTRUMENT)
+    	  Logging.LOGGER.info("Executing " + statement.getLocation().prettyPrint());
+      
+      // END OF ADDED CODE
+      
       Value value = statement.execute(env);
 
       if (value != null) {

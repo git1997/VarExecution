@@ -54,7 +54,8 @@ public class Concat extends MultiValue {
 			Value value = new ConstStringValue(case1.getValue().toString() + case2.getValue().toString());
 			Constraint constraint = Constraint.createAndConstraint(case1.getConstraint(), case2.getConstraint());
 			
-			switch_.addCase(new Case(constraint, value));
+			if (constraint.isSatisfiable()) // This check is required
+				switch_.addCase(new Case(constraint, value));
 		}
 		
 		return switch_;

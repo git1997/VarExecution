@@ -34,6 +34,9 @@ import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.BinaryAppendExpr_;
+
 /**
  * Represents a PHP append ('.') expression.
  */
@@ -83,6 +86,13 @@ public class BinaryAppendExpr extends Expr
   @Override
   public Value eval(Env env)
   {
+    // INST ADDED BY HUNG
+    
+    if (Env_.INSTRUMENT)
+    	return BinaryAppendExpr_.eval(env, _value, _next);
+
+    // END OF ADDED CODE
+	    
     Value value = _value.eval(env);
 
     StringValue sb = value.toStringBuilder(env);

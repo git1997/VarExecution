@@ -101,6 +101,8 @@ import com.caucho.vfs.TempBuffer;
 import com.caucho.vfs.WriteStream;
 import com.caucho.vfs.i18n.EncodingReader;
 
+import edu.iastate.hungnv.shadow.Env_;
+
 /**
  * Represents the Quercus environment.
  */
@@ -492,6 +494,12 @@ public class Env
       addConstant("STDERR", wrapJava(new PhpStderr()), false);
       addConstant("STDIN", wrapJava(new PhpStdin(this)), false);
     }
+    
+    // INST ADDED BY HUNG
+    
+    addConstant("__INSTRUMENT__", Env_.INSTRUMENT ? BooleanValue.TRUE : BooleanValue.FALSE, true);
+    
+    // END OF ADDED CODE
   }
 
   public Env(QuercusContext quercus)
@@ -1890,6 +1898,13 @@ public class Env
                         boolean isAutoCreate,
                         boolean isOutputNotice)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return Env_.getValue(name, isAutoCreate, isOutputNotice, this);
+	  
+	  // END OF ADDED CODE
+	  
     EnvVar var = getEnvVar(name, isAutoCreate, isOutputNotice);
     
     if (var != null)
@@ -2868,6 +2883,13 @@ public class Env
    */
   public Value setValue(StringValue name, Value value)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return Env_.setValue(name, value, this);
+	  
+	  // END OF ADDED CODE
+	  
     EnvVar envVar = getEnvVar(name);
 
     envVar.set(value);
@@ -7328,4 +7350,14 @@ public class Env
     DEFAULT_QUERY_SEPARATOR_MAP = new int[128];
     DEFAULT_QUERY_SEPARATOR_MAP['&'] = 1;
   }
+  
+  	// INST ADDED BY HUNG
+  
+  	private Env_ env_ = new Env_();
+  	
+  	public Env_ getEnv_() {
+  		return env_;
+  	}
+  	
+  	// END OF ADDED CODE
 }

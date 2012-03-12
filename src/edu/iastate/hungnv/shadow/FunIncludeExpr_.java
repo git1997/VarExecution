@@ -34,6 +34,9 @@ public class FunIncludeExpr_ {
 			Value flattenedValue = case_.getValue();
 			Constraint constraint = case_.getConstraint();
 			
+			if (!env.getEnv_().canEnterNewScope(constraint))
+				continue;
+			
 			boolean constraintAlwaysTrue = constraint.isTautology();
 			
 			if (!constraintAlwaysTrue)

@@ -39,6 +39,9 @@ import com.caucho.quercus.parser.QuercusParser;
 import com.caucho.quercus.function.AbstractFunction;
 import com.caucho.util.L10N;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.Functions;
+
 import java.util.ArrayList;
 
 /**
@@ -195,6 +198,19 @@ public class CallExpr extends Expr {
           _funId = env.findFunctionId(_nsName);
       
         if (_funId <= 0) {
+        	
+        	// INST ADDED BY HUNG
+
+        	if (Env_.INSTRUMENT) {
+        		if (_name.equals(Functions.__CHOICE__.class.getSimpleName()))
+        			return Functions.__CHOICE__.evalImpl(evalArgs(env, _args));
+          
+        		if (_name.equals(Functions.__ASSERT__.class.getSimpleName()))
+        			return Functions.__ASSERT__.evalImpl(evalArgs(env, _args), this.getLocation());
+        	}
+        	
+        	// END OF ADDED CODE
+        	
           env.error(getLocationLine(),
                     L.l("'{0}' is an unknown function.", _name));
 

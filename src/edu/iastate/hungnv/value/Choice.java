@@ -58,7 +58,8 @@ public class Choice extends MultiValue {
 			Value value = case_.getValue();
 			Constraint constraint = Constraint.createAndConstraint(this.constraint, case_.getConstraint());
 			
-			switch_.addCase(new Case(constraint, value));
+			if (constraint.isSatisfiable()) // This check is required
+				switch_.addCase(new Case(constraint, value));
 		}
 		
 		Constraint notConstraint = Constraint.createNotConstraint(this.constraint);
@@ -66,7 +67,8 @@ public class Choice extends MultiValue {
 			Value value = case_.getValue();
 			Constraint constraint = Constraint.createAndConstraint(notConstraint, case_.getConstraint());
 			
-			switch_.addCase(new Case(constraint, value));
+			if (constraint.isSatisfiable()) // This check is required
+				switch_.addCase(new Case(constraint, value));
 		}
 		
 		return switch_;

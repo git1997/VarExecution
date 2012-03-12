@@ -29,7 +29,7 @@ public class JavaInvoker_ {
 	/**
 	 * @see com.caucho.quercus.env.JavaInvoker.callMethod(Env, QuercusClass, Value, Value[])
 	 */
-	public static Value callMethod(Env env, QuercusClass qClass, Value qThis, Value []args,
+	public static Value callMethod(Env env, QuercusClass qClass, Value qThis, Value []origArgs,
 									JavaInvoker _this,
 									Class<?> [] _param, boolean _hasEnv, boolean _hasThis, Marshal []_marshalArgs,
 									Expr [] _defaultExprs, String _name, int _minArgumentLength, L10N L, boolean _hasRestArgs,
@@ -38,9 +38,12 @@ public class JavaInvoker_ {
 		Value combinedReturnValue = null;
 		Value retValue = null;
 
-		for (Case case_ : flatten(args)) {
-			args = ((FlattenedValueArray) case_.getValue()).get();
+		for (Case case_ : flatten(origArgs)) {
+			Value[] args = ((FlattenedValueArray) case_.getValue()).get();
 			Constraint constraint = case_.getConstraint();
+			
+			if (!env.getEnv_().canEnterNewScope(constraint))
+				continue;
 			
 			boolean constraintAlwaysTrue = constraint.isTautology();
 			

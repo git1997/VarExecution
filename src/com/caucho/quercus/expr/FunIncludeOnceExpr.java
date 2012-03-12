@@ -36,6 +36,9 @@ import com.caucho.quercus.env.Value;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.vfs.Path;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.FunIncludeOnceExpr_;
+
 /**
  * Represents a PHP include statement
  */
@@ -81,6 +84,13 @@ public class FunIncludeOnceExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return FunIncludeOnceExpr_.eval(env, this, _expr, _dir, _isRequire);
+	  
+	  // END OF ADDED CODE
+	  
     StringValue name = _expr.eval(env).toStringValue();
 
     // return env.include(_dir, name);

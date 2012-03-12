@@ -40,7 +40,8 @@ public abstract class MultiValue extends Value {
 	 */
 
 	/**
-	 * Returns all possible Quercus Values.
+	 * Returns all possible Quercus Values.<br>
+	 * Note: The constraints associated with the Quercus Values must be satisfiable.
 	 * @return All possible Quercus Values
 	 */
 	public abstract Switch flatten();
@@ -60,7 +61,8 @@ public abstract class MultiValue extends Value {
 	 */
 	
 	/**
-	 * Returns all possible Quercus Values of a regular Value.
+	 * Returns all possible Quercus Values of a regular Value.<br>
+	 * Note: The constraints associated with the Quercus Values must be satisfiable.
 	 * @param value		A regular value, not null
 	 * @return All possible Quercus Values of the given value
 	 */
@@ -124,7 +126,7 @@ public abstract class MultiValue extends Value {
 	
 	/**
 	 * Returns a regular Value (usually a Case Value)
-	 * @param constraint
+	 * @param constraint	The constraint must be satisfiable
 	 * @param value			A Quercus value, not null
 	 * @return	A regular Value (usually a Case Value)
 	 */
@@ -218,6 +220,46 @@ public abstract class MultiValue extends Value {
 	@Override
 	public Value copyReturn() {
 		return this;
+	}
+	
+	@Override
+	public Value callMethod(Env env,
+	                          StringValue methodName, int hash,
+	                          Value []args) {
+		Switch switch_ = new Switch();
+		
+		for (Case case_ : MultiValue.flatten(this)) {
+			Constraint constraint = case_.getConstraint();
+			
+			if (case_.getValue() == NullValue.NULL) // TODO Debug why NullValue occured?
+				continue;
+			
+			Value value = case_.getValue().callMethod(env, methodName, hash, args);
+			
+			switch_.addCase(new Case(constraint, value));
+		}
+		
+		return switch_;
+	}
+	
+	@Override
+	public Value toAutoArray() {
+		Switch switch_ = new Switch();
+		
+		for (Case case_ : MultiValue.flatten(this)) {
+			Constraint constraint = case_.getConstraint();
+			Value value = case_.getValue().toAutoArray();
+			
+			switch_.addCase(new Case(constraint, value));
+		}
+		
+		return switch_;
+	}
+	
+	@Override
+	public int cmp(Value rValue) {
+		// TODO Revise
+	    return 1;
 	}	
 	
 	  //
@@ -738,63 +780,63 @@ public abstract class MultiValue extends Value {
 	    return this == rValue.toValue();
 	  }
 
-	  /**
-	   * Returns a negative/positive integer if this Value is
-	   * lessthan/greaterthan rValue.
-	   */
-	  @Override
-	  public int cmp(Value rValue)
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    // This is tricky: implemented according to Table 15-5 of
-	    // http://us2.php.net/manual/en/language.operators.comparison.php
-
-	    Value lVal = toValue();
-	    Value rVal = rValue.toValue();
-
-	    if (lVal instanceof StringValue && rVal instanceof NullValue)
-	      return ((StringValue) lVal).cmpString(StringValue.EMPTY);
-
-	    if (lVal instanceof NullValue && rVal instanceof StringValue)
-	      return StringValue.EMPTY.cmpString((StringValue) rVal);
-
-	    if (lVal instanceof StringValue && rVal instanceof StringValue)
-	      return ((StringValue) lVal).cmpString((StringValue) rVal);
-
-	    if (lVal instanceof NullValue
-	        || lVal instanceof BooleanValue
-	        || rVal instanceof NullValue
-	        || rVal instanceof BooleanValue)
-	    {
-	      boolean lBool = toBoolean();
-	      boolean rBool    = rValue.toBoolean();
-
-	      if (!lBool && rBool) return -1;
-	      if (lBool && !rBool) return 1;
-	      return 0;
-	    }
-
-	    if (lVal.isObject() && rVal.isObject())
-	      return ((ObjectValue) lVal).cmpObject((ObjectValue) rVal);
-
-	    if ((lVal instanceof StringValue
-	         || lVal instanceof NumberValue
-	         || lVal instanceof ResourceValue)
-	        && (rVal instanceof StringValue
-	            || rVal instanceof NumberValue
-	            || rVal instanceof ResourceValue))
-	      return NumberValue.compareNum(lVal, rVal);
-
-	    if (lVal instanceof ArrayValue) return 1;
-	    if (rVal instanceof ArrayValue) return -1;
-	    if (lVal instanceof ObjectValue) return 1;
-	    if (rVal instanceof ObjectValue) return -1;
-
-	    // XXX: proper default case?
-	    throw new RuntimeException(
-	      "values are incomparable: " + lVal + " <=> " + rVal);
-	  }
+//	  /**
+//	   * Returns a negative/positive integer if this Value is
+//	   * lessthan/greaterthan rValue.
+//	   */
+//	  @Override
+//	  public int cmp(Value rValue)
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    // This is tricky: implemented according to Table 15-5 of
+//	    // http://us2.php.net/manual/en/language.operators.comparison.php
+//
+//	    Value lVal = toValue();
+//	    Value rVal = rValue.toValue();
+//
+//	    if (lVal instanceof StringValue && rVal instanceof NullValue)
+//	      return ((StringValue) lVal).cmpString(StringValue.EMPTY);
+//
+//	    if (lVal instanceof NullValue && rVal instanceof StringValue)
+//	      return StringValue.EMPTY.cmpString((StringValue) rVal);
+//
+//	    if (lVal instanceof StringValue && rVal instanceof StringValue)
+//	      return ((StringValue) lVal).cmpString((StringValue) rVal);
+//
+//	    if (lVal instanceof NullValue
+//	        || lVal instanceof BooleanValue
+//	        || rVal instanceof NullValue
+//	        || rVal instanceof BooleanValue)
+//	    {
+//	      boolean lBool = toBoolean();
+//	      boolean rBool    = rValue.toBoolean();
+//
+//	      if (!lBool && rBool) return -1;
+//	      if (lBool && !rBool) return 1;
+//	      return 0;
+//	    }
+//
+//	    if (lVal.isObject() && rVal.isObject())
+//	      return ((ObjectValue) lVal).cmpObject((ObjectValue) rVal);
+//
+//	    if ((lVal instanceof StringValue
+//	         || lVal instanceof NumberValue
+//	         || lVal instanceof ResourceValue)
+//	        && (rVal instanceof StringValue
+//	            || rVal instanceof NumberValue
+//	            || rVal instanceof ResourceValue))
+//	      return NumberValue.compareNum(lVal, rVal);
+//
+//	    if (lVal instanceof ArrayValue) return 1;
+//	    if (rVal instanceof ArrayValue) return -1;
+//	    if (lVal instanceof ObjectValue) return 1;
+//	    if (rVal instanceof ObjectValue) return -1;
+//
+//	    // XXX: proper default case?
+//	    throw new RuntimeException(
+//	      "values are incomparable: " + lVal + " <=> " + rVal);
+//	  }
 
 	  /**
 	   * Returns true for less than
@@ -928,19 +970,19 @@ public abstract class MultiValue extends Value {
 	    return new ArrayValueImpl().append(this);
 	  }
 
-	  /**
-	   * Converts to an array if null.
-	   */
-	  @Override
-	  public Value toAutoArray()
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    Env.getCurrent().warning(L.l("'{0}' cannot be used as an array.", 
-	                                 toDebugString()));
-
-	    return this;
-	  }
+//	  /**
+//	   * Converts to an array if null.
+//	   */
+//	  @Override
+//	  public Value toAutoArray()
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    Env.getCurrent().warning(L.l("'{0}' cannot be used as an array.", 
+//	                                 toDebugString()));
+//
+//	    return this;
+//	  }
 
 	  /**
 	   * Casts to an array.
@@ -2108,26 +2150,26 @@ public abstract class MultiValue extends Value {
 	  // Methods invocation
 	  //
 
-	  /**
-	   * Evaluates a method.
-	   */
-	  @Override
-	  public Value callMethod(Env env,
-	                          StringValue methodName, int hash,
-	                          Value []args)
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    if (isNull()) {
-	      return env.error(L.l("Method call '{0}' is not allowed for a null value.",
-	                           methodName));
-	    }
-	    else {
-	      return env.error(L.l("'{0}' is an unknown method of {1}.",
-	                           methodName,
-	                           toDebugString()));
-	    }
-	  }
+//	  /**
+//	   * Evaluates a method.
+//	   */
+//	  @Override
+//	  public Value callMethod(Env env,
+//	                          StringValue methodName, int hash,
+//	                          Value []args)
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    if (isNull()) {
+//	      return env.error(L.l("Method call '{0}' is not allowed for a null value.",
+//	                           methodName));
+//	    }
+//	    else {
+//	      return env.error(L.l("'{0}' is an unknown method of {1}.",
+//	                           methodName,
+//	                           toDebugString()));
+//	    }
+//	  }
 
 	  /**
 	   * Evaluates a method.

@@ -35,7 +35,7 @@ public abstract class AbstractBinaryExpr_ {
 			Constraint constraint = Constraint.createAndConstraint(leftCase.getConstraint(), rightCase.getConstraint());
 			Value value = evalBasicCase(leftCase.getValue(), rightCase.getValue());
 			
-			if (constraint.isSatisfiable()) // TODO This check is optional
+			if (constraint.isSatisfiable()) // This check is required
 				switch_.addCase(new Case(constraint, value));
 		}
 		
