@@ -3,6 +3,7 @@ package edu.iastate.hungnv.debug;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ import com.caucho.quercus.env.ObjectExtValue.EntrySet;
 import com.caucho.quercus.env.Value;
 
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.scope.ScopedValue;
+import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.Choice;
 import edu.iastate.hungnv.value.Concat;
@@ -31,6 +34,7 @@ import edu.iastate.hungnv.value.Undefined;
 public class ValueViewer {
 	
 	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\values.xml";
+	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\values-all.xml";
 	public static final String xmlFile00 		= "C:\\Users\\HUNG\\Desktop\\values00-derived.xml";
 	public static final String xmlFile01 		= "C:\\Users\\HUNG\\Desktop\\values01-derived.xml";
 	public static final String xmlFile10 		= "C:\\Users\\HUNG\\Desktop\\values10-derived.xml";
@@ -61,11 +65,35 @@ public class ValueViewer {
 	private ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 	
 	/**
+	 * List of names that will not be printed out
+	 */
+	private static HashSet<String> excludedNames = new HashSet<String>();
+	
+	static {
+		excludedNames.add("REMOTE_ADDR");
+		excludedNames.add("REMOTE_HOST");
+		excludedNames.add("REMOTE_PORT");
+		excludedNames.add("REQUEST_TIME");
+		excludedNames.add("SERVER_ADDR");
+		excludedNames.add("_transient_doing_cron");
+		excludedNames.add("cache_hits");
+		excludedNames.add("cache_misses");
+		excludedNames.add("last_changed");
+		excludedNames.add("mc_uninstalled");
+		excludedNames.add("num_queries");
+		excludedNames.add("rows_affected");	
+		excludedNames.add("timestart");
+		excludedNames.add("update_option");
+		excludedNames.add("update_option_mc_version");
+		excludedNames.add("updated_option");		
+	}
+	
+	/**
 	 * Adds a name-value pair
 	 * @param name
 	 * @param value
 	 */
-	public void add(String name, Value value) {
+	public void add(Value name, Value value) {
 		nameValuePairs.add(new NameValuePair(name, value));
 	}
 	
@@ -110,7 +138,23 @@ public class ValueViewer {
 	 * @param constraint
 	 * @return
 	 */
-	private Element createXmlElementForNameValuePair(String name, Value value, Document xmlDocument, Constraint constraint) {
+	private Element createXmlElementForNameValuePair(Value name, Value value, Document xmlDocument, Constraint constraint) {
+		if (excludedNames.contains(name.toString()))
+			return null;
+		
+		if (constraint != null && name instanceof MultiValue) {
+			Switch flattenedName = ((MultiValue) name).flatten(constraint);
+		
+			List<Case> cases = flattenedName.getCases();
+			
+			if (cases.size() == 0)
+				return null;
+			else if (cases.size() == 1)
+				name = cases.get(0).getValue();
+			else
+				name = flattenedName;
+		}
+		
 		if (constraint != null && value instanceof MultiValue) {
 			Switch flattenedValue = ((MultiValue) value).flatten(constraint);
 		
@@ -125,7 +169,7 @@ public class ValueViewer {
 		}
 		
 		Element element = xmlDocument.createElement(XML_NAME_VALUE);
-		element.setAttribute(XML_DESC, name);
+		element.setAttribute(XML_DESC, name.toString());
 		element.setAttribute(XML_INFO1, value instanceof ObjectExtValue ? "Object" : value.toString());
 		
 		Element childElement = createXmlElementForValue(value, xmlDocument, constraint);
@@ -143,7 +187,12 @@ public class ValueViewer {
 	 * @return
 	 */
 	private Element createXmlElementForValue(Value value, Document xmlDocument, Constraint constraint) {
-		if (value instanceof Concat) {
+		if (value instanceof ScopedValue) {
+			Logging.LOGGER.warning("In ValueViewer.createXmlElementForValue: value must not be a ScopedValue. Please debug.");
+			
+			return createXmlElementForValue(((ScopedValue) value).getValue(), xmlDocument, constraint);
+		}
+		else if (value instanceof Concat) {
 			return createXmlElementForConcat((Concat) value, xmlDocument, constraint);
 		}
 		else if (value instanceof Choice) {
@@ -280,7 +329,7 @@ public class ValueViewer {
 		ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		for (Iterator<Map.Entry<Value, Value>> iter = array.getIterator(); iter.hasNext(); ) {
 			Map.Entry<Value, Value> pair = iter.next();
-			pairs.add(new NameValuePair(pair.getKey().toString(), pair.getValue()));
+			pairs.add(new NameValuePair(pair.getKey(), pair.getValue()));
 		}
 			
 		Collections.sort(pairs, SortNameValuePairByName.inst);
@@ -307,7 +356,7 @@ public class ValueViewer {
 		ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		for (Iterator<Map.Entry<Value,Value>> iter = ((EntrySet) object.entrySet()).iterator(); iter.hasNext(); ) {
 			Map.Entry<Value, Value> pair = iter.next();
-			pairs.add(new NameValuePair(pair.getKey().toString(), pair.getValue()));
+			pairs.add(new NameValuePair(pair.getKey(), pair.getValue()));
 		}
 			
 		Collections.sort(pairs, SortNameValuePairByName.inst);
@@ -326,15 +375,15 @@ public class ValueViewer {
 	 */
 	private class NameValuePair {
 		
-		private String name;
+		private Value name;
 		private Value value;
 		
-		public NameValuePair(String name, Value value) {
+		public NameValuePair(Value name, Value value) {
 			this.name = name;
 			this.value = value;
 		}
 		
-		public String getName() {
+		public Value getName() {
 			return name;
 		}
 		
@@ -353,7 +402,7 @@ public class ValueViewer {
 		
 		@Override
 		public int compare(NameValuePair pair1, NameValuePair pair2) {
-			return pair1.getName().compareTo(pair2.getName());
+			return pair1.getName().toString().compareTo(pair2.getName().toString());
 		}
 
 	}

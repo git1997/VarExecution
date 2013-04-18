@@ -57,21 +57,24 @@ public class Env_ {
 		ValueViewer viewer = new ValueViewer();
 		for (StringValue name : env.getEnv().keySet()) {
 			Value value = env.getEnv().get(name).get();
-			viewer.add(name.toString(), value);
+			viewer.add(name, value);
 		}
 		
-		viewer.writeToXmlFile(ValueViewer.xmlFile);
+		if (INSTRUMENT) {
+	//		Constraint PLUGIN1 = Constraint.createConstraint("GOOGLE");
+	//		Constraint PLUGIN2 = Constraint.createConstraint("FACEBOOK");
+			
+			Constraint PLUGIN1 = Constraint.createConstraint("CAL");
+			Constraint PLUGIN2 = Constraint.createConstraint("WEA");
 		
-		Constraint PLUGIN1 = Constraint.createConstraint("GOOGLE");
-		Constraint PLUGIN2 = Constraint.createConstraint("FACEBOOK");
-		
-//		Constraint PLUGIN1 = Constraint.createConstraint("CAL");
-//		Constraint PLUGIN2 = Constraint.createConstraint("WEA");
-		
-//		viewer.writeToXmlFile(ValueViewer.xmlFile00, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), Constraint.createNotConstraint(PLUGIN2)));
-//		viewer.writeToXmlFile(ValueViewer.xmlFile01, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), PLUGIN2));
-//		viewer.writeToXmlFile(ValueViewer.xmlFile10, Constraint.createAndConstraint(PLUGIN1, Constraint.createNotConstraint(PLUGIN2)));
-//		viewer.writeToXmlFile(ValueViewer.xmlFile11, Constraint.createAndConstraint(PLUGIN1, PLUGIN2));
+			viewer.writeToXmlFile(ValueViewer.xmlFileAll);
+			viewer.writeToXmlFile(ValueViewer.xmlFile00, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), Constraint.createNotConstraint(PLUGIN2)));
+			viewer.writeToXmlFile(ValueViewer.xmlFile01, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), PLUGIN2));
+			viewer.writeToXmlFile(ValueViewer.xmlFile10, Constraint.createAndConstraint(PLUGIN1, Constraint.createNotConstraint(PLUGIN2)));
+			viewer.writeToXmlFile(ValueViewer.xmlFile11, Constraint.createAndConstraint(PLUGIN1, PLUGIN2));
+		}
+		else
+			viewer.writeToXmlFile(ValueViewer.xmlFile);
 
 		Logging.LOGGER.info("Env closed.");
 	}

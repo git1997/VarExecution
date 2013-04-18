@@ -82,8 +82,8 @@ public abstract class MultiValue extends Value {
 		return switch_;
 	}
 	
-	public MultiValue simplify() {
-		// TODO Combine same values, remove dead conditions
+	public Value simplify() {
+		// TODO Combine same values, remove dead conditions...
 		
 		return this;
 	}

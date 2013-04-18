@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.caucho.quercus.env.Value;
+
 /**
  * 
  * @author HUNG
@@ -37,6 +39,14 @@ public class Switch extends MultiValue implements Iterable<Case> {
 	@Override
 	public Switch flatten() {
 		return this;
+	}
+	
+	@Override
+	public Value simplify() {
+		if (cases.size() == 1 && cases.get(0).getConstraint().isTautology())
+			return cases.get(0).getValue();
+		else
+			return this;
 	}
 
 	@Override

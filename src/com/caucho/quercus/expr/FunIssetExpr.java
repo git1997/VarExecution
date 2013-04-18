@@ -34,6 +34,9 @@ import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 import com.caucho.quercus.env.BooleanValue;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.FunIssetExpr_;
+
 /**
  * Represents a PHP isset call
  */
@@ -65,6 +68,14 @@ public class FunIssetExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  // TODO Comment out later
+//	  if (Env_.INSTRUMENT)
+//		  return new FunIssetExpr_().eval(env, _expr);
+	  
+	  // END OF ADDED CODE
+		  
     return _expr.evalIsset(env) ? BooleanValue.TRUE : BooleanValue.FALSE;
   }
 
