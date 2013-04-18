@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 
 import com.caucho.util.RandomUtil;
 
+import edu.iastate.hungnv.shadow.ArrayValueImpl_;
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.value.Undefined;
 
@@ -481,23 +482,46 @@ public class ArrayValueImpl extends ArrayValue
     if (key instanceof UnsetValue) // php/4a4h
       key = createTailKey();
 
+    // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return ArrayValueImpl_.append(key, value, this);
+	  
+	// END OF ADDED CODE
+	  
     Entry entry = createEntry(key);
 
     // php/0434
     // Var oldVar = entry._var;
 
+    entry.set(value);
+
+    return this;
+  }
+  
+// INST ADDED BY HUNG  
+
+  public ArrayValue append_basic(Value key, Value value)
+  {
+    Entry entry = createEntry(key);
+
+    // php/0434
+    // Var oldVar = entry._var;
+    
     // INST ADDED BY HUNG
     
     if (Env_.INSTRUMENT && Env.getInstance() != null)
     	//value = Env.getInstance().getEnv_().addScopedValue(entry.getValue(), value); // Using this way, Array[i] == CHOICE(value, "") and "" may cause errors if used later
     	value = Env.getInstance().getEnv_().addScopedValue(Undefined.UNDEFINED, value); // Use UNDEFINED so that Array[i] == CHOICE(value, UNDEFINED) and UNDEFINED will not be used
     
-    // END OF ADDED CODE    		
-    
+    // END OF ADDED CODE    
+
     entry.set(value);
 
     return this;
   }
+  
+// END OF ADDED CODE  
 
   /**
    * Add to the beginning

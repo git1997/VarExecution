@@ -2,11 +2,12 @@ ArrayValueImpl		append		get			// Handle arrays				x
 ObjectExtValue		putField	getField	// Handle objects				x	
 Var					set...		toValue...	// Handle variables' values		x
 
-CallExpr			evalImpl	// Handle user-defined function calls	x	
-FunIncludeExpr		eval		// Handle includes						x	
-FunIncludeOnceExpr	eval		// Handle includes						x	
-IfStatement			execute		// Handle branching						x	
-JavaInvoker			callMethod	// Handle library function calls		x			
+ArrayValueImpl		append		// Handle arrays with variational indexes	x
+CallExpr			evalImpl	// Handle user-defined function calls		x	
+FunIncludeExpr		eval		// Handle includes							x	
+FunIncludeOnceExpr	eval		// Handle includes							x	
+IfStatement			execute		// Handle branching							x	
+JavaInvoker			callMethod	// Handle library function calls			x			
 
 com.caucho.quercus.expr.*			// Handle expressions		
 	BinaryAndExpr		eval			// Handle &&			x	
