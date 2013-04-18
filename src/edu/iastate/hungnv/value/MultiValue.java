@@ -82,8 +82,12 @@ public abstract class MultiValue extends Value {
 		return switch_;
 	}
 	
+	/**
+	 * Simplifies the MultiValue
+	 * @return The simplified value
+	 */
 	public Value simplify() {
-		// TODO Combine same values, remove dead conditions...
+		// TODO Combine same values, remove dead conditions, ...
 		
 		return this;
 	}
@@ -106,7 +110,7 @@ public abstract class MultiValue extends Value {
 			combinedRetValue.addCase(new Case(constraint, retValue));
 		}
 		
-		return combinedRetValue;
+		return combinedRetValue.simplify();
 	}
 	
 	/*
@@ -305,6 +309,13 @@ public abstract class MultiValue extends Value {
 		// TODO Revise
 
 		return new ConstStringValue(toString()).toKey();
+	
+//		return operate(new IOperation() {
+//			@Override
+//			public Value operate(Value value) {
+//				return value.toKey();
+//			}
+//		});
 	}
 	
 	@Override

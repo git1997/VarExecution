@@ -1,4 +1,4 @@
-ArrayValueImpl		append		get			// Handle arrays				x
+ArrayValue			set			toValue		// Handle arrays				x
 ObjectExtValue		putField	getField	// Handle objects				x	
 Var					set...		toValue...	// Handle variables' values		x
 

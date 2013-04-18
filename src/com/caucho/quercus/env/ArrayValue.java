@@ -34,6 +34,9 @@ import com.caucho.quercus.marshal.Marshal;
 import com.caucho.quercus.marshal.MarshalFactory;
 import com.caucho.vfs.WriteStream;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.value.Undefined;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -1705,6 +1708,33 @@ abstract public class ArrayValue extends Value {
 
     public Value set(Value value)
     {
+    	// INST ADDED BY HUNG
+
+    	if (Env_.INSTRUMENT && Env.getInstance() != null) {
+    		if (value instanceof ArrayValueImpl) {
+    			// TODO Fix this: For some reason, it doesn't work if value is an array
+    		}
+    		else {
+				if (_value == NullValue.NULL) 		// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
+					_value = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
+ 
+				Value oldValue = _value;
+		
+				if (value instanceof Var) {
+					_value = Env.getInstance().getEnv_().addScopedValue(_value, (Var) value);
+				}
+				else {
+					// TODO Fix this: For some reason, using addScopedValue(_value, _value.set(value)) makes some Choice values become strings
+					//_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.set(value));
+					_value = Env.getInstance().getEnv_().addScopedValue(_value, value);
+				}
+		
+				return oldValue;
+    		}
+    	}
+    
+    	// END OF ADDED CODE
+	    
       Value oldValue = _value;
 
       // XXX: make OO
