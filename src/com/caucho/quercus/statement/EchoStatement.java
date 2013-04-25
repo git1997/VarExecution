@@ -34,6 +34,8 @@ import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 import com.caucho.quercus.expr.Expr;
 
+import edu.iastate.hungnv.debug.OutputViewer;
+
 /**
  * Represents an echo statement in a PHP program.
  */
@@ -56,7 +58,25 @@ public class EchoStatement extends Statement {
   {
     Value value = _expr.eval(env);
 
+    // INST MODIFIED BY HUNG
+    
+    // Original code:
+    //value.print(env);
+    
+    // New code:
+    
+    // TODO Consider adding if (Env_.INSTRUMENT)
+    
+    boolean curState = OutputViewer.inst.getEnabled();
+	OutputViewer.inst.setEnabled(false);
+	
     value.print(env);
+    
+    OutputViewer.inst.setEnabled(curState);
+    
+    OutputViewer.inst.print(value);
+    
+    // END OF MODIFIED CODE
 
     return null;
   }

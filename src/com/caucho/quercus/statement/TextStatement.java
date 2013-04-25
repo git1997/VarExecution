@@ -34,6 +34,7 @@ import com.caucho.quercus.QuercusException;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.debug.OutputViewer;
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.util.Logging;
 
@@ -70,7 +71,25 @@ public class TextStatement extends Statement {
     	
     	// END OF ADDED CODE
     	
-      env.getOut().print(_value);
+        // INST MODIFIED BY HUNG
+        
+        // Original code:
+        //env.getOut().print(_value);
+        
+        // New code:
+    	
+    	// TODO Consider adding if (Env_.INSTRUMENT)
+        
+    	boolean curState = OutputViewer.inst.getEnabled();
+    	OutputViewer.inst.setEnabled(false);
+    	
+        env.getOut().print(_value);
+    	
+        OutputViewer.inst.setEnabled(curState);
+        
+        OutputViewer.inst.print(_value);
+      
+      	// END OF MODIFIED CODE
     }
     catch (RuntimeException e) {
       throw e;

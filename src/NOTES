@@ -27,6 +27,10 @@ FunIncludeExpr		eval_orig		// Track execution trace	x
 FunIncludeOnceExpr	eval_orig		// Track execution trace	x
 ObjectMethodExpr	eval			// Track execution trace	x
 
+EchoStatement		execute			// Track output				x
+TextStatement		execute			// Track output				x
+WriteStream			print, write	// Track output				x
+
 BlockStatement		execute					// Print debug info			x
 Env					setValue, start, close	// Print debug info			x
 Location			prettyPrint				// Print debug info			x

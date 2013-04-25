@@ -7050,6 +7050,13 @@ public class Env
    */
   public void close()
   {
+    // INST ADDED BY HUNG
+    
+    // TODO Consider adding if (Env_.INSTRUMENT) 
+    	env_.closing(this);
+  
+    // END OF ADDED CODE
+	    	
     _quercus.completeEnv(this);
     
     /*
@@ -7076,7 +7083,7 @@ public class Env
     // INST ADDED BY HUNG
     
     // TODO Consider adding if (Env_.INSTRUMENT) 
-    	env_.close(this);
+    	env_.closed(this);
   
     // END OF ADDED CODE
     

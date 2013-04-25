@@ -1,9 +1,11 @@
 package edu.iastate.hungnv.shadow;
 
+import com.caucho.quercus.env.ConstStringValue;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.debug.OutputViewer;
 import edu.iastate.hungnv.debug.ValueViewer;
 import edu.iastate.hungnv.scope.Scope;
 import edu.iastate.hungnv.scope.ScopedValue;
@@ -19,6 +21,9 @@ public class Env_ {
 	
 	// Turn on or off instrumentation mode
 	public static final boolean INSTRUMENT = true;
+	
+	// String constants
+	public static final String __INSTRUMENT__ 	= "__INSTRUMENT__";
 	
 	// The current scope
 	private Scope scope;
@@ -47,12 +52,32 @@ public class Env_ {
 	 */
 	
 	public void start(Env env) {
+		OutputViewer.inst.setOutputValue(new ConstStringValue(""));
 	}
 	
-	public void close(Env env) {
+	public void closing(Env env) {
 		Logging.LOGGER.info("Env closing...");
 		
+		OutputViewer.inst.setFinalOutputValue(OutputViewer.inst.getOutputValue());
+	}
+	
+	public void closed(Env env) {
+		
+//		Constraint PLUGIN1 = Constraint.createConstraint("GOOGLE");
+//		Constraint PLUGIN2 = Constraint.createConstraint("FACEBOOK");
+				
+		Constraint PLUGIN1 = Constraint.createConstraint("CAL");
+		Constraint PLUGIN2 = Constraint.createConstraint("WEA");
+		
 		//TraceViewer.inst.writeToXmlFile(TraceViewer.xmlFile);
+		
+		if (INSTRUMENT) {
+			OutputViewer.inst.writeToXmlFile(OutputViewer.xmlFileAll);
+			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFileAll);
+			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFile10, Constraint.createAndConstraint(PLUGIN1, Constraint.createNotConstraint(PLUGIN2)));
+		}
+		else
+			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFile);
 		
 		ValueViewer viewer = new ValueViewer();
 		for (StringValue name : env.getEnv().keySet()) {
@@ -61,12 +86,6 @@ public class Env_ {
 		}
 		
 		if (INSTRUMENT) {
-	//		Constraint PLUGIN1 = Constraint.createConstraint("GOOGLE");
-	//		Constraint PLUGIN2 = Constraint.createConstraint("FACEBOOK");
-			
-			Constraint PLUGIN1 = Constraint.createConstraint("CAL");
-			Constraint PLUGIN2 = Constraint.createConstraint("WEA");
-		
 			viewer.writeToXmlFile(ValueViewer.xmlFileAll);
 			viewer.writeToXmlFile(ValueViewer.xmlFile00, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), Constraint.createNotConstraint(PLUGIN2)));
 			viewer.writeToXmlFile(ValueViewer.xmlFile01, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), PLUGIN2));

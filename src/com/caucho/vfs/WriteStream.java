@@ -40,6 +40,8 @@ import java.util.Locale;
 import com.caucho.util.CharSegment;
 import com.caucho.vfs.i18n.EncodingWriter;
 
+import edu.iastate.hungnv.debug.OutputViewer;
+
 /**
  * A fast bufferered output stream supporting both character
  * and byte data.  The underlying stream sources are provided by StreamImpl
@@ -292,6 +294,17 @@ public class WriteStream extends OutputStreamWithBuffer
   @Override
   public void write(byte []buf, int offset, int length) throws IOException
   {
+	  // INST ADDED BY HUNG
+
+	  // TODO Consider adding if (Env_.INSTRUMENT)
+	  
+	  byte[] chars = new byte[length];
+	  System.arraycopy(buf, offset, chars, 0, length);
+	  
+	  OutputViewer.inst.print(new String(chars));
+	  
+	  // END OF ADDED CODE
+	  
     byte []buffer = _writeBuffer;
     
     int bufferLength = buffer.length;
@@ -567,6 +580,18 @@ public class WriteStream extends OutputStreamWithBuffer
   public final void print(char []buffer, int offset, int length)
     throws IOException
   {
+	  
+	  // INST ADDED BY HUNG
+	  
+	  // TODO Consider adding if (Env_.INSTRUMENT)
+	  
+	  char[] chars = new char[length];
+	  System.arraycopy(buffer, offset, chars, 0, length);
+	  
+	  OutputViewer.inst.print(new String(chars));
+	  
+	// END OF ADDED CODE
+	  
     if (_source == null)
       return;
 

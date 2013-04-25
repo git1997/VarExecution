@@ -255,7 +255,7 @@ public abstract class MultiValue extends Value {
 		*/
 		
 		/*
-		 * Check # 3: Simplify the branches if possible
+		 * Check #3: Simplify the branches if possible
 		 */
 		if (trueBranchValue instanceof Choice) {
 			if (constraint.equivalentTo(((Choice) trueBranchValue).getConstraint()))
@@ -269,6 +269,25 @@ public abstract class MultiValue extends Value {
 				falseBranchValue = ((Choice) falseBranchValue).getValue2();
 			else if (constraint.oppositeOf(((Choice) falseBranchValue).getConstraint()))
 				falseBranchValue = ((Choice) falseBranchValue).getValue1();
+		}
+		
+		/*
+		 * Check #4: Handle one specific case. 
+		 * Example: 
+		 * 		if (C)
+		 *			echo "Cats";
+		 * 		else
+		 *			echo "Dogs";
+		 * After executing both branches: OUTPUT = CHOICE(!C, CONCAT(CHOICE(C, Cats, ), Dogs), Cats)
+		 * => Simplify to: OUTPUT = CHOICE(!C, Dogs, Cats)
+		 */
+		if (trueBranchValue instanceof Concat) {
+			Value firstPartOfConcat = ((Concat) trueBranchValue).getValue1();
+			if (firstPartOfConcat instanceof Choice) {
+				if (constraint.oppositeOf(((Choice) firstPartOfConcat).getConstraint())) {
+					trueBranchValue = MultiValue.createConcatValue(((Choice) firstPartOfConcat).getValue2(), ((Concat) trueBranchValue).getValue2());
+				}
+			}
 		}
 		
 		/*
@@ -296,7 +315,6 @@ public abstract class MultiValue extends Value {
 		// TODO Revise
 		
 		new ConstStringValue(toString()).print(env);
-		Logging.LOGGER.info("Printing: " + toString());
 	}
 	
 	@Override
@@ -356,7 +374,12 @@ public abstract class MultiValue extends Value {
 	@Override
 	public int hashCode() {
 		return super.hashCode();
-	}	
+	}
+	
+	@Override
+	public boolean isVar() {
+		return false;
+	}
 	
 	  //
 	  // Properties
@@ -3645,13 +3668,13 @@ public abstract class MultiValue extends Value {
 	    }
 	  }
 
-	  @Override
-	  public boolean isVar()
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    return false;
-	  }
+//	  @Override
+//	  public boolean isVar()
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    return false;
+//	  }
 	  
 	  /**
 	   * Sets the value ref.

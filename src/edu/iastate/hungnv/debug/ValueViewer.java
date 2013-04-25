@@ -108,7 +108,7 @@ public class ValueViewer {
 	/**
 	 * Writes all values satisfying a given constraint to an XML file
 	 * @param xmlFile
-	 * @param constraint
+	 * @param constraint (can be null)
 	 */
 	public void writeToXmlFile(String xmlFile, Constraint constraint) {
 		Document xmlDocument = XmlDocument.newDocument();
@@ -234,15 +234,29 @@ public class ValueViewer {
 		//element.setAttribute(XML_INFO1, concat.getValue1().toString());
 		//element.setAttribute(XML_INFO2, concat.getValue2().toString());
 
-		Element child1 = createXmlElementForValue(concat.getValue1(), xmlDocument, constraint);
-		if (child1 != null)
-			element.appendChild(child1);
-		
-		Element child2 = createXmlElementForValue(concat.getValue2(), xmlDocument, constraint);
-		if (child2 != null)
-			element.appendChild(child2);
+		for (Value childValue : flattenConcatChildValues(concat)) {
+			Element child = createXmlElementForValue(childValue, xmlDocument, constraint);
+			if (child != null)
+				element.appendChild(child);
+		}
 		
 		return (element.hasChildNodes() ? element : null);
+	}
+	
+	private List<Value> flattenConcatChildValues(Concat concat) {
+		List<Value> childValues = new ArrayList<Value>();
+		
+		if (concat.getValue1() instanceof Concat)
+			childValues.addAll(flattenConcatChildValues((Concat) concat.getValue1()));
+		else
+			childValues.add(concat.getValue1());
+		
+		if (concat.getValue2() instanceof Concat)
+			childValues.addAll(flattenConcatChildValues((Concat) concat.getValue2()));
+		else
+			childValues.add(concat.getValue2());
+		
+		return childValues;
 	}
 	
 	/**
