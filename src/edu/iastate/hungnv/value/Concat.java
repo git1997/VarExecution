@@ -61,6 +61,14 @@ public class Concat extends MultiValue {
 		return switch_;
 	}
 	
+	@Override
+	public Value simplify(Constraint constraint) {
+		Value firstValue = MultiValue.simplify(value1, constraint);
+		Value secondValue = MultiValue.simplify(value2, constraint);
+		
+		return MultiValue.createConcatValue(firstValue, secondValue);
+	}
+	
 	/*
 	 * Shadowed methods of the Value class
 	 */

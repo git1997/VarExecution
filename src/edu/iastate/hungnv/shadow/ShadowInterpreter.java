@@ -5,6 +5,7 @@ import com.caucho.quercus.env.NullValue;
 import com.caucho.quercus.env.Value;
 
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.constraint.Constraint.Result;
 import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.MultiValue;
 import edu.iastate.hungnv.value.Undefined;
@@ -39,10 +40,13 @@ public class ShadowInterpreter {
 			Value flattenedValue = case_.getValue();
 			Constraint constraint = case_.getConstraint();
 			
-			if (!env.getEnv_().canEnterNewScope(constraint))
-				continue;
+			Constraint aggregatedConstraint = env.getEnv_().getScope().getAggregatedConstraint();
+			Constraint.Result result = aggregatedConstraint.tryAddingConstraint(constraint);
+			boolean constraintAlwaysTrue = (result == Result.THE_SAME);
+			boolean constraintAlwaysFalse = (result == Result.ALWAYS_FALSE);
 			
-			boolean constraintAlwaysTrue = constraint.isTautology();
+			if (constraintAlwaysFalse)
+				continue;
 			
 			if (!constraintAlwaysTrue)
 				env.getEnv_().enterNewScope(constraint);
@@ -57,7 +61,8 @@ public class ShadowInterpreter {
 			if (retValue == null)
 				continue;
 			
-			retValue = MultiValue.createChoiceValue(constraint, retValue, Undefined.UNDEFINED);
+			if (!constraintAlwaysTrue)
+				retValue = MultiValue.createChoiceValue(constraint, retValue, Undefined.UNDEFINED);
 			
 			if (combinedReturnValue == null)
 				combinedReturnValue = retValue;

@@ -80,6 +80,36 @@ public class Constraint {
 		return featureExpr.toString();
 	}
 	
+	/**
+	 * Given the current constraint, try adding another constraint onto it.
+	 * For example, suppose the current constraint is A, the added constraint is B
+	 * (A & B can be dependent, e.g. A = a & c, B = b & c),
+	 * then we have 3 possible outcomes:
+	 * 		+ A & B stays THE SAME:  A & B = A		(equivalently, A & !B = FALSE)
+	 * 		+ A & B is ALWAYS FALSE: A & B = FALSE  (equivalently, A & !B = A)
+	 * 		+ A & B cannot be determined
+	 * @param constraint
+	 */
+	public Result tryAddingConstraint(Constraint constraint) {
+		if (Constraint.createAndConstraint(this, Constraint.createNotConstraint(constraint)).isContradiction())
+			return Result.THE_SAME;
+		
+		else if (Constraint.createAndConstraint(this, constraint).isContradiction())
+			return Result.ALWAYS_FALSE;
+		
+		else
+			return Result.UNDETERMINED;
+	}
+
+	/**
+	 * @see edu.iastate.hungnv.constraint.Constraint.tryAddingConstraint(Constraint) 
+	 */
+	public enum Result {
+		THE_SAME, 
+		ALWAYS_FALSE,
+		UNDETERMINED
+	}
+	
 	/*
 	 * Static methods
 	 */

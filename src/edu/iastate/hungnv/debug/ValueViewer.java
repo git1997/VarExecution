@@ -142,31 +142,22 @@ public class ValueViewer {
 		if (excludedNames.contains(name.toString()))
 			return null;
 		
-		if (constraint != null && name instanceof MultiValue) {
-			Switch flattenedName = ((MultiValue) name).flatten(constraint);
-		
-			List<Case> cases = flattenedName.getCases();
-			
-			if (cases.size() == 0)
-				return null;
-			else if (cases.size() == 1)
-				name = cases.get(0).getValue();
-			else
-				name = flattenedName;
+		if (constraint != null)
+			name = MultiValue.simplify(name, constraint);
+		else {
+			name = MultiValue.simplify(name);
 		}
-		
-		if (constraint != null && value instanceof MultiValue) {
-			Switch flattenedValue = ((MultiValue) value).flatten(constraint);
-		
-			List<Case> cases = flattenedValue.getCases();
+		if (name == Undefined.UNDEFINED)
+			return null;
+
 			
-			if (cases.size() == 0)
-				return null;
-			else if (cases.size() == 1)
-				value = cases.get(0).getValue();
-			else
-				value = flattenedValue;
+		if (constraint != null)
+			value = MultiValue.simplify(value, constraint);
+		else {
+			value = MultiValue.simplify(value);
 		}
+		if (value == Undefined.UNDEFINED)
+			return null;
 		
 		Element element = xmlDocument.createElement(XML_NAME_VALUE);
 		element.setAttribute(XML_DESC, name.toString());
@@ -200,9 +191,6 @@ public class ValueViewer {
 		}
 		else if (value instanceof Switch) {
 			return createXmlElementForSwitch((Switch) value, xmlDocument, constraint);
-		}
-		else if (value instanceof Case) {
-			return createXmlElementForCase((Case) value, xmlDocument, constraint);
 		}
 		else if (value instanceof Undefined) {
 			return createXmlElementForUndefined((Undefined) value, xmlDocument, constraint);

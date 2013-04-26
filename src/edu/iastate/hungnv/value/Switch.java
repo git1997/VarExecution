@@ -6,6 +6,9 @@ import java.util.List;
 
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.constraint.Constraint.Result;
+
 /**
  * 
  * @author HUNG
@@ -42,11 +45,21 @@ public class Switch extends MultiValue implements Iterable<Case> {
 	}
 	
 	@Override
-	public Value simplify() {
-		if (cases.size() == 1 && cases.get(0).getConstraint().isTautology())
-			return cases.get(0).getValue();
-		else
-			return this;
+	public Value simplify(Constraint constraint) {
+		Switch switch_ = new Switch();
+		for (Case case_ : cases) {
+			Constraint.Result result = constraint.tryAddingConstraint(case_.getConstraint());
+			
+			if (result == Result.THE_SAME)
+				return case_.getValue();
+			
+			if (result == Result.UNDETERMINED)
+				switch_.addCase(case_);
+			
+			// Do nothing if result == ResultType.ALWAYS_FALSE
+		}
+		
+		return switch_;
 	}
 
 	@Override

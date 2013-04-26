@@ -82,7 +82,8 @@ public class Env_ {
 		ValueViewer viewer = new ValueViewer();
 		for (StringValue name : env.getEnv().keySet()) {
 			Value value = env.getEnv().get(name).get();
-			viewer.add(name, value);
+			if (!name.toString().equals("__OUTPUT__")) // TODO Adhoc code so that the special variable output is not printed
+				viewer.add(name, value);
 		}
 		
 		if (INSTRUMENT) {

@@ -6,7 +6,6 @@ import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.MultiValue;
-import edu.iastate.hungnv.value.Undefined;
 
 /**
  * 
@@ -25,7 +24,7 @@ public class ArrayValueImpl_ {
 				Value flattenedKey = case_.getValue();
 				Constraint constraint = case_.getConstraint();
 				
-				Value modifiedValue = MultiValue.createChoiceValue(constraint, value, Undefined.UNDEFINED);
+				Value modifiedValue = MultiValue.createChoiceValue(constraint, value, _this.get(flattenedKey));
 				
 				// Eval basic case
 				_this.append_basic(flattenedKey, modifiedValue);

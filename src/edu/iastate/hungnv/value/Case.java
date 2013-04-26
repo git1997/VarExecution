@@ -9,8 +9,7 @@ import edu.iastate.hungnv.constraint.Constraint;
  * @author HUNG
  *
  */
-@SuppressWarnings("serial")
-public class Case extends MultiValue {
+public class Case {
 	
 	private Constraint constraint;	// The constraint must be satisfiable
 	private Value value;			// A Quercus value, not null
@@ -47,21 +46,4 @@ public class Case extends MultiValue {
 	 * Methods
 	 */
 
-	@Override
-	public Switch flatten() {
-		Switch switch_ = new Switch();
-		switch_.addCase(this);
-		
-		return switch_;
-	}
-	
-	/*
-	 * Shadowed methods of the Value class
-	 */
-	
-	@Override
-	public String toString() {
-		return "CASE(" + constraint.toString() + ", " + value.toString() + ")";
-	}
-	
 }

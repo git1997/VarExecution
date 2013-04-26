@@ -48,10 +48,10 @@ public abstract class MultiValue extends Value {
 		 * @return			The Quercus value after applying the operation on the given Quercus value
 		 */
 		public Value operate(Value value);
-	}	
+	}
 	
 	/*
-	 * Abstract methods
+	 * Methods
 	 */
 
 	/**
@@ -61,43 +61,27 @@ public abstract class MultiValue extends Value {
 	 */
 	public abstract Switch flatten();
 	
-	/*
-	 * Methods
-	 */
-	
 	/**
-	 * Returns all Quercus Values in the MultiValue whose constraints do not contradict the given constraint.
-	 * For example, given a Switch(Case(A => x), Case(!A => y)) and the constraint A, the returned Quercus value will be x.
-	 * @param constraint
-	 * @return
-	 */
-	public Switch flatten(Constraint constraint) {
-		Switch switch_ = new Switch();
-		for (Case case_ : this.flatten()) {
-			if (Constraint.createAndConstraint(constraint, case_.getConstraint()).isSatisfiable()) {
-				switch_.addCase(case_);
-			}
-		}
-		
-		return switch_;
-	}
-	
-	/**
-	 * Simplifies the MultiValue
+	 * Simplifies the MultiValue (combine same values, remove dead conditions, etc.)
 	 * @return The simplified value
 	 */
-	public Value simplify() {
-		// TODO Combine same values, remove dead conditions, ...
-		
-		return this;
+	public final Value simplify() {
+		return simplify(Constraint.TRUE);
 	}
+	
+	/**
+	 * Simplifies the MultiValue (combine same values, remove dead conditions, etc.)
+	 * @param constraint	Used to simplify the MultiValue (e.g., if constraint is A, then CHOICE(A, x, y) will be simplified to x)
+	 * @return The simplified value
+	 */
+	public abstract Value simplify(Constraint constraint);
 	
 	/**
 	 * Apply an operation on this MultiValue
-	 * @param operation	An operation on this MultiValue
+	 * @param operation	An operation on a *Quercus* value
 	 * @return			The value after applying the operation on this MultiValue
 	 */
-	public Value operate(IOperation operation) {
+	public final Value operate(IOperation operation) {
 		Switch combinedRetValue = new Switch();
 		
 		for (Case case_ : this.flatten()) {
@@ -118,24 +102,49 @@ public abstract class MultiValue extends Value {
 	 */
 	
 	/**
-	 * Returns all possible Quercus Values of a regular Value.<br>
-	 * Note: The constraints associated with the Quercus Values must be satisfiable.
 	 * @param value		A regular value, not null
-	 * @return All possible Quercus Values of the given value
+	 * @see edu.iastate.hungnv.value.MultiValue.flatten()
 	 */
 	public static Switch flatten(Value value) {
 		if (value instanceof MultiValue) {
 			return ((MultiValue) value).flatten();
 		}
-		else 
-			return new Case(Constraint.TRUE, value).flatten();
-	}	
+		else {
+			Switch switch_ = new Switch();
+			switch_.addCase(new Case(Constraint.TRUE, value));
+			return switch_;
+		}
+	}
 	
 	/**
-	 * Apply an operation on a regular Value.
+	 * @param value		A regular value, not null 
+	 * @see edu.iastate.hungnv.value.MultiValue.simplify()
+	 */
+	public static Value simplify(Value value) {
+		if (value instanceof MultiValue) {
+			return ((MultiValue) value).simplify();
+		}
+		else 
+			return value;
+	}
+	
+	/**
+	 * @param value		A regular value, not null 
+	 * @param constraint 
+	 * @see edu.iastate.hungnv.value.MultiValue.simplify(Constraint)
+	 */
+	public static Value simplify(Value value, Constraint constraint) {
+		if (value instanceof MultiValue) {
+			return ((MultiValue) value).simplify(constraint);
+		}
+		else 
+			return value;
+	}
+	
+	/**
 	 * @param value		A regular value, not null
-	 * @param operation	An operation on a *Quercus* value
-	 * @return			The value after applying the operation on the given regular value
+	 * @param operation
+	 * @see edu.iastate.hungnv.value.MultiValue.operate(IOperation)
 	 */
 	public static Value operateOnValue(Value value, IOperation operation) {
 		if (value instanceof MultiValue) {
@@ -193,16 +202,6 @@ public abstract class MultiValue extends Value {
 		}
 		else 
 			return Constraint.FALSE;
-	}
-	
-	/**
-	 * Returns a regular Value (usually a Case Value)
-	 * @param constraint	The constraint must be satisfiable
-	 * @param value			A Quercus value, not null
-	 * @return	A regular Value (usually a Case Value)
-	 */
-	public static Value createCaseValue(Constraint constraint, Value value) {
-		return new Case(constraint, value);
 	}
 	
 	/**
@@ -303,6 +302,10 @@ public abstract class MultiValue extends Value {
 	 * @return	A regular Value (usually a Concat Value)
 	 */
 	public static Value createConcatValue(Value value1, Value value2) {
+		// TODO Revise: Decide to simplify the Concat value early (here) or later (at edu.iastate.hungnv.value.Concat.simplify(Constraint))
+		if (!(value1 instanceof MultiValue) && !(value2 instanceof MultiValue))
+			return new ConstStringValue(value1.toString() + value2.toString());
+		
 		return new Concat(value1, value2);
 	}
 	
@@ -312,7 +315,7 @@ public abstract class MultiValue extends Value {
 	
 	@Override
 	public void print(Env env) {
-		// TODO Revise
+		// TODO Revise, debug if this is called
 		
 		new ConstStringValue(toString()).print(env);
 	}

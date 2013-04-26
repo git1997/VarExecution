@@ -2,6 +2,7 @@ package edu.iastate.hungnv.value;
 
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.constraint.Constraint.Result;
 
 /**
  * 
@@ -74,12 +75,30 @@ public class Choice extends MultiValue {
 		return switch_;
 	}
 	
+	@Override
+	public Value simplify(Constraint constraint) {
+		Constraint.Result result = constraint.tryAddingConstraint(this.constraint);
+		
+		if (result == Result.THE_SAME) {
+			return MultiValue.simplify(value1, constraint);
+		}
+		else if (result == Result.ALWAYS_FALSE)
+			return MultiValue.simplify(value2, constraint);
+		
+		Value trueBranchValue = MultiValue.simplify(value1, Constraint.createAndConstraint(constraint, this.constraint));
+		Value falseBranchValue = MultiValue.simplify(value2,  Constraint.createAndConstraint(constraint, Constraint.createNotConstraint(this.constraint)));
+		
+		return MultiValue.createChoiceValue(this.constraint, trueBranchValue, falseBranchValue);
+	}
+	
 	/*
 	 * Shadowed methods of the Value class
 	 */
 	
 	@Override
 	public String toString() {
+		// TODO Produce a warning here
+		
 		return "CHOICE(" + constraint.toString() + ", " + value1.toString() + ", " + value2.toString() + ")";
 	}
 	

@@ -134,15 +134,13 @@ public class OutputViewer {
 	 */
 	public void writeToTxtFile(String txtFile, Constraint constraint) {
 		Value outputValue = getFinalOutputValue();
-		
-		Value flattenedOutputValue;
-		if (constraint != null && outputValue instanceof MultiValue) {
-			flattenedOutputValue = ((MultiValue) outputValue).flatten(constraint).simplify();
-		}
+				
+		if (constraint != null)
+			outputValue = MultiValue.simplify(outputValue, constraint);
 		else
-			flattenedOutputValue = outputValue;
+			outputValue = MultiValue.simplify(outputValue);
 		
-		FileIO.writeStringToFile(flattenedOutputValue.toString(), txtFile);
+		FileIO.writeStringToFile(outputValue.toString(), txtFile);
 	}
 	
 	/**
