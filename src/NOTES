@@ -2,6 +2,7 @@ ArrayValue			set			toValue		// Handle arrays				x
 ObjectExtValue		putField	getField	// Handle objects				x	
 Var					set...		toValue...	// Handle variables' values		x
 
+ArrayValue			toCallable	// Handle toCallable with multi values		x
 ArrayValueImpl		append		// Handle arrays with variational indexes	x
 CallExpr			evalImpl	// Handle user-defined function calls		x	
 FunIncludeExpr		eval		// Handle includes							x	
