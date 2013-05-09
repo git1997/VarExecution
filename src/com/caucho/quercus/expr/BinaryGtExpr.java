@@ -34,6 +34,9 @@ import com.caucho.quercus.env.BooleanValue;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.BinaryGtExpr_;
+
 /**
  * Represents a PHP comparison expression.
  */
@@ -61,6 +64,13 @@ public class BinaryGtExpr extends AbstractBinaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new BinaryGtExpr_().eval(env, _left, _right);
+	  
+	  // END OF ADDED CODE
+	  
     return evalBoolean(env) ? BooleanValue.TRUE : BooleanValue.FALSE;
   }
 

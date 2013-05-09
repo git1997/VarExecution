@@ -46,4 +46,9 @@ public class Case {
 	 * Methods
 	 */
 
+	@Override
+	public String toString() {
+		return "CASE(" + constraint.toString() + ", " + value.toString() + ")";
+	}
+	
 }
