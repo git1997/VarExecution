@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -271,7 +272,7 @@ public abstract class MultiValue extends Value {
 		}
 		
 		/*
-		 * Check #4: Handle one specific case. 
+		 * Check #4: Handle one specific case. Currently this check is not very useful (not executed much).
 		 * Example: 
 		 * 		if (C)
 		 *			echo "Cats";
@@ -280,12 +281,68 @@ public abstract class MultiValue extends Value {
 		 * After executing both branches: OUTPUT = CHOICE(!C, CONCAT(CHOICE(C, Cats, ), Dogs), Cats)
 		 * => Simplify to: OUTPUT = CHOICE(!C, Dogs, Cats)
 		 */
+		/*
 		if (trueBranchValue instanceof Concat) {
-			Value firstPartOfConcat = ((Concat) trueBranchValue).getValue1();
+			List<Value> childNodes = ((Concat) trueBranchValue).getChildNodes();
+			Value firstPartOfConcat = childNodes.get(0);
 			if (firstPartOfConcat instanceof Choice) {
 				if (constraint.oppositeOf(((Choice) firstPartOfConcat).getConstraint())) {
-					trueBranchValue = MultiValue.createConcatValue(((Choice) firstPartOfConcat).getValue2(), ((Concat) trueBranchValue).getValue2());
+					trueBranchValue = ((Choice) firstPartOfConcat).getValue2();
+					for (int i = 1; i < childNodes.size(); i++)
+						trueBranchValue = MultiValue.createConcatValue(trueBranchValue, childNodes.get(i));
 				}
+			}
+		}
+		*/
+		
+		/*
+		 * Check #5: Handle Choice(Concat, Concat)
+		 * Example:
+		 * 		CHOICE(COND, CONCAT(A, B), CONCAT(A, C)) => CONCAT(A, CHOICE(COND, B, C)) 
+		 */
+		if (trueBranchValue instanceof Concat && falseBranchValue instanceof Concat) {
+			List<Value> items1 = ((Concat) trueBranchValue).getChildNodes();
+			List<Value> items2 = ((Concat) falseBranchValue).getChildNodes();
+			
+			int sharedPartLen = 0;
+			while (sharedPartLen < items1.size() 
+					&& sharedPartLen < items2.size() 
+					&& items1.get(sharedPartLen) == items2.get(sharedPartLen)) {
+				sharedPartLen++;
+			}
+			
+			if (sharedPartLen > 0) {
+				Value sharedPart;
+				if (sharedPartLen == 1)
+					sharedPart = items1.get(0);
+				else
+					sharedPart = new Concat(items1.subList(0, sharedPartLen));
+				
+				Value part1;
+				if (sharedPartLen == items1.size())
+					part1 = null;
+				else if (sharedPartLen == items1.size() - 1)
+					part1 = items1.get(items1.size() - 1);
+				else
+					part1 = new Concat(items1.subList(sharedPartLen, items1.size()));
+				
+				Value part2;
+				if (sharedPartLen == items2.size())
+					part2 = null;
+				else if (sharedPartLen == items2.size() - 1)
+					part2 = items2.get(items2.size() - 1);
+				else
+					part2 = new Concat(items2.subList(sharedPartLen, items2.size()));
+				
+				if (part1 == null && part2 == null)
+					return sharedPart;
+				
+				if (part1 == null)
+					part1 = new ConstStringValue("");
+				if (part2 == null)
+					part2 = new ConstStringValue("");
+				
+				return createConcatValue(sharedPart, createChoiceValue(constraint, part1, part2));
 			}
 		}
 		
@@ -303,10 +360,57 @@ public abstract class MultiValue extends Value {
 	 */
 	public static Value createConcatValue(Value value1, Value value2) {
 		// TODO Revise: Decide to simplify the Concat value early (here) or later (at edu.iastate.hungnv.value.Concat.simplify(Constraint))
-		if (!(value1 instanceof MultiValue) && !(value2 instanceof MultiValue))
-			return new ConstStringValue(value1.toString() + value2.toString());
+		// If we want to simplify the Concat value early, then use: return createConcatValue(value1, value2, true);
+		// 	+ Pros: Values will be simplified early
+		// 	+ Cons: The common part between the two branches of a Choice cannot be extracted out because they have become strings (e.g., Choice('ab', 'ac')).
 		
-		return new Concat(value1, value2);
+		return createConcatValue(value1, value2, false);
+	}
+	
+	/**
+	 * Returns a regular Value (usually a Concat Value)
+	 * @param value1	A regular value, not null
+	 * @param value2	A regular value, not null
+	 * @param enableMerging		If set as true, then combine two adjacent string values from value1 and value 2 into one string value
+	 * @return	A regular Value (usually a Concat Value)
+	 */
+	public static Value createConcatValue(Value value1, Value value2, boolean enableMerging) {
+		List<Value> items1;
+		List<Value> items2;
+		
+		if (value1 instanceof Concat)
+			items1 = ((Concat) value1).getChildNodes();
+		else {
+			items1 = new ArrayList<Value>();
+			items1.add(value1);
+		}
+		
+		if (value2 instanceof Concat)
+			items2 = ((Concat) value2).getChildNodes();
+		else {
+			items2 = new ArrayList<Value>();
+			items2.add(value2);
+		}
+		
+		if (enableMerging) {
+			Value val1 = items1.get(items1.size() - 1);
+			Value val2 = items2.get(0);
+			
+			// TODO Consider using if (val1 instanceof StringBuilderValue && val2 instanceof StringBuilderValue) {
+			// 					or if (!(val1 instanceof MultiValue) && !(val2 instanceof MultiValue))
+			// Currently, the latter is preferred.
+			//if (val1 instanceof StringBuilderValue && val2 instanceof StringBuilderValue) {
+			if (!(val1 instanceof MultiValue) && !(val2 instanceof MultiValue)) {
+				items2.set(0, new ConstStringValue(val1.toString() + val2.toString()));
+				items1.remove(items1.size() - 1);
+			}
+		}
+		
+		items1.addAll(items2);
+		if (items1.size() == 1)
+			return items1.get(0);
+		else
+			return new Concat(items1);
 	}
 	
 	/*

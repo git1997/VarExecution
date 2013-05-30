@@ -25,7 +25,7 @@ public class BinaryAppendExpr_ {
 	    for (BinaryAppendExpr ptr = _next; ptr != null; ptr = ptr.getNext()) {
 	      Value ptrValue = ptr.getValue().eval(env);
 	
-	      sb = MultiValue.createConcatValue(sb, ptrValue);
+	      sb = MultiValue.createConcatValue(sb, ptrValue, true);
 	    }
 	    
 	    return sb;

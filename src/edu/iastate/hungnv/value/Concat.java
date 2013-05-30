@@ -1,5 +1,9 @@
 package edu.iastate.hungnv.value;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import com.caucho.quercus.env.ConstStringValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
@@ -10,31 +14,28 @@ import edu.iastate.hungnv.constraint.Constraint;
  *
  */
 @SuppressWarnings("serial")
-public class Concat extends MultiValue {
+public class Concat extends MultiValue implements Iterable<Value> {
 	
-	private Value value1;	// A regular value, not null
-	private Value value2;	// A regular value, not null
-
+	private ArrayList<Value> childNodes = new ArrayList<Value>(); // A size-2+ list of not-null regular values
+	
+	/*
+	 * Constructors
+	 */
+	
 	/**
 	 * Constructor
-	 * @param value1	A regular value, not null
-	 * @param value2	A regular value, not null
+	 * @param values	A size-2+ list of not-null regular values
 	 */
-	public Concat(Value value1, Value value2) {
-		this.value1 = value1;
-		this.value2 = value2;
+	public Concat(List<Value> values) {
+		childNodes.addAll(values);
 	}
-	
+
 	/*
 	 * Getters and setters
 	 */
 	
-	public Value getValue1() {
-		return value1;
-	}
-	
-	public Value getValue2() {
-		return value2;
+	public List<Value> getChildNodes() {
+		return new ArrayList<Value>(childNodes);
 	}
 	
 	/*
@@ -43,30 +44,66 @@ public class Concat extends MultiValue {
 	
 	@Override
 	public Switch flatten() {
-		// TODO Revise
-		Switch switch_ = new Switch();
 		
-		Switch cases1 = MultiValue.flatten(value1);
-		Switch cases2 = MultiValue.flatten(value2);
+		return flatten(0, new Value[childNodes.size()]);
+	}
+	
+	/**
+	 * Flattens an array of values, given that the values from index 0 (inclusive) to idxToFlatten (exclusive) have been flattened.
+	 * @param idxToFlatten
+	 * @param flattenedValues
+	 * @return
+	 */
+	private Switch flatten(int idxToFlatten, Value[] flattenedValues) {
+		Switch finalResult = new Switch();
 		
-		for (Case case1 : cases1)
-		for (Case case2 : cases2) {
-			Value value = new ConstStringValue(case1.getValue().toString() + case2.getValue().toString());
-			Constraint constraint = Constraint.createAndConstraint(case1.getConstraint(), case2.getConstraint());
+		if (idxToFlatten < childNodes.size()) {
+			Switch result1 = MultiValue.flatten(childNodes.get(idxToFlatten));
 			
-			if (constraint.isSatisfiable()) // This check is required
-				switch_.addCase(new Case(constraint, value));
+			for (Case case1 : result1) {
+				Value value1 = case1.getValue();
+				Constraint constraint1 = case1.getConstraint();
+				
+				flattenedValues[idxToFlatten] = value1;
+				Switch result2 = flatten(idxToFlatten + 1, flattenedValues);
+				
+				for (Case case2 : result2) {
+					Value value2 = case2.getValue();
+					Constraint constraint2 = case2.getConstraint();
+					
+					Constraint constraint = Constraint.createAndConstraint(constraint1, constraint2);
+					
+					if (constraint.isSatisfiable()) // This check is required
+						finalResult.addCase(new Case(constraint, value2));
+				}
+			}
+		}
+		else {
+			StringBuilder result = new StringBuilder();
+			for (Value childNode : flattenedValues)
+				result.append(childNode.toString());
+			
+			finalResult.addCase(new Case(Constraint.TRUE, new ConstStringValue(result.toString())));
 		}
 		
-		return switch_;
+		return finalResult;
 	}
 	
 	@Override
 	public Value simplify(Constraint constraint) {
-		Value firstValue = MultiValue.simplify(value1, constraint);
-		Value secondValue = MultiValue.simplify(value2, constraint);
+		Value simplifiedValue = MultiValue.simplify(childNodes.get(0), constraint);
 		
-		return MultiValue.createConcatValue(firstValue, secondValue);
+		for (int i = 1; i < childNodes.size(); i++) {
+			Value nextValue = MultiValue.simplify(childNodes.get(i), constraint);
+			simplifiedValue = MultiValue.createConcatValue(simplifiedValue, nextValue, true);
+		}
+
+		return simplifiedValue;
+	}
+	
+	@Override
+	public Iterator<Value> iterator() {
+		return childNodes.iterator();
 	}
 	
 	/*
@@ -75,10 +112,13 @@ public class Concat extends MultiValue {
 	
 	@Override
 	public String toString() {
-		// TODO Revise
+		// TODO Produce a warning here
 		
-		//return "CONCAT(" + value1.toString() + ", " + value2.toString() + ")";
-		return value1.toString() + value2.toString();
+		StringBuilder result = new StringBuilder();
+		for (Value childNode : childNodes)
+			result.append(childNode.toString());
+		
+		return result.toString();
 	}
 	
 	@Override

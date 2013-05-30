@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -222,29 +221,13 @@ public class ValueViewer {
 		//element.setAttribute(XML_INFO1, concat.getValue1().toString());
 		//element.setAttribute(XML_INFO2, concat.getValue2().toString());
 
-		for (Value childValue : flattenConcatChildValues(concat)) {
+		for (Value childValue : concat) {
 			Element child = createXmlElementForValue(childValue, xmlDocument, constraint);
 			if (child != null)
 				element.appendChild(child);
 		}
 		
 		return (element.hasChildNodes() ? element : null);
-	}
-	
-	private List<Value> flattenConcatChildValues(Concat concat) {
-		List<Value> childValues = new ArrayList<Value>();
-		
-		if (concat.getValue1() instanceof Concat)
-			childValues.addAll(flattenConcatChildValues((Concat) concat.getValue1()));
-		else
-			childValues.add(concat.getValue1());
-		
-		if (concat.getValue2() instanceof Concat)
-			childValues.addAll(flattenConcatChildValues((Concat) concat.getValue2()));
-		else
-			childValues.add(concat.getValue2());
-		
-		return childValues;
 	}
 	
 	/**
