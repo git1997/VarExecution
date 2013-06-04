@@ -35,6 +35,9 @@ import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.UnicodeValueImpl;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.ToStringExpr_;
+
 /**
  * Converts to an string
  */
@@ -66,6 +69,13 @@ public class ToStringExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new ToStringExpr_().eval(env, _expr);
+	 
+	  // END OF ADDED CODE
+	  
     return _expr.eval(env).toString(env);
   }
 

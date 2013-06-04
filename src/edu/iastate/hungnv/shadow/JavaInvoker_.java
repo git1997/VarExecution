@@ -29,7 +29,7 @@ public class JavaInvoker_ {
 									Value []args,
 									final JavaInvoker _this) {
 		
-		Value flattenedArgs = flatten(args);
+		Value flattenedArgs = flattenArgs(args);
 		
 		return ShadowInterpreter.eval(flattenedArgs, new ShadowInterpreter.IBasicCaseHandler() {
 			@Override
@@ -40,11 +40,18 @@ public class JavaInvoker_ {
 		}, env);
 	}
 	
-	private static Switch flatten(Value[] args) {
+	/**
+	 * Flattens an array of arguments.
+	 * Since an argument can be of type Var, wrapping around a Value, this method proceeds in 3 steps:
+	 * 	 1. Pre-processing: Unwrap the Values from Var arguments
+	 *   2. Flattening: Flatten the array of unwrapped values
+	 *   3. Post-processing: Wrap the flattened Values back into Var arguments
+	 */
+	private static Switch flattenArgs(Value[] args) {
 		int len = args.length;
-		Switch flattenedArgsSet = new Switch();
+		Switch arraySwitch = new Switch();
 		
-		// Pre-processing
+		// 1. Pre-processing
 		Value[] argValues = new Value[len];
 		for (int i = 0; i < len; i++) {
 			if (args[i] instanceof Var)
@@ -57,10 +64,10 @@ public class JavaInvoker_ {
 				argValues[i] = ((ScopedValue) argValues[i]).getValue();
 		}
 		
-		// The real flattening operation takes place here
-		Switch flattenedArgSet_ = flatten2(argValues);
+		// 2. The real flattening operation takes place here
+		Switch flattenedArgSet_ = flattenArray(argValues);
 		
-		// Post-processing
+		// 3. Post-processing
 		for (Case case_ : flattenedArgSet_) {
 			Value[] flattenedArgValues = (Value[]) ((WrappedObject) case_.getValue()).getObject();
 			Constraint constraint = case_.getConstraint();
@@ -73,13 +80,16 @@ public class JavaInvoker_ {
 			}
 			
 			Case flattenedArgs = new Case(constraint, new WrappedObject(Arrays.copyOf(argValues, argValues.length)));
-			flattenedArgsSet.addCase(flattenedArgs);
+			arraySwitch.addCase(flattenedArgs);
 		}
 		
-		return flattenedArgsSet;
+		return arraySwitch;
 	}
 	
-	public static Switch flatten2(Value[] values) {
+	/**
+	 * Flattens an array of values
+	 */
+	private static Switch flattenArray(Value[] values) {
 		int len = values.length;
 		Switch arraySwitch = new Switch();
 		
@@ -90,46 +100,74 @@ public class JavaInvoker_ {
 			cases[i] = switch_.getCases().toArray(new Case[0]);
 		}
 		
-		// curCursor is used to mark the current selected values for the array 
-		int[] curCursor = new int[len];
+		// selection is an array indicating what value is being selected at a given position
+		int[] selection = new int[len];
 		for (int i = 0; i < len; i++)
-			curCursor[i] = 0;
+			selection[i] = 0;
+		
+		// max is an array indicating the maximum number that can be assigned to a given position (selection[i] assumes values from 0 to max[i] - 1)
+		int[] max = new int[len];
+		for (int i = 0; i < len; i++)
+			max[i] = cases[i].length;
 		
 		// flattenedValues will contain flattened values of the array elements
 		Value[] flattenedValues = new Value[len];
 		
 		while (true) {
-			// Get the current selected values
 			Constraint constraint = Constraint.TRUE;
-			for (int i = 0; i < len; i++) {
-				Case curCase = cases[i][curCursor[i]];
+			
+			// Get the current selected values
+			int i;
+			for (i = 0; i < len; i++) {
+				Case case_ = cases[i][selection[i]];
 				
-				flattenedValues[i] = curCase.getValue();
-				constraint = Constraint.createAndConstraint(constraint, curCase.getConstraint());
+				flattenedValues[i] = case_.getValue();
+				constraint = Constraint.createAndConstraint(constraint, case_.getConstraint());
+				
+				// If the constraint is a contradiction, stop exploring all the combinations after that 
+				if (constraint.isContradiction())
+					break;
 			}
+			
+			int focusPosition = i; // focusPosition is the position used to generate the next selection
 			
 			if (constraint.isSatisfiable()) { // This check is required
 				Case newCase = new Case(constraint, new WrappedObject(Arrays.copyOf(flattenedValues, flattenedValues.length)));
 				arraySwitch.addCase(newCase);
+				
+				focusPosition = len - 1;
 			}
 			
-			// Update curCursor
-			int i;
-			for (i = len - 1; i >= 0; i--) {
-				if (curCursor[i] < cases[i].length - 1) {
-					curCursor[i]++;
-					break;
-				}
-				else
-					curCursor[i] = 0;
-			}
-			
-			// Exit if all combinations have been visited
-			if (i == -1)
+			// Generate new selection, exit if all combinations have been visited
+			if (!generateNextSelection(selection, focusPosition, max))
 				break;
 		}
 		
 		return arraySwitch;
+	}
+	
+	/**
+	 * Generates the next selection based on the current selection, used in flattenArray method.
+	 * In general, the value at the focusPosition will increase by 1, while the values after the focusPosition will be reset to 0's.
+	 * @param selection			An array indicating what value is being selected at a given position
+	 * @param focusPosition		The position used to generate the next selection
+	 * @param max				An array indicating the maximum number that can be assigned to a given position (selection[i] assumes values from 0 to max[i] - 1)
+	 * @return	true if there exists a next selection, false otherwise
+	 */
+	private static boolean generateNextSelection(int[] selection, int focusPosition, int[] max) {
+		int i = focusPosition;
+		while (i >= 0 && selection[i] == max[i] - 1)
+			i--;
+		
+		if (i == -1)
+			return false;
+		
+		selection[i]++;
+		for (int j = i + 1; j < selection.length; j++) {
+			selection[j] = 0;
+		}
+		
+		return true;
 	}
 	  
 }

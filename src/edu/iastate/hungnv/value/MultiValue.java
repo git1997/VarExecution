@@ -206,22 +206,6 @@ public abstract class MultiValue extends Value {
 	}
 	
 	/**
-	 * Returns a regular Value (usually a Switch Value)
-	 * @param value1	A regular value, not null
-	 * @param value2	A regular value, not null
-	 * @return	A regular Value (usually a Switch Value)
-	 */
-	public static Value createSwitchValue(Value value1, Value value2) {
-		// TODO Optimize this task
-		
-		Switch switch_ = new Switch();
-		switch_.addCases(flatten(value1));
-		switch_.addCases(flatten(value2));
-		
-		return switch_;
-	}
-	
-	/**
 	 * Returns a regular Value (usually a Choice Value)
 	 * @param constraint
 	 * @param trueBranchValue	A regular value, not null
@@ -232,27 +216,19 @@ public abstract class MultiValue extends Value {
 		// TODO Optimize this task
 		
 		/*
-		 * Check #1: Tautology and contradiction
+		 * Check #1: Same value in both branches
+		 */
+		if (trueBranchValue == falseBranchValue)
+			return trueBranchValue;
+		
+		/*
+		 * Check #2: Tautology and contradiction
 		 */
 		if (constraint.isTautology())
 			return trueBranchValue;
 		
 		if (constraint.isContradiction())
 			return falseBranchValue;
-		
-		/*
-		 * Check #2: Handle one specific case. This check is already implied by check #3. Should be commented out if check 3 is activated.
-		 */
-		/*
-		// Handle specially for the case after executing the else branch of an if statement
-		// CHOICE(!cond, y, CHOICE(cond, x, z)) => CHOICE(cond, x, y) 
-		if (falseBranchValue instanceof Choice) {
-			if (Constraint.createNotConstraint(constraint).equivalentTo(
-					((Choice) falseBranchValue).getConstraint()))
-
-				return new Choice(((Choice) falseBranchValue).getConstraint(), ((Choice) falseBranchValue).getValue1(), trueBranchValue);
-		}
-		*/
 		
 		/*
 		 * Check #3: Simplify the branches if possible
@@ -398,7 +374,7 @@ public abstract class MultiValue extends Value {
 			
 			// TODO Consider using if (val1 instanceof StringBuilderValue && val2 instanceof StringBuilderValue) {
 			// 					or if (!(val1 instanceof MultiValue) && !(val2 instanceof MultiValue))
-			// Currently, the latter is preferred.
+			// Currently, the latter is preferred (the former produces some unwanted results).
 			//if (val1 instanceof StringBuilderValue && val2 instanceof StringBuilderValue) {
 			if (!(val1 instanceof MultiValue) && !(val2 instanceof MultiValue)) {
 				items2.set(0, new ConstStringValue(val1.toString() + val2.toString()));
@@ -461,7 +437,7 @@ public abstract class MultiValue extends Value {
 			@Override
 			public Value evalBasicCase(Value value, Env env) {
 				if (value instanceof NullValue) // TODO Revise what to do when this happens (probably due to unimplemented MultiValue.isset?)
-					return null;
+					return NullValue.NULL;
 					
 				return value.callMethod(env, methodName, hash, args);
 			}

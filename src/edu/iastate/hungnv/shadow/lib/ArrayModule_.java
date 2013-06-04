@@ -37,7 +37,7 @@ public class ArrayModule_ {
     			@Override
     			public Value evalBasicCase(Value value, Env env) {
     				if (value instanceof NullValue) // TODO Revise what to do when this happens (probably due to unimplemented MultiValue.isset?)
-    					return null;
+    					return NullValue.NULL;
     				
     				((ArrayValue) callbackName).put(LongValue.ZERO, value);
     				

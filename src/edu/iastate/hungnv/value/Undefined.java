@@ -26,6 +26,9 @@ public class Undefined extends MultiValue {
 	
 	@Override
 	public Switch flatten() {
+		// Return an empty Switch instead of a Switch of Case(Constraint.TRUE, this)
+		// because Case can only take a Quercus value. 
+		
 		return new Switch();
 	}
 
