@@ -33,7 +33,10 @@ public class ArrayValue_ {
     		// Eval all cases
     		Value retValue = ShadowInterpreter.eval(obj, handler, env);
     		
-    		return new MultiCallable((MultiValue) retValue);
+    		if (!(retValue instanceof MultiValue))
+    			return ((Callable) ((WrappedObject) retValue).getObject());
+    		else
+    			return new MultiCallable((MultiValue) retValue);
     	}
     	else {
     		return this_.toCallable_basic(env, obj, nameV);

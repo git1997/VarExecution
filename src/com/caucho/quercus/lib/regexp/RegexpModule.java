@@ -42,6 +42,9 @@ import com.caucho.quercus.module.AbstractQuercusModule;
 import com.caucho.util.L10N;
 import com.caucho.util.LruCache;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.lib.RegexpModule_;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1580,6 +1583,13 @@ public class RegexpModule
                                            @Optional @Reference Value countV)
     throws IllegalRegexpException
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return RegexpModule_.pregReplaceCallback_(env, regexp, fun, subject, limit, countV, LONG_MAX);
+	  
+	  // END OF ADDED CODE
+	  
     if (limit < 0)
       limit = LONG_MAX;
 

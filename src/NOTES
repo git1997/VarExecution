@@ -24,7 +24,8 @@ com.caucho.quercus.expr.*			// Handle expressions
 	UnaryNotExpr		eval			// Handle !==			x
 	
 com.caucho.quercus.lib.*			// Handle library functions
-	ArrayModule			array_filter	// Handle array_filter	x
+	ArrayModule			array_filter			// Handle array_filter	x
+	RegexpModule 		pregReplaceCallback		// Handle preg_replace	x
 	
 CallExpr			evalImpl		// Track execution trace	x
 FunIncludeExpr		eval_orig		// Track execution trace	x

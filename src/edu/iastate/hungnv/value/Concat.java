@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.caucho.quercus.env.ConstStringValue;
+import com.caucho.quercus.env.StringBuilderValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
 
@@ -44,28 +44,40 @@ public class Concat extends MultiValue implements Iterable<Value> {
 	
 	@Override
 	public Switch flatten() {
+		// Get all possible values of child nodes
+		Switch[] cases = new Switch[childNodes.size()];
+		for (int i = 0; i < childNodes.size(); i++) {
+			cases[i] = MultiValue.flatten(childNodes.get(i));
+		}
 		
-		return flatten(0, new Value[childNodes.size()]);
+		return flatten(0, cases);
 	}
 	
 	/**
-	 * Flattens an array of values, given that the values from index 0 (inclusive) to idxToFlatten (exclusive) have been flattened.
-	 * @param idxToFlatten
-	 * @param flattenedValues
-	 * @return
+	 * Flattens the child nodes of a Concat node starting from the idxToFlatten.
+	 * @param idxToFlatten		
+	 * @param cases				All possible values of the child nodes
 	 */
-	private Switch flatten(int idxToFlatten, Value[] flattenedValues) {
+	private Switch flatten(int idxToFlatten, Switch[] cases) {
 		Switch finalResult = new Switch();
 		
 		if (idxToFlatten < childNodes.size()) {
-			Switch result1 = MultiValue.flatten(childNodes.get(idxToFlatten));
+			Switch result1 = cases[idxToFlatten];
+			
+			/*
+			 * Handle the case where some child node is undefined (e.g., C = CONCAT(CHOICE(A, X, UNDEFINED), Y))
+			 * In such cases, turn UNDEFINED into an empty string, so that C.flatten() = CHOICE(A, XY, Y).
+			 * Without this handling, C.flatten() would be CHOICE(A, XY, UNDEFINED), which we don't want.
+			 */
+			Constraint undefinedCases = MultiValue.whenUndefined(result1);
+			if (undefinedCases.isSatisfiable()) // This check is required
+				result1.addCase(new Case(undefinedCases, new StringBuilderValue("")));
 			
 			for (Case case1 : result1) {
 				Value value1 = case1.getValue();
 				Constraint constraint1 = case1.getConstraint();
 				
-				flattenedValues[idxToFlatten] = value1;
-				Switch result2 = flatten(idxToFlatten + 1, flattenedValues);
+				Switch result2 = flatten(idxToFlatten + 1, cases);
 				
 				for (Case case2 : result2) {
 					Value value2 = case2.getValue();
@@ -74,16 +86,12 @@ public class Concat extends MultiValue implements Iterable<Value> {
 					Constraint constraint = Constraint.createAndConstraint(constraint1, constraint2);
 					
 					if (constraint.isSatisfiable()) // This check is required
-						finalResult.addCase(new Case(constraint, value2));
+						finalResult.addCase(new Case(constraint, new StringBuilderValue(value1.toString() + value2.toString())));
 				}
 			}
 		}
 		else {
-			StringBuilder result = new StringBuilder();
-			for (Value childNode : flattenedValues)
-				result.append(childNode.toString());
-			
-			finalResult.addCase(new Case(Constraint.TRUE, new ConstStringValue(result.toString())));
+			finalResult.addCase(new Case(Constraint.TRUE, new StringBuilderValue("")));
 		}
 		
 		return finalResult;

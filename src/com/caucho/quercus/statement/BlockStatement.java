@@ -110,8 +110,8 @@ public class BlockStatement extends Statement {
       if (Env_.INSTRUMENT) {
     	  Logging.LOGGER.info("Executing " + statement.getLocation().prettyPrint());
     	  
-    	  String debugFile = "Objects.php";
-    	  int debugLine = 13;
+    	  String debugFile = "plugin.php";
+    	  int debugLine = 166;
     	  if (statement.getLocation().getFileName().endsWith(debugFile) && statement.getLocation().getLineNumber() == debugLine)
     		  System.out.println();
       }

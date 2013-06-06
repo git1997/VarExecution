@@ -2892,8 +2892,8 @@ public class Env
     
 	  // INST ADDED BY HUNG
 	  
-	  if (Env_.INSTRUMENT)
-		  Logging.LOGGER.info("Assign $" + name + " with " + (envVar.get() instanceof ScopedValue ? ((ScopedValue) envVar.get()).toStringWithScoping() : envVar.get().toString()));
+//	  if (Env_.INSTRUMENT)
+//		  Logging.LOGGER.info("Assign $" + name + " with " + (envVar.get() instanceof ScopedValue ? ((ScopedValue) envVar.get()).toStringWithScoping() : envVar.get().toString()));
 	  
 	  // END OF ADDED CODE
 
