@@ -27,6 +27,9 @@ public abstract class AbstractBinaryExpr_ {
 			return result;
 		
 		Value rightValue = rightExpr.eval(env);
+		
+		if (!(leftValue instanceof MultiValue) && !(rightValue instanceof MultiValue))
+			return evalBasicCase(leftValue, rightValue);
 
 		Switch switch_ = new Switch();
 		

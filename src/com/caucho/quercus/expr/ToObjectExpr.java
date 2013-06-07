@@ -33,6 +33,9 @@ import com.caucho.quercus.Location;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.ToObjectExpr_;
+
 /**
  * Converts to an object
  */
@@ -56,6 +59,13 @@ public class ToObjectExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new ToObjectExpr_().eval(env, _expr);
+	 
+	  // END OF ADDED CODE
+	  
     return _expr.eval(env).toObject(env);
   }
 

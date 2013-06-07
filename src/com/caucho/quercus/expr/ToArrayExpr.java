@@ -34,6 +34,9 @@ import com.caucho.quercus.env.ArrayValue;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.ToArrayExpr_;
+
 /**
  * Converts to an array
  */
@@ -57,6 +60,13 @@ public class ToArrayExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new ToArrayExpr_().eval(env, _expr);
+	 
+	  // END OF ADDED CODE
+	  
     return _expr.eval(env).toArray();
   }
 

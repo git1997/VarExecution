@@ -34,6 +34,9 @@ import com.caucho.quercus.env.BooleanValue;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.ToBooleanExpr_;
+
 /**
  * Converts to a boolean
  */
@@ -57,6 +60,13 @@ public class ToBooleanExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new ToBooleanExpr_().eval(env, _expr);
+	 
+	  // END OF ADDED CODE
+	  
     return _expr.evalBoolean(env) ? BooleanValue.TRUE : BooleanValue.FALSE;
   }
 

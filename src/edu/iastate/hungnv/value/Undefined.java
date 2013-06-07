@@ -46,4 +46,9 @@ public class Undefined extends MultiValue {
 		return "UNDEFINED";
 	}
 	
+	@Override
+	public Value get(Value index) {
+	    return UNDEFINED;
+	}
+	
 }

@@ -338,7 +338,8 @@ public abstract class MultiValue extends Value {
 		// TODO Revise: Decide to simplify the Concat value early (here) or later (at edu.iastate.hungnv.value.Concat.simplify(Constraint))
 		// If we want to simplify the Concat value early, then use: return createConcatValue(value1, value2, true);
 		// 	+ Pros: Values will be simplified early
-		// 	+ Cons: The common part between the two branches of a Choice cannot be extracted out because they have become strings (e.g., Choice('ab', 'ac')).
+		// 	+ Cons: The common part between the two branches of a Choice cannot be extracted out because they have become strings
+		//			(e.g., echo 'a'; if (...) echo 'b'; else echo 'c'; becomes Choice('ab', 'ac')).
 		
 		return createConcatValue(value1, value2, false);
 	}

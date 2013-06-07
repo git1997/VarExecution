@@ -34,6 +34,9 @@ import com.caucho.quercus.env.DoubleValue;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.ToDoubleExpr_;
+
 /**
  * Converts to a double
  */
@@ -57,6 +60,13 @@ public class ToDoubleExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new ToDoubleExpr_().eval(env, _expr);
+	 
+	  // END OF ADDED CODE
+	  
     return new DoubleValue(_expr.evalDouble(env));
   }
 

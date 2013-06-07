@@ -79,6 +79,9 @@ import com.caucho.util.RandomUtil;
 import com.caucho.vfs.ByteToChar;
 import com.caucho.vfs.Path;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.lib.StringModule_;
+
 /**
  * PHP functions implemented from the string module
  */
@@ -672,6 +675,13 @@ public class StringModule extends AbstractQuercusModule {
                               Value glueV,
                               @Optional Value piecesV)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return StringModule_.implode_(env, glueV, piecesV, L);
+	  
+	  // END OF ADDED CODE
+	  
     StringValue glue;
     ArrayValue pieces;
 

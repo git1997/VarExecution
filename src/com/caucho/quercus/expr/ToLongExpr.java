@@ -34,6 +34,9 @@ import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.LongValue;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.ToLongExpr_;
+
 /**
  * Converts to a long
  */
@@ -57,6 +60,13 @@ public class ToLongExpr extends AbstractUnaryExpr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return new ToLongExpr_().eval(env, _expr);
+	 
+	  // END OF ADDED CODE
+	  
     return LongValue.create(_expr.evalLong(env));
   }
 

@@ -1,6 +1,7 @@
 package edu.iastate.hungnv.shadow.expr;
 
 import com.caucho.quercus.env.Env;
+import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.Value;
 import com.caucho.quercus.expr.BinaryAppendExpr;
 import com.caucho.quercus.expr.Expr;
@@ -25,7 +26,10 @@ public class BinaryAppendExpr_ {
 	    for (BinaryAppendExpr ptr = _next; ptr != null; ptr = ptr.getNext()) {
 	      Value ptrValue = ptr.getValue().eval(env);
 	
-	      sb = MultiValue.createConcatValue(sb, ptrValue, true);
+	      if (sb instanceof MultiValue || ptrValue instanceof MultiValue)
+	    	  sb = MultiValue.createConcatValue(sb, ptrValue, true);
+	      else
+	    	  sb = ((StringValue) sb).appendUnicode(ptrValue);
 	    }
 	    
 	    return sb;

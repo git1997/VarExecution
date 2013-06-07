@@ -87,7 +87,7 @@ public class RegexpModule_ {
 	      int start = regexpState.start();
 	      if (tail < start) {
 	    	  if (result instanceof MultiValue)
-	    		  result = MultiValue.createConcatValue(result, regexpState.substring(env, tail, start));
+	    		  result = MultiValue.createConcatValue(result, regexpState.substring(env, tail, start), true);
 	    	  else
 	    		  result = ((StringValue) result).append(regexpState.substring(env, tail, start));
 	      }
@@ -113,7 +113,7 @@ public class RegexpModule_ {
 	      Value replacement = fun.call(env, regs);
 
 	      if (result instanceof MultiValue || replacement instanceof MultiValue)
-	    	  result = MultiValue.createConcatValue(result, replacement);
+	    	  result = MultiValue.createConcatValue(result, replacement, true);
 	      else
 	    	  result = ((StringValue) result).append(replacement);
 
@@ -124,7 +124,7 @@ public class RegexpModule_ {
 
 	    if (tail < regexpState.getSubjectLength()) {
 	    	if (result instanceof MultiValue)
-	    		result = MultiValue.createConcatValue(result, regexpState.substring(env, tail));
+	    		result = MultiValue.createConcatValue(result, regexpState.substring(env, tail), true);
 	    	else
 	    		result = ((StringValue) result).append(regexpState.substring(env, tail));
 	    }
