@@ -27,7 +27,10 @@ public class JavaInvoker_ {
 									final QuercusClass qClass,
 									final Value qThis,
 									Value []args,
-									final JavaInvoker _this) {
+									final JavaInvoker _this)
+	{
+		if (!argsFlattenable(args))
+			return _this.callMethod_orig(env, qClass, qThis, args);
 		
 		Value flattenedArgs = flattenArgs(args);
 		
@@ -38,6 +41,32 @@ public class JavaInvoker_ {
 				return _this.callMethod_orig(env, qClass, qThis, args_);
 			}
 		}, env);
+	}
+	
+	/**
+	 * Returns true if the arguments should be flattened.
+	 * The implementation of this method must be consistent with the flattenArgs method.
+	 * @see edu.iastate.hungnv.shadow.JavaInvoker_.flattenArgs(Value[])
+	 */
+	private static boolean argsFlattenable(Value[] args) {
+		int len = args.length;
+		Value[] argValues = new Value[len];
+		
+		for (int i = 0; i < len; i++) {
+			if (args[i] instanceof Var)
+				argValues[i] = ((Var) args[i]).getRawValue();
+			else
+				argValues[i] = args[i];
+			
+			// TODO Revise
+			if (argValues[i] instanceof ScopedValue)
+				argValues[i] = ((ScopedValue) argValues[i]).getValue();
+			
+			if (argValues[i] instanceof MultiValue)
+				return true;
+		}
+		
+		return false;
 	}
 	
 	/**

@@ -40,6 +40,7 @@ import com.caucho.quercus.parser.QuercusParser;
 import com.caucho.util.L10N;
 
 import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.Functions;
 import edu.iastate.hungnv.shadow.JavaInvoker_;
 
 import java.lang.annotation.Annotation;
@@ -636,8 +637,12 @@ abstract public class JavaInvoker
 	    
 	  // INST ADDED BY HUNG
 	  
-	  if (Env_.INSTRUMENT)
+	  if (Env_.INSTRUMENT) {
+		  if (_name.equals(Functions.is_null.class.getSimpleName()))
+			  return Functions.is_null.eval(args[0]);
+
 		  return JavaInvoker_.callMethod(env, qClass, qThis, args, this);
+	  }
 	  
 	  // END OF ADDED CODE  
 	  

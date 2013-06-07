@@ -2,10 +2,13 @@ package edu.iastate.hungnv.shadow;
 
 import com.caucho.quercus.env.ArrayValue;
 import com.caucho.quercus.env.ArrayValueImpl;
+import com.caucho.quercus.env.BooleanValue;
+import com.caucho.quercus.env.UnsetValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.MultiValue;
+import edu.iastate.hungnv.value.Undefined;
 
 /**
  * 
@@ -24,7 +27,13 @@ public class ArrayValueImpl_ {
 				Value flattenedKey = case_.getValue();
 				Constraint constraint = case_.getConstraint();
 				
-				Value modifiedValue = MultiValue.createChoiceValue(constraint, value, _this.get(flattenedKey));
+				Value oldValue = _this.get(flattenedKey);
+				
+				if (oldValue instanceof UnsetValue)	// Use UNDEFINED instead of UNSET because if Array[i] == CHOICE(value, UNSET), flatten(Array[i]) returns two values and it will cause an exception if Array[i] is used
+					oldValue = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
+													// @see com.caucho.quercus.env.ArrayValue.Entry.set(Value)
+				
+				Value modifiedValue = MultiValue.createChoiceValue(constraint, value, oldValue);
 				
 				// Eval basic case
 				_this.append_basic(flattenedKey, modifiedValue);
@@ -35,5 +44,76 @@ public class ArrayValueImpl_ {
 		else
 			return _this.append_basic(key, value);
 	}
+	
+	/**
+	 * Returns a CHOICE(C, TRUE, FALSE) if the array elements are undefined in some cases.
+	 * For example, array = (0 => CHOICE(C, UNDEFINED, x), 1 => CHOICE(C, UNDEFINED, y))
+	 */
+	public static Value isNull(ArrayValueImpl array) {
+		Constraint undefinedCases = null;
+		for (Value value : array.values()) {
+			Constraint undefined = MultiValue.whenUndefined(value);
+			
+			if (undefinedCases == null)
+				undefinedCases = undefined;
+			else if (!undefinedCases.equivalentTo(undefined))
+				return BooleanValue.FALSE;
+		}
+		
+		return (undefinedCases == null ? BooleanValue.TRUE : MultiValue.createChoiceValue(undefinedCases, BooleanValue.TRUE, BooleanValue.FALSE));
+	}
+	
+	/**
+	 * Flattens an array in case the array's elements are MultiValues.
+	 * @see edu.iastate.hungnv.value.MultiValue.flatten(Value)
+	 */
+	/*
+	public static Switch flatten(ArrayValueImpl array) {
+		//TODO Revise
+		Set<Value> keys = array.keySet();
+		Value[] values = new Value[keys.size()];
+		
+		int idx = 0;
+		for (Value key : keys) {
+			values[idx++] = array.get(key);
+		}
+		
+		Switch newSwitch = new Switch();
+		
+		// TODO: Optional. If this check is used, deep-flattening is not possible.
+		// For example, all the array elements themselves are not instanceof MultiValues
+		// but some of them may be arrays of MultiValues
+		boolean alreadyFlattened = true;
+		for (Value value : values) {
+			if (value instanceof MultiValue) {
+				alreadyFlattened = false;
+				break;
+			}
+		}
+		if (alreadyFlattened) {
+			newSwitch.addCase(new Case(Constraint.TRUE, array));
+			return newSwitch;
+		}
+		
+		Switch flattened = JavaInvoker_.flattenArray(values);
+		
+		for (Case case_ : flattened) {
+			Value[] flattenedValues = (Value[]) ((WrappedObject) case_.getValue()).getObject();
+			Constraint constraint = case_.getConstraint();
+			
+			ArrayValueImpl newArray = (ArrayValueImpl) array.copy();
+			idx = 0;
+			for (Value key : keys) {
+				newArray.append(key, flattenedValues[idx]);
+				idx++;
+			}
+			
+			Case newCase = new Case(constraint, newArray);
+			newSwitch.addCase(newCase);
+		}
+		
+		return newSwitch;
+	}
+	*/
 
 }

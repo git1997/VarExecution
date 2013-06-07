@@ -1,9 +1,11 @@
 package edu.iastate.hungnv.shadow;
 
 import com.caucho.quercus.Location;
+import com.caucho.quercus.env.ArrayValueImpl;
 import com.caucho.quercus.env.BooleanValue;
 import com.caucho.quercus.env.NullValue;
 import com.caucho.quercus.env.Value;
+import com.caucho.quercus.env.Var;
 
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.util.Logging;
@@ -49,6 +51,26 @@ public class Functions {
 				Logging.LOGGER.severe("Assertion Error: " + location.prettyPrint() + ". Asserted value is undefined when " + undefinedConstraint.toString());
 			
 			return NullValue.NULL;
+		}
+		
+	}
+	
+	public static class is_null {
+		
+		public static Value eval(Value arg) {
+			if (arg instanceof Var)
+				arg = ((Var) arg).getRawValue();
+			
+			if (arg instanceof MultiValue) {
+				Constraint undefinedCases = MultiValue.whenUndefined(arg);
+				return MultiValue.createChoiceValue(undefinedCases, BooleanValue.TRUE, BooleanValue.FALSE);
+			}
+			
+			else if (arg instanceof ArrayValueImpl)
+				return ArrayValueImpl_.isNull((ArrayValueImpl) arg);
+			
+			else
+				return arg.isNull() ? BooleanValue.TRUE : BooleanValue.FALSE;
 		}
 		
 	}
