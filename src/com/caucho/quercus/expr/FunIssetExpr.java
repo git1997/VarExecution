@@ -70,9 +70,8 @@ public class FunIssetExpr extends AbstractUnaryExpr {
   {
 	  // INST ADDED BY HUNG
 	  
-	  // TODO Comment out later
-//	  if (Env_.INSTRUMENT)
-//		  return new FunIssetExpr_().eval(env, _expr);
+	  if (Env_.INSTRUMENT)
+		  return new FunIssetExpr_().eval(env, _expr);
 	  
 	  // END OF ADDED CODE
 		  
