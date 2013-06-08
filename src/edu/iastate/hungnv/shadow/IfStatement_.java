@@ -32,10 +32,13 @@ public class IfStatement_ {
 	    	else
 	    		return null;
 	    }
+	    
+	    Value retValueTrueBlock = null;
+	    Value retValueFalseBlock = null;
 		
 		if (env.getEnv_().canEnterNewScope(constraint)) {
 			env.getEnv_().enterNewScope(constraint);
-			trueBlock.execute(env);
+			retValueTrueBlock = trueBlock.execute(env);
 			env.getEnv_().exitScope();
 		}
 		
@@ -43,12 +46,15 @@ public class IfStatement_ {
 			Constraint notConstraint = Constraint.createNotConstraint(constraint);
 			if (env.getEnv_().canEnterNewScope(notConstraint)) {
 				env.getEnv_().enterNewScope(notConstraint);
-				falseBlock.execute(env);
+				retValueFalseBlock = falseBlock.execute(env);
 				env.getEnv_().exitScope();
 			}
 		}
 		
-		return null; // TODO Handle returned value
+		if (retValueTrueBlock == null && retValueFalseBlock == null)
+			return null;
+		else
+			return MultiValue.createChoiceValue(constraint, retValueTrueBlock, retValueFalseBlock);
 	}
   
 }

@@ -3,7 +3,7 @@ package edu.iastate.hungnv.shadow;
 import com.caucho.quercus.env.ArrayValue;
 import com.caucho.quercus.env.ArrayValueImpl;
 import com.caucho.quercus.env.BooleanValue;
-import com.caucho.quercus.env.UnsetValue;
+import com.caucho.quercus.env.NullValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.value.Case;
@@ -29,7 +29,7 @@ public class ArrayValueImpl_ {
 				
 				Value oldValue = _this.get(flattenedKey);
 				
-				if (oldValue instanceof UnsetValue)	// Use UNDEFINED instead of UNSET because if Array[i] == CHOICE(value, UNSET), flatten(Array[i]) returns two values and it will cause an exception if Array[i] is used
+				if (oldValue instanceof NullValue)	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
 					oldValue = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
 													// @see com.caucho.quercus.env.ArrayValue.Entry.set(Value)
 				

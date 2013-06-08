@@ -1776,7 +1776,7 @@ abstract public class ArrayValue extends Value {
     			// TODO Fix this: For some reason, it doesn't work if value is an array
     		}
     		else {
-				if (_value == NullValue.NULL) 		// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
+				if (_value instanceof NullValue) 	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used.
 					_value = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
  
 				Value oldValue = _value;

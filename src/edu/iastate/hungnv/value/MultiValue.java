@@ -190,6 +190,23 @@ public abstract class MultiValue extends Value {
 	}
 	
 	/**
+	 * Returns the constraint when the given value evaluates to null.
+	 * @param value		A regular value, not null 
+	 */
+	public static Constraint whenNull(Value value) {
+		if (value instanceof MultiValue) {
+			Constraint constraint = Constraint.FALSE;
+			for (Case case_ : ((MultiValue) value).flatten()) {
+				if (case_.getValue() == null)
+					constraint = Constraint.createOrConstraint(constraint, case_.getConstraint());
+			}
+			return constraint;
+		}
+		else 
+			return Constraint.FALSE;
+	}
+	
+	/**
 	 * Returns the constraint when the given value is UNDEFINED (it evaluates to neither TRUE nor FALSE).
 	 * @param value		A regular value, not null 
 	 */
