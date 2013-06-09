@@ -192,10 +192,10 @@ public class CallExpr extends Expr {
   private Value evalImpl(Env env, boolean isRef, boolean isCopy)
   {
 	  // INST ADDED BY HUNG
+	  // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+	  
 	  try {
-		  if (Env_.INSTRUMENT) {
-	  		  TraceViewer.inst.enterFunction(_name, getLocation());
-		  }
+		  TraceViewer.inst.enterFunction(_name, getLocation());
 	  // END OF ADDED CODE
 	  
     if (_funId <= 0) {
@@ -271,10 +271,10 @@ public class CallExpr extends Expr {
     }
     
 	  // INST ADDED BY HUNG
+      // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+	  
 	  } finally {
-		  if (Env_.INSTRUMENT) {
-	  		  TraceViewer.inst.exitFunction(_name, getLocation());
-		  }
+		  TraceViewer.inst.exitFunction(_name, getLocation());
 	  }
 	  // END OF ADDED CODE
   }

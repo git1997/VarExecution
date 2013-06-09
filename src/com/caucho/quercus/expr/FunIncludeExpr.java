@@ -95,6 +95,13 @@ public class FunIncludeExpr extends AbstractUnaryExpr {
 	  // END OF ADDED CODE
 	  
     StringValue name = _expr.eval(env).toStringValue();
+    
+	  // INST ADDED BY HUNG
+      // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+    
+	  try {
+		  TraceViewer.inst.enterFile(name.toString(), getLocation());
+	  // END OF ADDED CODE 
       
     env.pushCall(this, NullValue.NULL, new Value[] { name });
     try {
@@ -102,6 +109,14 @@ public class FunIncludeExpr extends AbstractUnaryExpr {
     } finally {
       env.popCall();
     }
+    
+	  // INST ADDED BY HUNG
+      // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+    
+	  } finally {
+		  TraceViewer.inst.exitFile(name.toString(), getLocation());
+	  }
+	  // END OF ADDED CODE
   }
   
 // INST ADDED BY HUNG
@@ -111,9 +126,7 @@ public class FunIncludeExpr extends AbstractUnaryExpr {
     
 	  // INST ADDED BY HUNG
 	  try {
-		  if (Env_.INSTRUMENT) {
-	  		  TraceViewer.inst.enterFile(name.toString(), getLocation());
-		  }
+  		  TraceViewer.inst.enterFile(name.toString(), getLocation());
 	  // END OF ADDED CODE    
       
     env.pushCall(this, NullValue.NULL, new Value[] { name });
@@ -125,9 +138,7 @@ public class FunIncludeExpr extends AbstractUnaryExpr {
     
 	  // INST ADDED BY HUNG
 	  } finally {
-		  if (Env_.INSTRUMENT) {
-	  		  TraceViewer.inst.exitFile(name.toString(), getLocation());
-		  }
+		  TraceViewer.inst.exitFile(name.toString(), getLocation());
 	  }
 	  // END OF ADDED CODE
   }

@@ -6,6 +6,7 @@ import com.caucho.quercus.env.StringValue;
 import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.debug.OutputViewer;
+import edu.iastate.hungnv.debug.TraceViewer;
 import edu.iastate.hungnv.debug.ValueViewer;
 import edu.iastate.hungnv.scope.Scope;
 import edu.iastate.hungnv.scope.ScopedValue;
@@ -69,7 +70,7 @@ public class Env_ {
 		Constraint PLUGIN1 = Constraint.createConstraint("CAL");
 		Constraint PLUGIN2 = Constraint.createConstraint("WEA");
 		
-		//TraceViewer.inst.writeToXmlFile(TraceViewer.xmlFile);
+		TraceViewer.inst.writeToXmlFile(TraceViewer.xmlFile);
 		
 		if (INSTRUMENT) {
 			OutputViewer.inst.writeToXmlFile(OutputViewer.xmlFileAll);

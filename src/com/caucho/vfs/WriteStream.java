@@ -296,7 +296,7 @@ public class WriteStream extends OutputStreamWithBuffer
   {
 	  // INST ADDED BY HUNG
 
-	  // TODO Consider adding if (Env_.INSTRUMENT)
+	  // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
 	  
 	  byte[] chars = new byte[length];
 	  System.arraycopy(buf, offset, chars, 0, length);
@@ -583,14 +583,14 @@ public class WriteStream extends OutputStreamWithBuffer
 	  
 	  // INST ADDED BY HUNG
 	  
-	  // TODO Consider adding if (Env_.INSTRUMENT)
+	  // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
 	  
 	  char[] chars = new char[length];
 	  System.arraycopy(buffer, offset, chars, 0, length);
 	  
 	  OutputViewer.inst.print(new String(chars));
 	  
-	// END OF ADDED CODE
+	  // END OF ADDED CODE
 	  
     if (_source == null)
       return;

@@ -64,8 +64,6 @@ public class TraceViewer {
 	 * @param location
 	 */
 	public void exitFunction(String functionName, Location location) {
-		//if (stack.peek().getLocation() != location)
-		//	System.out.println();
 		stack.pop();
 	}
 	

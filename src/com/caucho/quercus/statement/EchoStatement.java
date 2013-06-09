@@ -65,7 +65,7 @@ public class EchoStatement extends Statement {
     
     // New code:
     
-    // TODO Consider adding if (Env_.INSTRUMENT)
+    // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
     
     boolean curState = OutputViewer.inst.getEnabled();
 	OutputViewer.inst.setEnabled(false);

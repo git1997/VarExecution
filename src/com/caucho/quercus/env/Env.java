@@ -1013,8 +1013,9 @@ public class Env
     		
     // INST ADDED BY HUNG
   
-    // TODO Consider adding if (Env_.INSTRUMENT) 
-    	env_.start(this);
+    // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+    		
+    env_.start(this);
   
     // END OF ADDED CODE
     
@@ -7052,8 +7053,9 @@ public class Env
   {
     // INST ADDED BY HUNG
     
-    // TODO Consider adding if (Env_.INSTRUMENT) 
-    	env_.closing(this);
+	// NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+	  
+    env_.closing(this);
   
     // END OF ADDED CODE
 	    	
@@ -7082,8 +7084,9 @@ public class Env
     
     // INST ADDED BY HUNG
     
-    // TODO Consider adding if (Env_.INSTRUMENT) 
-    	env_.closed(this);
+    // NOTE: This code is not guarded by if (Env_.INSTRUMENT) 
+    	
+    env_.closed(this);
   
     // END OF ADDED CODE
     
