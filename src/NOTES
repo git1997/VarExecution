@@ -5,7 +5,8 @@ Var					set...		toValue...	// Handle variables' values		x
 ArrayValue			toCallable	// Handle toCallable with multi values		x
 ArrayValueImpl		append		// Handle arrays with variational indexes	x
 BlockStatement		execute		// Handle return, continue, break			x
-CallExpr			evalImpl	// Handle user-defined function calls		x	
+CallExpr			evalImpl	// Handle user-defined function calls		x
+ForeachStatement	execute		// Handle loops								x	
 FunIncludeExpr		eval		// Handle includes							x	
 FunIncludeOnceExpr	eval		// Handle includes							x	
 IfStatement			execute		// Handle branching							x	

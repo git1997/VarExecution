@@ -59,6 +59,21 @@ public class TraceViewer {
 	}
 	
 	/**
+	 * Modifies the function name to make it more descriptive.
+	 * See the callsite in com.caucho.quercus.expr.CallExpr.evalImpl(Env, boolean, boolean)
+	 * @param oldName
+	 * @param newName
+	 */
+	public void modifyLastEnteredFunctionName(String oldName, String newName) {
+		for (int i = stack.size() - 1; i >= 0; i--) {
+			if (stack.get(i).getName().equals(oldName)) {
+				stack.get(i).setName(newName);
+				break;
+			}
+		}
+	}
+	
+	/**
 	 * Exits a function
 	 * @param functionName
 	 * @param location
@@ -184,6 +199,14 @@ public class TraceViewer {
 			}
 			
 			return childrenCount;
+		}
+		
+		/**
+		 * This method should be called by modifyLastEnteredFunctionName only.
+		 * @see edu.iastate.hungnv.debug.TraceViewer.modifyLastEnteredFunctionName(String, String)
+		 */
+		public void setName(String name) {
+			this.name = name;
 		}
 		
 	}

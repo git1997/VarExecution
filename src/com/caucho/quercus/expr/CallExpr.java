@@ -237,6 +237,13 @@ public class CallExpr extends Expr {
 
     Value []args = evalArgs(env, _args);
 
+	  // INST ADDED BY HUNG
+	  // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+	  
+	  if (_name.equals("add_action") || _name.equals("do_action") || _name.equals("call_user_func_array"))
+		  TraceViewer.inst.modifyLastEnteredFunctionName(_name, _name + " (" + args[0] + ")");
+	  // END OF ADDED CODE
+
     env.pushCall(this, NullValue.NULL, args);
     
     // php/0249
