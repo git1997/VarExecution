@@ -5,6 +5,7 @@ import com.caucho.quercus.env.Value;
 
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.constraint.Constraint.Result;
+import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.MultiValue;
 import edu.iastate.hungnv.value.Switch;
@@ -58,6 +59,18 @@ public class ShadowInterpreter {
 			
 			if (constraintAlwaysTrue)
 				return retValue;
+
+			/*
+			 * Handle the case where retValue is a MultiValue
+			 */
+			if (retValue instanceof MultiValue) {
+				retValue = ((MultiValue) retValue).simplify(constraint);
+			
+				if (retValue instanceof MultiValue) {
+					Logging.LOGGER.fine("In ShadowInterpreter.java: retValue is a MultiValue. Please debug.");
+					retValue = null;
+				}
+			}
 			
 			combinedReturnValue.addCase(new Case(constraint, retValue));
 		}

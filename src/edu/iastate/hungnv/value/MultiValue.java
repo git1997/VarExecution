@@ -92,6 +92,18 @@ public abstract class MultiValue extends Value {
 			// Eval basic case
 			Value retValue = operation.operate(flattenedValue);    
 			
+			/*
+			 * Handle the case where retValue is a MultiValue
+			 */
+			if (retValue instanceof MultiValue) {
+				retValue = ((MultiValue) retValue).simplify(constraint);
+			
+				if (retValue instanceof MultiValue) {
+					Logging.LOGGER.fine("In MultiValue.java: retValue is a MultiValue. Please debug.");
+					retValue = null;
+				}
+			}
+
 			combinedRetValue.addCase(new Case(constraint, retValue));
 		}
 		
