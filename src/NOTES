@@ -19,6 +19,7 @@ com.caucho.quercus.expr.*			// Handle expressions
 	BinaryGtExpr		eval			// Handle >				x
 	BinaryLeqExpt		eval			// Handle <=			x
 	BinaryLtExpr		eval			// Handle <				x
+	BinaryNeqExpr		eval			// Handle !=
 	BinaryOrExpr		eval			// Handle ||			x
 	FunIssetExpr		eval			// Handle isset			x
 	ToArrayExpr			eval			// Handle (array)		x
