@@ -88,7 +88,7 @@ public class TraceViewer {
 	 * @param location
 	 */
 	public void enterFile(String fileName, Location location) {
-		// TODO Adhoc code below (to shorten file names)
+		// ADHOC Adhoc code below (to shorten file names)
 		String rootPath = "C:\\Eclipse\\workspace\\javaEE\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0\\wtpwebapps\\quercus\\WebApps\\";
 		if (fileName.startsWith(rootPath))
 			fileName = fileName.substring(rootPath.length());

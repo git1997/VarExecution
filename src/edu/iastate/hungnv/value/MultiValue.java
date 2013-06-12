@@ -250,6 +250,10 @@ public abstract class MultiValue extends Value {
 		if (trueBranchValue == falseBranchValue)
 			return trueBranchValue;
 		
+		if (trueBranchValue instanceof StringValue && falseBranchValue instanceof StringValue 
+				&& ((StringValue) trueBranchValue).eq(falseBranchValue))
+			return trueBranchValue;
+		
 		/*
 		 * Check #2: Tautology and contradiction
 		 */
@@ -349,6 +353,45 @@ public abstract class MultiValue extends Value {
 				
 				return createConcatValue(sharedPart, createChoiceValue(constraint, part1, part2));
 			}
+		}
+		
+		/*
+		 * Check #6: Handle arrays of the same keys.
+		 * For example, CHOICE(COND, Array(0 => 'x', 1 => 'y'), Array(0 => 'x', 1 => 'z')) becomes Array(0 => 'x', 1 => CHOICE(COND, 'y', 'z')) 
+		 */
+		if (trueBranchValue instanceof ArrayValueImpl && falseBranchValue instanceof ArrayValueImpl
+			&& ((ArrayValueImpl) trueBranchValue).size() == ((ArrayValueImpl) falseBranchValue).size()) {
+
+			ArrayValueImpl lArray = (ArrayValueImpl) trueBranchValue;
+			ArrayValueImpl rArray = (ArrayValueImpl) falseBranchValue;
+			
+			boolean sameKeys = true;
+			boolean sameValues = true;
+			
+		    for (Value key : lArray.keySet()) {
+		    	if (!rArray.keyExists(key)) {
+		        	sameKeys = false;
+		        	break;
+		        }
+		    	if (lArray.get(key) != rArray.get(key))
+		    		sameValues = false;
+		    }
+			    
+		    if (sameKeys) {
+		    	if (sameValues)
+		    		return trueBranchValue;
+		    	
+		    	ArrayValueImpl array = new ArrayValueImpl(lArray);
+		    	for (Map.Entry<Value,Value> entry : array.entrySet()) {
+		    		Value key = entry.getKey();
+		    		
+			        Value lValue = lArray.get(key);
+			        Value rValue = rArray.get(key);
+			        
+			        entry.setValue(MultiValue.createChoiceValue(constraint, lValue, rValue)); // Use 'setValue' instead of 'set' to avoid attaching scoping information
+		    	}
+		    	return array;
+		    }
 		}
 		
 		/*

@@ -36,6 +36,8 @@ com.caucho.quercus.lib.*			// Handle library functions
 	RegexpModule 		pregReplaceCallback		// Handle preg_replace	x
 	StringModule		implode					// Handle implode		x
 	
+CallExpr			evalCopy		// Adhoc code to handle _wp_filter_build_unique_id		x	
+	
 CallExpr			evalImpl		// Track execution trace	x
 FunIncludeExpr		eval_orig		// Track execution trace	x
 FunIncludeOnceExpr	eval_orig		// Track execution trace	x

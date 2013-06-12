@@ -74,5 +74,36 @@ public class Functions {
 		}
 		
 	}
+	
+	/*
+	 * TODO PENDING CHANGES
+	 */
+	
+	/*
+	public static class is_callable {
+		
+		public static Value eval(Value arg, final Env env) {
+			if (arg instanceof Var)
+				arg = ((Var) arg).getRawValue();
+			
+			Value retValue = MultiValue.operateOnValue(arg, new IOperation()  {
+					@Override
+					public Value operate(Value value) {
+						if (value instanceof ArrayValueImpl)
+							return ArrayValueImpl_.isCallable((ArrayValueImpl) value, env);
+						
+						return value.isCallable(env) ? BooleanValue.TRUE : BooleanValue.FALSE;
+					}
+			});
+
+			// TODO Revise
+			Constraint undefinedCases = MultiValue.whenUndefined(retValue);
+			retValue = MultiValue.createChoiceValue(undefinedCases, BooleanValue.FALSE, retValue);
+			
+			return retValue;
+		}
+		
+	}
+	*/
 
 }

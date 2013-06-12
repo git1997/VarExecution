@@ -30,11 +30,15 @@
 package com.caucho.quercus.expr;
 
 import com.caucho.quercus.*;
+import com.caucho.quercus.env.ArrayValue;
 import com.caucho.quercus.env.Env;
+import com.caucho.quercus.env.LongValue;
 import com.caucho.quercus.env.NullValue;
+import com.caucho.quercus.env.ObjectValue;
 import com.caucho.quercus.env.QuercusClass;
 import com.caucho.quercus.env.UnsetValue;
 import com.caucho.quercus.env.Value;
+import com.caucho.quercus.env.Var;
 import com.caucho.quercus.parser.QuercusParser;
 import com.caucho.quercus.function.AbstractFunction;
 import com.caucho.util.L10N;
@@ -42,6 +46,8 @@ import com.caucho.util.L10N;
 import edu.iastate.hungnv.debug.TraceViewer;
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.shadow.Functions;
+import edu.iastate.hungnv.value.Case;
+import edu.iastate.hungnv.value.MultiValue;
 
 import java.util.ArrayList;
 
@@ -165,6 +171,26 @@ public class CallExpr extends Expr {
   @Override
   public Value evalCopy(Env env)
   {
+	  // INST ADDED BY HUNG
+	  if (Env_.INSTRUMENT) {
+		  // ADHOC Never let _wp_filter_build_unique_id in wp-includes/plugin.php return a MultiValue
+		  if (_name.equals("_wp_filter_build_unique_id")) {
+			  Value retValue = evalImpl(env, false, true);
+			  
+			  if (retValue instanceof MultiValue) {
+				  Value max = null;
+				  for (Case case_ : ((MultiValue) retValue).flatten()) {
+					  if (max == null || case_.getValue().gt(max))
+						  max = case_.getValue();
+				  }
+				  return max;
+			  }
+			  else 
+				  return retValue;
+		  }
+	  }
+	  // END OF ADDED CODE
+	  
     return evalImpl(env, false, true);
   }
   
@@ -240,8 +266,26 @@ public class CallExpr extends Expr {
 	  // INST ADDED BY HUNG
 	  // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
 	  
-	  if (_name.equals("add_action") || _name.equals("do_action") || _name.equals("call_user_func_array"))
+	  if (_name.equals("add_action") || _name.equals("do_action")) {
 		  TraceViewer.inst.modifyLastEnteredFunctionName(_name, _name + " (" + args[0] + ")");
+	  }
+	  else if (_name.equals("call_user_func_array")) {
+		  Value firstArg = args[0];
+		  if (firstArg instanceof Var)
+			  firstArg = ((Var) firstArg).getRawValue();
+		  
+		  String desc;
+		  if (firstArg instanceof ArrayValue) {
+			  if (((ArrayValue) firstArg).get(LongValue.ZERO) instanceof ObjectValue)
+				  desc = ((ObjectValue) ((ArrayValue) firstArg).get(LongValue.ZERO)).getClassName() + "." + ((ArrayValue) firstArg).get(LongValue.ONE);
+			  else
+				  desc = ((ArrayValue) firstArg).get(LongValue.ZERO) + "." + ((ArrayValue) firstArg).get(LongValue.ONE);
+		  }
+		  else
+			  desc = firstArg.toString();
+		  
+		  TraceViewer.inst.modifyLastEnteredFunctionName(_name, _name + " (" + desc + ")");
+	  }
 	  // END OF ADDED CODE
 
     env.pushCall(this, NullValue.NULL, args);

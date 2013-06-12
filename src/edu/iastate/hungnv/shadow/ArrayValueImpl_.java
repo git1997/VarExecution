@@ -63,6 +63,43 @@ public class ArrayValueImpl_ {
 		return (undefinedCases == null ? BooleanValue.TRUE : MultiValue.createChoiceValue(undefinedCases, BooleanValue.TRUE, BooleanValue.FALSE));
 	}
 	
+	/*
+	 * TODO PENDING CHANGES
+	 */
+	
+	/*
+	public static Value isCallable(ArrayValueImpl array, Env env) {
+		Value result = array.isCallable(env) ? BooleanValue.TRUE : BooleanValue.FALSE;
+		
+		ArrayValueImpl array1 = new ArrayValueImpl();
+		Constraint constraint = null;
+		
+		for (Value key : array.keySet()) {
+			Value value = array.get(key);
+			if (!(value instanceof Choice))
+				return result;
+			
+			if (constraint == null)
+				constraint = ((Choice) value).getConstraint();
+			else if (!constraint.equivalentTo(((Choice) value).getConstraint()))
+				return result;
+
+			Value value1 = ((Choice) value).getValue1();
+			Value value2 = ((Choice) value).getValue2();
+			
+			if (!(value2 instanceof Undefined))
+				return result;
+			
+			array1.append(key, value1);
+		}
+		
+		if (array1.isCallable(env))
+			return MultiValue.createChoiceValue(constraint, BooleanValue.TRUE, BooleanValue.FALSE);
+		else
+			return BooleanValue.FALSE;
+	}
+	*/
+	
 	/**
 	 * Flattens an array in case the array's elements are MultiValues.
 	 * @see edu.iastate.hungnv.value.MultiValue.flatten(Value)
