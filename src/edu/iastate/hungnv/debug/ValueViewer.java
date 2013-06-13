@@ -34,10 +34,7 @@ public class ValueViewer {
 	
 	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\values.xml";
 	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\values-all.xml";
-	public static final String xmlFile00 		= "C:\\Users\\HUNG\\Desktop\\values00-derived.xml";
-	public static final String xmlFile01 		= "C:\\Users\\HUNG\\Desktop\\values01-derived.xml";
-	public static final String xmlFile10 		= "C:\\Users\\HUNG\\Desktop\\values10-derived.xml";
-	public static final String xmlFile11 		= "C:\\Users\\HUNG\\Desktop\\values11-derived.xml";
+	public static final String xmlFileConfig 	= "C:\\Users\\HUNG\\Desktop\\Derived\\values{CONFIG}-derived.xml";
 	
 	public static final String XML_ROOT 		= "ROOT";
 	public static final String XML_NUM_ATTRS 	= "NumAttrs";

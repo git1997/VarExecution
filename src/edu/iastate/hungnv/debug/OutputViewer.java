@@ -19,8 +19,7 @@ public class OutputViewer {
 	
 	public static final String txtFile 			= "C:\\Users\\HUNG\\Desktop\\output.txt";
 	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\output-all.xml";
-	public static final String txtFileAll		= "C:\\Users\\HUNG\\Desktop\\output-all.txt";
-	public static final String txtFile10 		= "C:\\Users\\HUNG\\Desktop\\output10-derived.txt";
+	public static final String txtFileConfig 	= "C:\\Users\\HUNG\\Desktop\\Derived\\output{CONFIG}-derived.txt";
 	
 	// Used to simulate the expression $GLOBAL["__OUTPUT__"]
 	private static final StringValue GLOBALS 	= new CompiledConstStringValue("GLOBALS");

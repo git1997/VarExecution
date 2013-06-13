@@ -24,7 +24,7 @@ public class Env_ {
 	public static final boolean INSTRUMENT = true;
 	
 	// String constants
-	public static final String __INSTRUMENT__ 	= "__INSTRUMENT__";
+	public static final String __INSTRUMENT__ = "__INSTRUMENT__";
 	
 	// The current scope
 	private Scope scope;
@@ -63,39 +63,42 @@ public class Env_ {
 	}
 	
 	public void closed(Env env) {
-		
-//		Constraint PLUGIN1 = Constraint.createConstraint("GOOGLE");
-//		Constraint PLUGIN2 = Constraint.createConstraint("FACEBOOK");
-				
-		Constraint PLUGIN1 = Constraint.createConstraint("CAL");
-		Constraint PLUGIN2 = Constraint.createConstraint("WEA");
-		
+		/*
+		 * TraceViewer
+		 */
 		TraceViewer.inst.writeToXmlFile(TraceViewer.xmlFile);
 		
+		/*
+		 * OutputViewer
+		 */
 		if (INSTRUMENT) {
 			OutputViewer.inst.writeToXmlFile(OutputViewer.xmlFileAll);
-			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFileAll);
-			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFile10, Constraint.createAndConstraint(PLUGIN1, Constraint.createNotConstraint(PLUGIN2)));
+			Config.inst.generateConcreteOutputs(OutputViewer.inst);
 		}
 		else
 			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFile);
 		
+		/*
+		 * ValueViewer
+		 */
 		ValueViewer viewer = new ValueViewer();
 		for (StringValue name : env.getEnv().keySet()) {
 			Value value = env.getEnv().get(name).get();
-			if (!name.toString().equals("__OUTPUT__")) // TODO Adhoc code so that the special variable output is not printed
+			if (!name.toString().equals("__OUTPUT__")) // ADHOC Adhoc code so that the special variable output is not printed
 				viewer.add(name, value);
 		}
 		
 		if (INSTRUMENT) {
 			viewer.writeToXmlFile(ValueViewer.xmlFileAll);
-			viewer.writeToXmlFile(ValueViewer.xmlFile00, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), Constraint.createNotConstraint(PLUGIN2)));
-			viewer.writeToXmlFile(ValueViewer.xmlFile01, Constraint.createAndConstraint(Constraint.createNotConstraint(PLUGIN1), PLUGIN2));
-			viewer.writeToXmlFile(ValueViewer.xmlFile10, Constraint.createAndConstraint(PLUGIN1, Constraint.createNotConstraint(PLUGIN2)));
-			viewer.writeToXmlFile(ValueViewer.xmlFile11, Constraint.createAndConstraint(PLUGIN1, PLUGIN2));
+			Config.inst.generateConcreteValues(viewer);
 		}
 		else
 			viewer.writeToXmlFile(ValueViewer.xmlFile);
+		
+		/*
+		 * Tests
+		 */
+//		Tester.inst.test(OutputViewer.inst.getFinalOutputValue());
 
 		Logging.LOGGER.info("Env closed.");
 	}

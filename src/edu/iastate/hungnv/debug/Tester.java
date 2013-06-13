@@ -15,7 +15,6 @@ import com.caucho.quercus.env.BooleanValue;
 import com.caucho.quercus.env.Value;
 
 import edu.iastate.hungnv.constraint.Constraint;
-import edu.iastate.hungnv.shadow.Config;
 import edu.iastate.hungnv.value.MultiValue;
 import edu.iastate.hungnv.value.MultiValue.IOperation;
 
@@ -96,13 +95,13 @@ public class Tester {
 
 	@Test
 	public void test_CALwea() {
-		Value output_CALwea = MultiValue.simplify(output, Constraint.createAndConstraint(Config.PLUGIN1, Constraint.createNotConstraint(Config.PLUGIN2)));
+		Value output_CALwea = MultiValue.simplify(output, Constraint.createAndConstraint(Constraint.createConstraint("CAL"), Constraint.createNotConstraint(Constraint.createConstraint("WEA"))));
 		assertContains(output_CALwea, "June 2013");
 	}
 	
 	@Test
 	public void test_xxxWEA() {
-		Value output_xxxWEA = MultiValue.simplify(output, Config.PLUGIN2);
+		Value output_xxxWEA = MultiValue.simplify(output, Constraint.createConstraint("WEA"));
 		assertContains(output_xxxWEA, "June 2013");
 	}
 	

@@ -42,6 +42,7 @@ CallExpr			evalImpl		// Track execution trace	x
 FunIncludeExpr		eval_orig		// Track execution trace	x
 FunIncludeOnceExpr	eval_orig		// Track execution trace	x
 ObjectMethodExpr	eval			// Track execution trace	x
+ObjectNewExpr		eval			// Track execution trace	x
 
 EchoStatement		execute			// Track output				x
 TextStatement		execute			// Track output				x
