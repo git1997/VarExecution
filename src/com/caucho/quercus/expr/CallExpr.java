@@ -239,8 +239,11 @@ public class CallExpr extends Expr {
         		if (_name.equals(Functions.__CHOICE__.class.getSimpleName()))
         			return Functions.__CHOICE__.evalImpl(evalArgs(env, _args));
           
-        		if (_name.equals(Functions.__ASSERT__.class.getSimpleName()))
+        		else if (_name.equals(Functions.__ASSERT__.class.getSimpleName()))
         			return Functions.__ASSERT__.evalImpl(evalArgs(env, _args), this.getLocation());
+        		
+        		else if (_name.equals(Functions.__DEBUG__.class.getSimpleName()))
+        			return Functions.__DEBUG__.evalImpl(evalArgs(env, _args), this.getLocation());
         	}
         	
         	// END OF ADDED CODE

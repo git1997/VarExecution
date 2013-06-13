@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.caucho.quercus.QuercusException;
 import com.caucho.quercus.QuercusRuntimeException;
@@ -391,6 +392,48 @@ public abstract class MultiValue extends Value {
 			        entry.setValue(MultiValue.createChoiceValue(constraint, lValue, rValue)); // Use 'setValue' instead of 'set' to avoid attaching scoping information
 		    	}
 		    	return array;
+		    }
+		}
+		
+		/*
+		 * Check #7: Handle objects of the same entries (similar to arrays of the same keys)
+		 * @see com.caucho.quercus.env.ObjectValue.cmpObject(ObjectValue)
+		 */
+		if (trueBranchValue instanceof ObjectExtValue && falseBranchValue instanceof ObjectExtValue) {
+			ObjectExtValue lObject = (ObjectExtValue) trueBranchValue;
+			ObjectExtValue rObject = (ObjectExtValue) falseBranchValue;
+			
+			if (lObject.getName().equals(rObject.getName())) {
+				Set<? extends Map.Entry<Value,Value>> lSet = lObject.entrySet();
+				Set<? extends Map.Entry<Value,Value>> rSet = rObject.entrySet();
+		    
+			    if (lSet.size() == rSet.size()) {
+			    	TreeSet<Map.Entry<Value,Value>> aTree = new TreeSet<Map.Entry<Value,Value>>(lSet);
+			    	TreeSet<Map.Entry<Value,Value>> bTree = new TreeSet<Map.Entry<Value,Value>>(rSet);
+	
+			    	Iterator<Map.Entry<Value,Value>> iterA = aTree.iterator();
+			    	Iterator<Map.Entry<Value,Value>> iterB = bTree.iterator();
+			      
+			    	boolean sameEntries = true;
+	
+			    	while (iterA.hasNext()) {
+			    		Map.Entry<Value,Value> a = iterA.next();
+			    		Map.Entry<Value,Value> b = iterB.next();
+	
+			    		if (a.getKey() != b.getKey()) {
+			    			sameEntries = false;
+			    			break;
+			    		}
+	
+			    		if (a.getValue() != b.getValue()) {
+			    			sameEntries = false;
+			    			break;
+			    		}
+			    	}
+			      
+			    	if (sameEntries)
+			    		return trueBranchValue;
+				}
 		    }
 		}
 		

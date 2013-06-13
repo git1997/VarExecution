@@ -36,6 +36,8 @@ import com.caucho.quercus.env.QuercusClass;
 import com.caucho.quercus.env.Value;
 import com.caucho.util.L10N;
 
+import edu.iastate.hungnv.debug.TraceViewer;
+
 import java.util.ArrayList;
 
 /**
@@ -81,6 +83,13 @@ public class ObjectNewExpr extends Expr {
    */
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+	  
+	  try {
+		  TraceViewer.inst.enterFunction(_name, getLocation());
+	  // END OF ADDED CODE
+		  
     Value []args = new Value[_args.length];
 
     for (int i = 0; i < args.length; i++) {
@@ -98,6 +107,14 @@ public class ObjectNewExpr extends Expr {
     } finally {
       env.popCall();
     }
+    
+	  // INST ADDED BY HUNG
+      // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+	  
+	  } finally {
+		  TraceViewer.inst.exitFunction(_name, getLocation());
+	  }
+	  // END OF ADDED CODE    
   }
   
   public String toString()

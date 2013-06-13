@@ -33,6 +33,7 @@ import com.caucho.quercus.Location;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.debug.Debugger;
 import edu.iastate.hungnv.shadow.BlockStatement_;
 import edu.iastate.hungnv.shadow.Env_;
 
@@ -113,6 +114,12 @@ public class BlockStatement extends Statement {
     for (int i = 0; i < _statements.length; i++) {
       Statement statement = _statements[i];
 
+	  // INST ADDED BY HUNG
+      // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+      
+      Debugger.inst.checkBreakpoint(statement.getLocation());
+	  // END OF ADDED CODE
+      
       Value value = statement.execute(env);
 
       if (value != null) {

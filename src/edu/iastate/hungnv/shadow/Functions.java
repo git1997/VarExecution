@@ -55,6 +55,16 @@ public class Functions {
 		
 	}
 	
+	public static class __DEBUG__ {
+		
+		public static Value evalImpl(Value[] args, Location location) {
+			Logging.LOGGER.info("Breakpoint: " + location.prettyPrint());
+			
+			return NullValue.NULL;
+		}
+		
+	}
+	
 	public static class is_null {
 		
 		public static Value eval(Value arg) {
