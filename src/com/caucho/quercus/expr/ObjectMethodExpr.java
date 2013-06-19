@@ -101,7 +101,7 @@ public class ObjectMethodExpr extends AbstractMethodExpr {
       // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
     
 	  try {
-	  	TraceViewer.inst.enterFunction(methodName.toString(), getLocation());
+	  	TraceViewer.inst.enterFunction(methodName.toString(), getLocation(), env.getEnv_().getScope().getConstraint());
 	  // END OF ADDED CODE
 		  
     return eval(env, obj, methodName, hash, _args);

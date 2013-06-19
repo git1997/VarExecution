@@ -16,7 +16,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-
 /**
  * 
  * @author HUNG
@@ -58,7 +57,11 @@ public class XmlDocument {
 
 	public static Document readXmlDocumentFromFile(String xmlFile) {
 		try {
-			ByteArrayInputStream fileContent = new ByteArrayInputStream(FileIO.readStringFromFile(xmlFile).getBytes("UTF-8"));
+			// TODO Adhoc code to fix error with the &# characters
+			String source = FileIO.readStringFromFile(xmlFile);
+			source = source.replace("&#", "&amp;#");
+			
+			ByteArrayInputStream fileContent = new ByteArrayInputStream(source.getBytes("UTF-8"));
 			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(fileContent);
 			document.getDocumentElement().normalize();
 			removeEmptyXmlTextNodes(document);

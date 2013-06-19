@@ -34,7 +34,7 @@ public class RegressionTest {
 	 * ADHOC This file is used as a means of communication with the client browser
 	 * to identify what test config is being executed
 	 */
-	private static final String testConfigFile 	= "C:/Eclipse/workspace/javaEE/quercus/src/resources/testconfig";
+	public static final String testConfigFile 	= "C:/Eclipse/workspace/javaEE/quercus/src/resources/testconfig";
 	
 	/**
 	 * This variable must be set before the concrete plugins are loaded.

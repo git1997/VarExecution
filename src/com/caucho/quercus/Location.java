@@ -103,7 +103,7 @@ public class Location {
   public String prettyPrint() {
 	  String rootPath = "C:\\Eclipse\\workspace\\javaEE\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0\\wtpwebapps\\quercus\\WebApps\\";
 	  if (_fileName.startsWith(rootPath))
-		  return _fileName.substring(rootPath.length()) + " @ line " + _lineNumber;
+		  return _fileName.substring(rootPath.length()) + " @ Line " + _lineNumber;
 	  else
 		  return _fileName + " @ line " + _lineNumber;
   }

@@ -221,7 +221,7 @@ public class CallExpr extends Expr {
 	  // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
 	  
 	  try {
-		  TraceViewer.inst.enterFunction(_name, getLocation());
+		  TraceViewer.inst.enterFunction(_name, getLocation(), env.getEnv_().getScope().getConstraint());
 	  // END OF ADDED CODE
 	  
     if (_funId <= 0) {

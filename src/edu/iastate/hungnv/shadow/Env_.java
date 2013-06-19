@@ -22,10 +22,10 @@ import edu.iastate.hungnv.value.MultiValue;
 public class Env_ {
 	
 	// Turn on or off instrumentation mode
-	public static final boolean INSTRUMENT = false;
+	public static final boolean INSTRUMENT = true;
 	
 	// Turn on or off regression testing mode
-	public static final boolean REGRESSION_TESTING = true;
+	public static final boolean REGRESSION_TESTING = false;
 	
 	// String constants
 	public static final String __INSTRUMENT__ = "__INSTRUMENT__";

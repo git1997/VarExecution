@@ -100,7 +100,7 @@ public class FunIncludeOnceExpr extends AbstractUnaryExpr {
       // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
     
 	  try {
-		  TraceViewer.inst.enterFile(name.toString(), getLocation());
+		  TraceViewer.inst.enterFile(name.toString(), getLocation(), env.getEnv_().getScope().getConstraint());
 	  // END OF ADDED CODE 
     
     env.pushCall(this, NullValue.NULL, new Value[] { name });
@@ -135,7 +135,7 @@ public class FunIncludeOnceExpr extends AbstractUnaryExpr {
     
 	  // INST ADDED BY HUNG
 	  try {
-		  TraceViewer.inst.enterFile(name.toString(), getLocation());
+		  TraceViewer.inst.enterFile(name.toString(), getLocation(), env.getEnv_().getScope().getConstraint());
 	  // END OF ADDED CODE  
     
     env.pushCall(this, NullValue.NULL, new Value[] { name });

@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 
 import com.caucho.quercus.Location;
 
+import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.util.XmlDocument;
 
 /**
@@ -18,7 +19,7 @@ import edu.iastate.hungnv.util.XmlDocument;
  */
 public class TraceViewer {
 	
-	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\traces.xml";
+	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\trace.xml";
 	
 	public static final String XML_ROOT 		= "ROOT";
 	public static final String XML_NUM_ATTRS 	= "NumAttrs";
@@ -46,7 +47,7 @@ public class TraceViewer {
 	 * Creates a default top-level callsite.
 	 */
 	public TraceViewer() {
-		stack.add(new CallSite("top", null));
+		stack.add(new CallSite(null, null, null)); // Top callsite can be null because it's never displayed (only its children are)
 	}
 	
 	/**
@@ -55,16 +56,17 @@ public class TraceViewer {
 	 */
 	public void reset() {
 		stack.clear();
-		stack.add(new CallSite("top", null));
+		stack.add(new CallSite(null, null, null)); // Top callsite can be null because it's never displayed (only its children are)
 	}
 	
 	/**
 	 * Enters a function
 	 * @param functionName
 	 * @param location
+	 * @param constraint
 	 */
-	public void enterFunction(String functionName, Location location) {
-		CallSite callSite = new CallSite(functionName, location);
+	public void enterFunction(String functionName, Location location, Constraint constraint) {
+		CallSite callSite = new CallSite(functionName, location, constraint);
 		stack.peek().addChild(callSite);
 		stack.push(callSite);
 	}
@@ -97,14 +99,15 @@ public class TraceViewer {
 	 * Enters a file
 	 * @param fileName
 	 * @param location
+	 * @param constraint
 	 */
-	public void enterFile(String fileName, Location location) {
+	public void enterFile(String fileName, Location location, Constraint constraint) {
 		// ADHOC Adhoc code below (to shorten file names)
 		String rootPath = "C:\\Eclipse\\workspace\\javaEE\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0\\wtpwebapps\\quercus\\WebApps\\";
 		if (fileName.startsWith(rootPath))
 			fileName = fileName.substring(rootPath.length());
 		  
-		CallSite callSite = new CallSite(fileName, location);
+		CallSite callSite = new CallSite(fileName, location, constraint);
 		stack.peek().addChild(callSite);
 		stack.push(callSite);
 	}
@@ -115,8 +118,6 @@ public class TraceViewer {
 	 * @param location
 	 */
 	public void exitFile(String fileName, Location location) {
-		//if (stack.peek().getLocation() != location)
-		//	System.out.println();
 		stack.pop();
 	}
 	
@@ -152,7 +153,7 @@ public class TraceViewer {
 		Element element = xmlDocument.createElement(XML_CALL_SITE);
 		element.setAttribute(XML_DESC, callSite.getName() + " (" + callSite.countChildren() + ")");
 		element.setAttribute(XML_INFO1, callSite.getLocation().prettyPrint());
-		//element.setAttribute(XML_INFO2, value.toString());
+		element.setAttribute(XML_INFO2, callSite.getConstraint().toString());
 		
 		for (CallSite child : callSite.getChildren()) {
 			Element childElement = createXmlElementForCallSite(child, xmlDocument);
@@ -171,6 +172,8 @@ public class TraceViewer {
 		
 		private Location location;
 		
+		private Constraint constraint;
+		
 		private ArrayList<CallSite> children = new ArrayList<CallSite>();
 		
 		private int childrenCount = 0;
@@ -179,10 +182,12 @@ public class TraceViewer {
 		 * Constructor
 		 * @param name
 		 * @param location
+		 * @param constraint
 		 */
-		private CallSite(String name, Location location) {
+		private CallSite(String name, Location location, Constraint constraint) {
 			this.name = name;
 			this.location = location;
+			this.constraint = constraint;
 		}
 		
 		public String getName() {
@@ -191,6 +196,10 @@ public class TraceViewer {
 		
 		public Location getLocation() {
 			return location;
+		}
+		
+		public Constraint getConstraint() {
+			return constraint;
 		}
 		
 		public void addChild(CallSite callSite) {
