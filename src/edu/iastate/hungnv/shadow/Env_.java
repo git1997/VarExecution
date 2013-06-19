@@ -8,6 +8,7 @@ import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.debug.OutputViewer;
 import edu.iastate.hungnv.debug.TraceViewer;
 import edu.iastate.hungnv.debug.ValueViewer;
+import edu.iastate.hungnv.regressiontest.RegressionTest;
 import edu.iastate.hungnv.scope.Scope;
 import edu.iastate.hungnv.scope.ScopedValue;
 import edu.iastate.hungnv.util.Logging;
@@ -21,10 +22,14 @@ import edu.iastate.hungnv.value.MultiValue;
 public class Env_ {
 	
 	// Turn on or off instrumentation mode
-	public static final boolean INSTRUMENT = true;
+	public static final boolean INSTRUMENT = false;
+	
+	// Turn on or off regression testing mode
+	public static final boolean REGRESSION_TESTING = true;
 	
 	// String constants
 	public static final String __INSTRUMENT__ = "__INSTRUMENT__";
+	public static final String __REGRESSION_TESTING__ = "__REGRESSION_TESTING__";
 	
 	// The current scope
 	private Scope scope;
@@ -53,6 +58,7 @@ public class Env_ {
 	 */
 	
 	public void start(Env env) {
+		TraceViewer.inst.reset();
 		OutputViewer.inst.setOutputValue(new ConstStringValue(""));
 	}
 	
@@ -71,9 +77,12 @@ public class Env_ {
 		/*
 		 * OutputViewer
 		 */
-		if (INSTRUMENT) {
+		if (REGRESSION_TESTING) {
+			RegressionTest.inst.generateOutputs(OutputViewer.inst);
+		}
+		else if (INSTRUMENT) {
 			OutputViewer.inst.writeToXmlFile(OutputViewer.xmlFileAll);
-			Config.inst.generateConcreteOutputs(OutputViewer.inst);
+			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFileDerived, Constraint.TRUE); // TODO Revise
 		}
 		else
 			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFile);
@@ -88,9 +97,12 @@ public class Env_ {
 				viewer.add(name, value);
 		}
 		
+		if (REGRESSION_TESTING) {
+			RegressionTest.inst.generateHeaps(viewer);
+		}
 		if (INSTRUMENT) {
 			viewer.writeToXmlFile(ValueViewer.xmlFileAll);
-			Config.inst.generateConcreteValues(viewer);
+			viewer.writeToXmlFile(ValueViewer.xmlFileDerived, Constraint.TRUE); // TODO Revise
 		}
 		else
 			viewer.writeToXmlFile(ValueViewer.xmlFile);

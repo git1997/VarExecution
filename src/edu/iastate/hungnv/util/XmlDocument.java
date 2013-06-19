@@ -1,4 +1,4 @@
-package edu.iastate.hungnv.debug;
+package edu.iastate.hungnv.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -15,6 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+
 
 /**
  * 

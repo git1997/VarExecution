@@ -499,7 +499,8 @@ public class Env
     
     // INST ADDED BY HUNG
     
-    addConstant("__INSTRUMENT__", Env_.INSTRUMENT ? BooleanValue.TRUE : BooleanValue.FALSE, true);
+    addConstant(Env_.__INSTRUMENT__, Env_.INSTRUMENT ? BooleanValue.TRUE : BooleanValue.FALSE, true);
+    addConstant(Env_.__REGRESSION_TESTING__, Env_.REGRESSION_TESTING ? BooleanValue.TRUE : BooleanValue.FALSE, true);
     
     // END OF ADDED CODE
   }

@@ -18,6 +18,7 @@ import com.caucho.quercus.env.Value;
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.scope.ScopedValue;
 import edu.iastate.hungnv.util.Logging;
+import edu.iastate.hungnv.util.XmlDocument;
 import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.Choice;
 import edu.iastate.hungnv.value.Concat;
@@ -32,9 +33,9 @@ import edu.iastate.hungnv.value.Undefined;
  */
 public class ValueViewer {
 	
-	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\values.xml";
-	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\values-all.xml";
-	public static final String xmlFileConfig 	= "C:\\Users\\HUNG\\Desktop\\Derived\\values{CONFIG}-derived.xml";
+	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\heap.xml";
+	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\heap-all.xml";
+	public static final String xmlFileDerived 	= "C:\\Users\\HUNG\\Desktop\\heap-derived.xml";
 	
 	public static final String XML_ROOT 		= "ROOT";
 	public static final String XML_NUM_ATTRS 	= "NumAttrs";

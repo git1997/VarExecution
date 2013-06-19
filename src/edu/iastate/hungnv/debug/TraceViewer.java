@@ -9,6 +9,8 @@ import org.w3c.dom.Element;
 
 import com.caucho.quercus.Location;
 
+import edu.iastate.hungnv.util.XmlDocument;
+
 /**
  * 
  * @author HUNG
@@ -44,6 +46,15 @@ public class TraceViewer {
 	 * Creates a default top-level callsite.
 	 */
 	public TraceViewer() {
+		stack.add(new CallSite("top", null));
+	}
+	
+	/**
+	 * Resets the TraceViewer as if it's newly created.
+	 * Must be consistent with the constructor.
+	 */
+	public void reset() {
+		stack.clear();
 		stack.add(new CallSite("top", null));
 	}
 	

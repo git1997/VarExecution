@@ -1,4 +1,4 @@
-package edu.iastate.hungnv.debug;
+package edu.iastate.hungnv.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,6 +18,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,6 +76,17 @@ public class FileIO {
 			System.exit(0);
 			return null;
 		}
+	}
+	
+	public static List<String> readLinesFromFile(String inputFile) {
+		String content = FileIO.readStringFromFile(inputFile);
+		content = content.replace("\r\n", "\n");
+		String[] lines = content.split("\n");
+		
+		List<String> lineList = new ArrayList<String>();
+		for (String line : lines)
+			lineList.add(line);
+		return lineList;
 	}
 	
 	/*

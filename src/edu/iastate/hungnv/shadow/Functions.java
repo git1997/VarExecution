@@ -8,6 +8,7 @@ import com.caucho.quercus.env.Value;
 import com.caucho.quercus.env.Var;
 
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.regressiontest.RegressionTest;
 import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.MultiValue;
 
@@ -61,6 +62,14 @@ public class Functions {
 			Logging.LOGGER.info("Breakpoint: " + location.prettyPrint());
 			
 			return NullValue.NULL;
+		}
+		
+	}
+	
+	public static class __PLUGINS__ {
+		
+		public static Value evalImpl(Value[] args) {
+			return RegressionTest.inst.loadPlugins();
 		}
 		
 	}
