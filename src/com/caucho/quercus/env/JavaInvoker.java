@@ -822,7 +822,11 @@ abstract public class JavaInvoker
     else if (_marshalArgs.length < args.length) {
 
     	// INST ADDED BY HUNG
-    	if (!Env_.INSTRUMENT || !_name.equals("debug_backtrace")) // Quick fix so that Quercus won't show spurious warnings (these warnings are caused by incorrect implementation of Quercus, not by the PHP code).
+    	// ADHOC Quick fix so that Quercus won't show spurious warnings (these warnings are caused by incorrect implementation of Quercus, not by the PHP code).
+    	if (Env_.INSTRUMENT && _name.equals("debug_backtrace")) { 
+    		// Do nothing
+    	} 
+    	else
     	// END OF ADDED CODE
     		
       // php/153o

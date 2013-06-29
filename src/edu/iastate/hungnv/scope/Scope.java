@@ -18,18 +18,22 @@ public class Scope {
 	private Scope outerScope;	// Can be null (if the current scope is Global)
 	
 	// The constraint of the current scope
-	private Constraint constraint;		
+	private Constraint localConstraint;
+	
+	// The aggregated constraint of the current scope and all its outer scopes
+	private Constraint constraint;
 	
 	// The dirty values in the current scope
 	private HashSet<ScopedValue> dirtyValues = new HashSet<ScopedValue>();
 	
 	/**
 	 * Constructor
-	 * @param constraint
+	 * @param localConstraint
 	 * @param outerScope	Can be null (if the current scope is Global)
 	 */
-	public Scope(Constraint constraint, Scope outerScope) {
-		this.constraint = constraint;
+	public Scope(Constraint localConstraint, Scope outerScope) {
+		this.localConstraint = localConstraint;
+		this.constraint = (outerScope != null ? Constraint.createAndConstraint(outerScope.constraint, localConstraint) : localConstraint);
 		this.outerScope = outerScope;
 	}
 	
@@ -46,7 +50,13 @@ public class Scope {
 
 	/**
 	 * @return The constraint of the current scope
-	 * @see edu.iastate.hungnv.scope.Scope.getAggregatedConstraint()
+	 */
+	public Constraint getLocalConstraint() {
+		return localConstraint;
+	}
+	
+	/**
+	 * @return The aggregated constraint of the current scope and all its outer scopes
 	 */
 	public Constraint getConstraint() {
 		return constraint;
@@ -63,20 +73,6 @@ public class Scope {
 	/*
 	 * Methods
 	 */
-	
-	/**
-	 * @return The aggregated constraint of the current scope and all its outer scopes.
-	 */
-	public Constraint getAggregatedConstraint() {
-		Constraint aggregatedConstraint = constraint;
-
-		Scope curScope = this;
-		while ((curScope = curScope.getOuterScope()) != null) {
-			aggregatedConstraint = Constraint.createAndConstraint(curScope.getConstraint(), aggregatedConstraint);
-		}
-		
-		return aggregatedConstraint;
-	}
 	
 	/**
 	 * @return A string describing the scope

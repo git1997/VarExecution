@@ -103,7 +103,7 @@ public class TestConfig {
 		
 		for (Plugin plugin : activePlugins) {
 			if (!activePluginsString.isEmpty())
-				activePluginsString += "-";
+				activePluginsString += ".";
 			
 			activePluginsString += plugin.getPluginId();
 		}

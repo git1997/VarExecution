@@ -26,6 +26,11 @@ import edu.iastate.hungnv.wpplugins.TestManager;
 public class RegressionTest {
 	
 	/**
+	 * This properties file in src/resources contains input/output file paths for the regression test. 
+	 */
+	public static final String pathsPropertiesFile = "paths-10plugins-22tests";
+	
+	/**
 	 * Static instance of RegressionTest
 	 */
 	public static RegressionTest inst = new RegressionTest();
@@ -34,13 +39,27 @@ public class RegressionTest {
 	 * ADHOC This file is used as a means of communication with the client browser
 	 * to identify what test config is being executed
 	 */
-	public static final String testConfigFile 	= "C:/Eclipse/workspace/javaEE/quercus/src/resources/testconfig";
+	public static final String testConfigFile 	= "C:/Eclipse/workspace/javaEE/quercus/src/resources/temp/testconfig";
 	
 	/**
 	 * This variable must be set before the concrete plugins are loaded.
-	 * @see edu.iastate.hungnv.regressiontest.RegressionTest.loadPlugins()
+	 * @see edu.iastate.hungnv.regressiontest.RegressionTest.start()
 	 */
 	private TestConfig testConfig = null;
+	
+	/**
+	 * This method is called when the Env starts.
+	 * Used to set the testConfig.
+	 */
+	public void start() {
+		if (Env_.INSTRUMENT) {
+			testConfig = null;
+		}
+		else {
+			String binaryString = FileIO.readStringFromFile(testConfigFile);
+			testConfig = new TestConfig(binaryString);
+		}
+	}
 	
 	/*
 	 * Load plugins for the following PHP code:
@@ -50,12 +69,8 @@ public class RegressionTest {
 	public Value loadPlugins() {
 		if (Env_.INSTRUMENT)
 			return loadChoicePlugins();
-		else {
-			String binaryString = FileIO.readStringFromFile(testConfigFile);
-			testConfig = new TestConfig(binaryString);
-			
+		else
 			return loadConcretePlugins();
-		}
 	}
 	
 	public Value loadChoicePlugins() {
@@ -144,7 +159,7 @@ public class RegressionTest {
 	}
 	
 	private static String getPath(String key) {
-		ResourceBundle bundle = ResourceBundle.getBundle("paths");
+		ResourceBundle bundle = ResourceBundle.getBundle(pathsPropertiesFile);
 		return bundle.getString(key);
 	}
 	

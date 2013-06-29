@@ -39,7 +39,7 @@ public class ShadowInterpreter {
 			Value flattenedValue = case_.getValue();
 			Constraint constraint = case_.getConstraint();
 			
-			Constraint aggregatedConstraint = env.getEnv_().getScope().getAggregatedConstraint();
+			Constraint aggregatedConstraint = env.getEnv_().getScope().getConstraint();
 			Constraint.Result result = aggregatedConstraint.tryAddingConstraint(constraint);
 			boolean constraintAlwaysTrue = (result == Result.THE_SAME);
 			boolean constraintAlwaysFalse = (result == Result.ALWAYS_FALSE);

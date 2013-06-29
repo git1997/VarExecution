@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import edu.iastate.hungnv.regressiontest.RegressionTest;
 import edu.iastate.hungnv.util.FileIO;
 
 /**
@@ -28,7 +29,7 @@ public class TestManager {
 	}
 	
 	private ArrayList<TestConfig> readTestConfigs() {
-		ResourceBundle bundle = ResourceBundle.getBundle("paths");
+		ResourceBundle bundle = ResourceBundle.getBundle(RegressionTest.pathsPropertiesFile);
 		String testsFile = bundle.getString("testsFile");
 		
 		ArrayList<TestConfig> testConfigs = new ArrayList<TestConfig>();

@@ -499,6 +499,8 @@ public class Env
     
     // INST ADDED BY HUNG
     
+    // NOTE: This code is not guarded by if (Env_.INSTRUMENT)
+    
     addConstant(Env_.__INSTRUMENT__, Env_.INSTRUMENT ? BooleanValue.TRUE : BooleanValue.FALSE, true);
     addConstant(Env_.__REGRESSION_TESTING__, Env_.REGRESSION_TESTING ? BooleanValue.TRUE : BooleanValue.FALSE, true);
     
@@ -2891,13 +2893,6 @@ public class Env
     EnvVar envVar = getEnvVar(name);
 
     envVar.set(value);
-    
-	  // INST ADDED BY HUNG
-	  
-//	  if (Env_.INSTRUMENT)
-//		  Logging.LOGGER.info("Assign $" + name + " with " + (envVar.get() instanceof ScopedValue ? ((ScopedValue) envVar.get()).toStringWithScoping() : envVar.get().toString()));
-	  
-	  // END OF ADDED CODE
 
     return value;
   }

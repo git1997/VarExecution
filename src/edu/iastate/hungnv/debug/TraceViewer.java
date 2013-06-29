@@ -78,7 +78,7 @@ public class TraceViewer {
 	 * @param newName
 	 */
 	public void modifyLastEnteredFunctionName(String oldName, String newName) {
-		for (int i = stack.size() - 1; i >= 0; i--) {
+		for (int i = stack.size() - 1; i > 0; i--) {
 			if (stack.get(i).getName().equals(oldName)) {
 				stack.get(i).setName(newName);
 				break;

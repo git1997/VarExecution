@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import edu.iastate.hungnv.regressiontest.RegressionTest;
 import edu.iastate.hungnv.util.FileIO;
 
 /**
@@ -28,7 +29,7 @@ public class PluginManager {
 	}
 	
 	private ArrayList<Plugin> readPlugins() {
-		ResourceBundle bundle = ResourceBundle.getBundle("paths");
+		ResourceBundle bundle = ResourceBundle.getBundle(RegressionTest.pathsPropertiesFile);
 		String pluginsFile = bundle.getString("pluginsFile");
 		
 		ArrayList<Plugin> plugins = new ArrayList<Plugin>();

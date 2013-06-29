@@ -824,7 +824,6 @@ public class ArrayValueImpl extends ArrayValue
         // return entry._value.toValue(); // php/39a1
 
         // 4.0.4 - _value.toValue() is marginally faster than _var
-    	
         return entry.toValue();
 
       }
