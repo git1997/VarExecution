@@ -389,7 +389,7 @@ public abstract class MultiValue extends Value {
 			        Value lValue = lArray.get(key);
 			        Value rValue = rArray.get(key);
 			        
-			        entry.setValue(MultiValue.createChoiceValue(constraint, lValue, rValue)); // Use 'setValue' instead of 'set' to avoid attaching scoping information
+			        ((ArrayValue.Entry) entry).setWithNoScoping(MultiValue.createChoiceValue(constraint, lValue, rValue)); // Use 'setWithNoScoping' instead of 'set' to avoid attaching scoping information
 		    	}
 		    	return array;
 		    }
@@ -435,6 +435,19 @@ public abstract class MultiValue extends Value {
 			    		return trueBranchValue;
 				}
 		    }
+		}
+		
+		/*
+		 * Check #8: Handle Choice of Vars
+		 */
+		if (trueBranchValue instanceof Var || falseBranchValue instanceof Var) {
+			if (trueBranchValue instanceof Var)
+				trueBranchValue = ((Var) trueBranchValue).getRawValue();
+			
+			if (falseBranchValue instanceof Var)
+				falseBranchValue = ((Var) falseBranchValue).getRawValue();
+			
+			return new Var(MultiValue.createChoiceValue(constraint, trueBranchValue, falseBranchValue));
 		}
 		
 		/*
@@ -579,6 +592,16 @@ public abstract class MultiValue extends Value {
 	public boolean isVar() {
 		return false;
 	}
+	
+	@Override
+	public Value getField(final Env env, final StringValue name) {		
+		return operate(new IOperation() {
+			@Override
+			public Value operate(Value value) {
+				return value.getField(env, name);
+			}
+		});
+	}	
 	
 	  //
 	  // Properties
@@ -1073,6 +1096,10 @@ public abstract class MultiValue extends Value {
 	  @Override
 	  public boolean eq(Value rValue)
 	  {
+		Value simplified = this.simplify(Env.getInstance().getEnv_().getScope().getConstraint());
+		if (!(simplified instanceof MultiValue))
+		  return simplified.eq(rValue);
+		  
 		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
 
 	    if (rValue.isArray())
@@ -3413,16 +3440,16 @@ public abstract class MultiValue extends Value {
 	  // Object field references
 	  //
 
-	  /**
-	   * Returns the field value
-	   */
-	  @Override
-	  public Value getField(Env env, StringValue name)
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    return NullValue.NULL;
-	  }
+//	  /**
+//	   * Returns the field value
+//	   */
+//	  @Override
+//	  public Value getField(Env env, StringValue name)
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    return NullValue.NULL;
+//	  }
 
 	  /**
 	   * Returns the field ref.

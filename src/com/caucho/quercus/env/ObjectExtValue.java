@@ -485,6 +485,58 @@ public class ObjectExtValue extends ObjectValue
 
     return value;
   }
+  
+// INST ADDED BY HUNG
+  /**
+   * This method is the same as com.caucho.quercus.env.ObjectExtValue.putField(Env, StringValue, Value),
+   * except that no scoping information will be added to the value.
+   */
+  public Value putFieldWithNoScoping(Env env, StringValue name, Value value)
+  {
+    Entry entry = getEntry(env, name);
+
+    // XXX: php/09ks, need visibility check
+    if (entry == null) {
+      Value oldValue = putFieldExt(env, name, value);
+
+      if (oldValue != null)
+        return oldValue;
+
+      if (! _isFieldInit) {
+        AbstractFunction fieldSet = _quercusClass.getFieldSet();
+
+        if (fieldSet != null) {
+          _isFieldInit = true;
+          Value retVal = _quercusClass.setField(env, this, name, value);
+          _isFieldInit = false;
+          if(retVal != UnsetValue.UNSET)
+            return retVal;
+        }
+      }
+
+      entry = createEntry(name, FieldVisibility.PUBLIC);
+    }
+
+    Value oldValue = entry._value;
+
+    if (value instanceof Var) {
+      Var var = (Var) value;
+
+      // for function return optimization
+      // var.setReference();
+
+      entry._value = var;
+    }
+    else if (oldValue instanceof Var) {
+      oldValue.set(value);
+    }
+    else {
+      entry._value = value;
+    }
+
+    return value;
+  }
+// END OF ADDED CODE
 
   /**
    * Sets/adds field to this object.

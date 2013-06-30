@@ -85,6 +85,21 @@ public class Var extends Value
     return this;
   }
   
+// INST ADDED BY HUNG
+  /**
+   * This method is the same as com.caucho.quercus.env.Var.set(Value),
+   * except that no scoping information will be added to the value.
+   */
+  public Value setWithNoScoping(Value value)
+  {
+    // assert(! value.isVar());
+    _value = value;
+
+    // php/151m
+    return this;
+  }
+// END OF ADDED CODE
+  
   public boolean isVar()
   {
     return true;
@@ -1048,7 +1063,7 @@ public class Var extends Value
     if (Env_.INSTRUMENT && Env.getInstance() != null) {
     	_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.increment(incr));
     	
-    	return _value;
+    	return Env_.removeScopedValue(_value);
     }
     
     // END OF ADDED CODE  
@@ -1110,7 +1125,7 @@ public class Var extends Value
     if (Env_.INSTRUMENT && Env.getInstance() != null) {
     	_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.preincr());
     	
-    	return _value;
+    	return Env_.removeScopedValue(_value);
     }
     
     // END OF ADDED CODE
@@ -1131,7 +1146,7 @@ public class Var extends Value
     if (Env_.INSTRUMENT && Env.getInstance() != null) {
     	_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.predecr());
     	
-    	return _value;
+    	return Env_.removeScopedValue(_value);
     }
     
     // END OF ADDED CODE
@@ -1539,8 +1554,37 @@ public class Var extends Value
   {
     // INST ADDED BY HUNG
     
-    // Note: Operations with array elements will be handled somewhere else.
-    
+	/*
+	 * NOTE: Must use edu.iastate.hungnv.scope.ScopedValue.updateValue(Value)
+	 * instead of edu.iastate.hungnv.shadow.Env_.addScopedValue(Value, Value)
+	 * 
+	 * updateValue changes the private value of an existing ScopedValue,
+	 * while addScopedValue creates a new ScopedValue.
+	 * 
+	 * For array operations, updateValue must be used because the array pointer
+	 * should not be changed, only the pointers of the array elements are changed.
+	 * 
+	 * In this Var class, sometimes updateValue is also used instead of addScopedValue
+	 * for performance purposes in cases when updateValue has mostly the same effect
+	 * as addScopedValue but runs faster (e.g. com.caucho.quercus.env.Var.toAutoArray()).
+	 */
+	  
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+        Value _valueTmp = _value.append(index, value);
+
+        Value retValue;
+        
+        if (_valueTmp.isArray() || _valueTmp.isObject()) {
+        	retValue =  value;
+        }
+        else {
+        	retValue = _valueTmp.get(index);
+        }
+        
+        ((ScopedValue) _value).updateValue(_valueTmp);
+    	
+    	return retValue;
+    }
     // END OF ADDED CODE
 	    
     // php/33m{g,h}
@@ -1566,8 +1610,27 @@ public class Var extends Value
   {
     // INST ADDED BY HUNG
     
-    // Note: Operations with array elements will be handled somewhere else.
-    
+	/*
+	 * NOTE: Must use edu.iastate.hungnv.scope.ScopedValue.updateValue(Value)
+	 * instead of edu.iastate.hungnv.shadow.Env_.addScopedValue(Value, Value)
+	 * 
+	 * updateValue changes the private value of an existing ScopedValue,
+	 * while addScopedValue creates a new ScopedValue.
+	 * 
+	 * For array operations, updateValue must be used because the array pointer
+	 * should not be changed, only the pointers of the array elements are changed.
+	 * 
+	 * In this Var class, sometimes updateValue is also used instead of addScopedValue
+	 * for performance purposes in cases when updateValue has mostly the same effect
+	 * as addScopedValue but runs faster (e.g. com.caucho.quercus.env.Var.toAutoArray()).
+	 */
+	  
+    if (Env_.INSTRUMENT && _value instanceof ScopedValue) {
+        ((ScopedValue) _value).updateValue(_value.append(index, value));
+
+        return Env_.removeScopedValue(_value);
+    }
+	  
     // END OF ADDED CODE
 	    
     // php/323g
@@ -1880,8 +1943,13 @@ public class Var extends Value
   public Value setCharValueAt(long index, Value value)
   {
     // INST ADDED BY HUNG
-    
-    // Note: Operations with array elements will be handled somewhere else.
+	
+	// TODO Revise
+    if (Env_.INSTRUMENT && Env.getInstance() != null) {
+    	_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.setCharValueAt(index, value));
+    	
+    	return Env_.removeScopedValue(_value);
+    }
     
     // END OF ADDED CODE
 	    

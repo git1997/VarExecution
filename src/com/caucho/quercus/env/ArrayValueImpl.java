@@ -484,7 +484,7 @@ public class ArrayValueImpl extends ArrayValue
     // INST ADDED BY HUNG
 	  
 	  if (Env_.INSTRUMENT)
-		  return ArrayValueImpl_.append(key, value, this);
+		  return ArrayValueImpl_.append(key, value, this, true);
 	  
 	// END OF ADDED CODE
 	  
@@ -499,15 +499,64 @@ public class ArrayValueImpl extends ArrayValue
   }
   
 // INST ADDED BY HUNG  
+  
+  /**
+   * This method is the same as com.caucho.quercus.env.ArrayValueImpl.put(Value),
+   * except that no scoping information will be added to the value.
+   */
+  public Value putWithNoScoping(Value value)
+  {
+    if (_isDirty)
+      copyOnWrite();
 
-  public ArrayValue append_basic(Value key, Value value)
+    Value key = createTailKey();
+    
+    appendWithNoScoping(key, value);
+
+    return value;
+  }
+  
+  /**
+   * This method is the same as com.caucho.quercus.env.ArrayValueImpl.append(Value, Value),
+   * except that no scoping information will be added to the value.
+   */
+  public ArrayValue appendWithNoScoping(Value key, Value value)
+  {
+    if (_isDirty) {
+      copyOnWrite();
+    }
+
+    if (key instanceof UnsetValue) // php/4a4h
+      key = createTailKey();
+
+    // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT)
+		  return ArrayValueImpl_.append(key, value, this, false);
+	  
+	// END OF ADDED CODE
+	  
+    Entry entry = createEntry(key);
+
+    // php/0434
+    // Var oldVar = entry._var;
+
+    entry.setWithNoScoping(value);
+
+    return this;
+  }  
+
+  public ArrayValue append_basic(Value key, Value value, boolean withScoping)
   {
     Entry entry = createEntry(key);
 
     // php/0434
     // Var oldVar = entry._var;
     
-    entry.set(value);
+    if (withScoping)
+    	entry.set(value);
+    else
+    	entry.setWithNoScoping(value);
 
     return this;
   }

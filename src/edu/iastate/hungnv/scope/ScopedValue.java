@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import com.caucho.quercus.QuercusException;
 import com.caucho.quercus.env.ArrayValue;
+import com.caucho.quercus.env.ArrayValueImpl;
 import com.caucho.quercus.env.BinaryBuilderValue;
 import com.caucho.quercus.env.Callable;
 import com.caucho.quercus.env.CopyRoot;
@@ -24,6 +25,7 @@ import com.caucho.quercus.env.FieldVisibility;
 import com.caucho.quercus.env.LargeStringBuilderValue;
 import com.caucho.quercus.env.LongValue;
 import com.caucho.quercus.env.NullValue;
+import com.caucho.quercus.env.ObjectExtValue;
 import com.caucho.quercus.env.QuercusClass;
 import com.caucho.quercus.env.SerializeMap;
 import com.caucho.quercus.env.StringBuilderValue;
@@ -3489,6 +3491,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value putField(Env env, StringValue name, Value object)
 	  {
+		  if (scope == env.getEnv_().getScope()) {
+			  if (value instanceof ObjectExtValue)
+				  return ((ObjectExtValue) value).putFieldWithNoScoping(env, name, object);
+		  }
+		  
 		  return value.putField(env, name, object);
 		  
 //		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
@@ -3963,6 +3970,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value put(Value value)
 	  {
+		  if (scope == Env.getInstance().getEnv_().getScope()) {
+			  if (this.value instanceof ArrayValueImpl)
+				  return ((ArrayValueImpl) this.value).putWithNoScoping(value);
+		  }
+
 		  return this.value.put(value);
 		  
 //		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");
@@ -3984,6 +3996,11 @@ public class ScopedValue extends Value {
 	  @Override
 	  public Value append(Value index, Value value)
 	  {
+		  if (scope == Env.getInstance().getEnv_().getScope()) {
+			  if (this.value instanceof ArrayValueImpl)
+				  return ((ArrayValueImpl) this.value).appendWithNoScoping(index, value);
+		  }
+
 		  return this.value.append(index, value);
 		  
 //		Logging.LOGGER.fine("Unsupported operation for a ScopedValue.");

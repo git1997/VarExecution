@@ -1785,9 +1785,7 @@ abstract public class ArrayValue extends Value {
 					_value = Env.getInstance().getEnv_().addScopedValue(_value, (Var) value);
 				}
 				else {
-					// TODO Fix this: For some reason, using addScopedValue(_value, _value.set(value)) makes some Choice values become strings
-					//_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.set(value));
-					_value = Env.getInstance().getEnv_().addScopedValue(_value, value);
+					_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.set(value));
 				}
 		
 				return oldValue;
@@ -1816,6 +1814,38 @@ abstract public class ArrayValue extends Value {
 
       return oldValue;
     }
+    
+// INST ADDED BY HUNG
+    /**
+     * This method is the same as com.caucho.quercus.env.ArrayValue.Entry.set(Value),
+     * except that no scoping information will be added to the value.
+     */
+    public Value setWithNoScoping(Value value)
+    {	    
+      Value oldValue = _value;
+
+      // XXX: make OO
+      /*
+      if (value instanceof Var)
+        _var = (Var) value;
+      else if (_var != null)
+        _var.set(value);
+      else
+        _value = value;
+      */
+
+      if (value instanceof Var)
+        _value = (Var) value;
+      else {
+    	  if (_value instanceof Var)
+    		  _value = ((Var) _value).setWithNoScoping(value);
+    	  else
+    		  _value = _value.set(value);
+      }
+
+      return oldValue;
+    }
+// END OF ADDED CODE    
 
     /**
      * Converts to a variable reference (for function  arguments)

@@ -21,7 +21,11 @@ public class BinaryAppendExpr_ {
 	public static Value eval(Env env, Expr _value, BinaryAppendExpr _next) {
 		Value value = _value.eval(env);
 		
-	    Value sb = value.toStringBuilder(env);
+		Value sb;
+		if (value instanceof MultiValue)
+			sb = value;
+		else
+			sb = value.toStringBuilder(env);
 		
 	    for (BinaryAppendExpr ptr = _next; ptr != null; ptr = ptr.getNext()) {
 	      Value ptrValue = ptr.getValue().eval(env);

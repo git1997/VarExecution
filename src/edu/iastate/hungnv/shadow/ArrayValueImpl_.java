@@ -20,7 +20,7 @@ public class ArrayValueImpl_ {
 	/**
 	 * @see com.caucho.quercus.env.ArrayValueImpl.append(Value, Value)
 	 */
-	public static ArrayValue append(Value key, Value value, final ArrayValueImpl _this) {
+	public static ArrayValue append(Value key, Value value, final ArrayValueImpl _this, boolean withScoping) {
 		if (key instanceof MultiValue) {
 			// Convert Array(CHOICE(Cond, x, y) => z) into Array(x => CHOICE(Cond, z, UNDEFINED), y => CHOICE(!Cond, z, UNDEFINED))
 			for (Case case_ : ((MultiValue) key).flatten()) {
@@ -36,13 +36,13 @@ public class ArrayValueImpl_ {
 				Value modifiedValue = MultiValue.createChoiceValue(constraint, value, oldValue);
 				
 				// Eval basic case
-				_this.append_basic(flattenedKey, modifiedValue);
+				_this.append_basic(flattenedKey, modifiedValue, withScoping);
 			}
 			
 			return _this;
 		}
 		else
-			return _this.append_basic(key, value);
+			return _this.append_basic(key, value, withScoping);
 	}
 	
 	/**
