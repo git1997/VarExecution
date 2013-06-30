@@ -79,6 +79,17 @@ public class ToArrayExpr extends AbstractUnaryExpr {
    */
   public Value evalCopy(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  // Fix errors with CAR plugin
+	  // class.wp-dependencies.php:73
+	  // 	if ( !$handles = (array) $handles )
+	  
+	  if (Env_.INSTRUMENT)
+		  return new ToArrayExpr_.ToArrayExpr_evalCopy().eval(env, _expr);
+	 
+	  // END OF ADDED CODE
+	  
     Value value = _expr.eval(env).toValue();
 
     if (value instanceof ArrayValue)

@@ -20,10 +20,11 @@ com.caucho.quercus.expr.*			// Handle expressions
 	BinaryGtExpr		eval			// Handle >				x
 	BinaryLeqExpt		eval			// Handle <=			x
 	BinaryLtExpr		eval			// Handle <				x
-	BinaryNeqExpr		eval			// Handle !=
+	BinaryNeqExpr		eval			// Handle !=			x
 	BinaryOrExpr		eval			// Handle ||			x
+	ConditionalExpr		evalCopy		// Handle ( ? : )		x
 	FunIssetExpr		eval			// Handle isset			x
-	ToArrayExpr			eval			// Handle (array)		x
+	ToArrayExpr			eval, evalCopy	// Handle (array)		x
 	ToBooleanExpr		eval			// Handle (boolean)		x
 	ToDoubleExpr		eval			// Handle (float)		x
 	ToLongExpr			eval			// Handle (long)		x
@@ -32,9 +33,9 @@ com.caucho.quercus.expr.*			// Handle expressions
 	UnaryNotExpr		eval			// Handle !				x
 	
 com.caucho.quercus.lib.*			// Handle library functions
-	ArrayModule			array_filter			// Handle array_filter	x
-	RegexpModule 		pregReplaceCallback		// Handle preg_replace	x
-	StringModule		implode					// Handle implode		x
+	ArrayModule			array_filter, array_diff	// Handle array_filter, array_diff	x
+	RegexpModule 		pregReplaceCallback			// Handle preg_replace				x
+	StringModule		implode						// Handle implode					x
 	
 CallExpr			evalCopy		// Adhoc code to handle _wp_filter_build_unique_id		x	
 	

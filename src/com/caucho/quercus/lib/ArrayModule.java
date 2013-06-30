@@ -65,6 +65,7 @@ import com.caucho.util.RandomUtil;
 
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.shadow.lib.ArrayModule_;
+import edu.iastate.hungnv.value.MultiValue;
 
 /**
  * PHP array routines.
@@ -543,6 +544,17 @@ public class ArrayModule
       valueFound = false;
 
       Value entryValue = entry.getValue();
+      
+      // INST ADDED BY HUNG
+      if (Env_.INSTRUMENT) {
+    	  // Fix errors with CAR plugin
+    	  // class.wp-dependencies.php:92
+    	  // elseif ( $this->registered[$handle]->deps && array_diff($this->registered[$handle]->deps, array_keys($this->registered)) )
+    	  
+    	  if (entryValue instanceof MultiValue)
+    		  entryValue = ((MultiValue) entryValue).simplify(env.getEnv_().getScope().getConstraint());
+      }
+      // END OF ADDED CODE
 
       for (int k = 0; k < arrays.length && ! valueFound; k++) {
         if (! (arrays[k] instanceof ArrayValue)) {

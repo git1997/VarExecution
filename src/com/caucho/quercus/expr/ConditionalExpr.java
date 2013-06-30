@@ -33,6 +33,9 @@ import com.caucho.quercus.Location;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.shadow.expr.ConditionalExpr_;
+
 /**
  * Represents a conditional expression.
  */
@@ -100,6 +103,14 @@ public class ConditionalExpr extends Expr {
    */
   public Value evalCopy(Env env)
   {
+	  // INST ADDED BY HUNG
+	  
+	  if (Env_.INSTRUMENT) {
+		  ConditionalExpr_.evalCopy(env, _test, _trueExpr, _falseExpr);
+	  }
+	  
+	  // END OF ADDED CODE
+	  
     if (_test.evalBoolean(env))
       return _trueExpr.evalCopy(env);
     else

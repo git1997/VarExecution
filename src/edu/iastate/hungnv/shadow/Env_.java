@@ -13,6 +13,7 @@ import edu.iastate.hungnv.scope.Scope;
 import edu.iastate.hungnv.scope.ScopedValue;
 import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.MultiValue;
+import edu.iastate.hungnv.wpplugins.TestConfig;
 
 /**
  * 
@@ -26,6 +27,9 @@ public class Env_ {
 	
 	// Turn on or off regression testing mode
 	public static final boolean REGRESSION_TESTING = false;
+	
+	// Set the testConfig to perform a normal run without variability-aware (only effective when INSTRUMENT == false and REGRESSION_TESTING == false) 
+	public static final String testConfig = "1000000000";
 	
 	// String constants
 	public static final String __INSTRUMENT__ = "__INSTRUMENT__";
@@ -58,8 +62,14 @@ public class Env_ {
 	 */
 	
 	public void start(Env env) {
+		Logging.LOGGER.info("Env starting...");
+
 		TraceViewer.inst.reset();
 		OutputViewer.inst.setOutputValue(new ConstStringValue(""));
+
+		if (REGRESSION_TESTING) {
+			RegressionTest.inst.start();
+		}
 	}
 	
 	public void closing(Env env) {
@@ -82,7 +92,7 @@ public class Env_ {
 		}
 		else if (INSTRUMENT) {
 			OutputViewer.inst.writeToXmlFile(OutputViewer.xmlFileAll);
-			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFileDerived, Constraint.TRUE); // TODO Revise
+			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFileDerived, new TestConfig(testConfig).getConstraint());
 		}
 		else
 			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFile);
@@ -102,7 +112,7 @@ public class Env_ {
 		}
 		if (INSTRUMENT) {
 			viewer.writeToXmlFile(ValueViewer.xmlFileAll);
-			viewer.writeToXmlFile(ValueViewer.xmlFileDerived, Constraint.TRUE); // TODO Revise
+			viewer.writeToXmlFile(ValueViewer.xmlFileDerived, new TestConfig(testConfig).getConstraint());
 		}
 		else
 			viewer.writeToXmlFile(ValueViewer.xmlFile);
@@ -118,14 +128,6 @@ public class Env_ {
 	/*
 	 * Handling scopes
 	 */
-	
-	/**
-	 * @return True if the new scope has a satisfiable aggregated constraint
-	 */
-	public boolean canEnterNewScope(Constraint constraint) {
-		Constraint aggregatedConstraint = Constraint.createAndConstraint(scope.getAggregatedConstraint(), constraint);
-		return aggregatedConstraint.isSatisfiable();
-	}
 	
 	/**
 	 * Enters a new scope with a given constraint.
@@ -145,7 +147,7 @@ public class Env_ {
 
 		// Combine the values that have been modified in the current scope with their original values in the outer scope
 		for (ScopedValue scopedValue : scope.getDirtyValues()) {
-			Constraint scopeConstraint = scope.getConstraint();
+			Constraint scopeConstraint = scope.getLocalConstraint();
 
 			Value inScopeValue = scopedValue.getValue();
 			Value outScopeValue = scopedValue.getOuterScopedValue().getValue();
