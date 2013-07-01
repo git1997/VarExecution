@@ -42,6 +42,8 @@ import com.caucho.util.RandomUtil;
 
 import edu.iastate.hungnv.shadow.ArrayValueImpl_;
 import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.value.MultiValue;
+import edu.iastate.hungnv.value.MultiValue.IOperation;
 
 /**
  * Represents a PHP array value.
@@ -849,6 +851,20 @@ public class ArrayValueImpl extends ArrayValue
    */
   public Value get(Value key)
   {
+	  // INST ADDED BY HUNG
+	  if (Env_.INSTRUMENT && key instanceof MultiValue) {
+		  final ArrayValueImpl array = this; 
+		  
+		  return ((MultiValue) key).operate(new IOperation() {
+			  
+			  @Override
+			  public Value operate(Value value) {
+				  return array.get(value);
+			  }
+		  });
+	  }
+	  // END OF ADDED CODE
+	  
     key = key.toKey();
 
     Entry []entries = _entries;

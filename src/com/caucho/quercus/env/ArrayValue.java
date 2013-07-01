@@ -36,6 +36,7 @@ import com.caucho.vfs.WriteStream;
 
 import edu.iastate.hungnv.shadow.ArrayValue_;
 import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.value.MultiValue;
 import edu.iastate.hungnv.value.Undefined;
 
 import java.io.IOException;
@@ -1785,7 +1786,15 @@ abstract public class ArrayValue extends Value {
 					_value = Env.getInstance().getEnv_().addScopedValue(_value, (Var) value);
 				}
 				else {
-					_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.set(value));
+					if (_value instanceof MultiValue) {
+						// TODO Must use 'value' instead of '_value.set(value)'. 
+						// Complex errors occur if '_value.set(value)' is used and _value is MultiValue
+						
+						_value = Env.getInstance().getEnv_().addScopedValue(_value, value);
+					}
+					else
+						_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.set(value));
+					 
 				}
 		
 				return oldValue;
@@ -1839,8 +1848,16 @@ abstract public class ArrayValue extends Value {
       else {
     	  if (_value instanceof Var)
     		  _value = ((Var) _value).setWithNoScoping(value);
-    	  else
-    		  _value = _value.set(value);
+    	  else {
+    		  if (_value instanceof MultiValue) {
+        		  // TODO Must use 'value' instead of '_value.set(value)'. 
+        		  // Complex errors occur if '_value.set(value)' is used and _value is MultiValue
+    			  
+    			  _value = value;
+    		  }
+    		  else
+    			  _value = _value.set(value);
+    	  }
       }
 
       return oldValue;

@@ -396,6 +396,39 @@ public abstract class MultiValue extends Value {
 		}
 		
 		/*
+		 * TODO EXPERIMENTAL
+		 * Revise later
+		 */
+		/*
+		if (trueBranchValue instanceof ArrayValueImpl && falseBranchValue instanceof ArrayValueImpl) {
+			ArrayValueImpl lArray = (ArrayValueImpl) trueBranchValue;
+			ArrayValueImpl rArray = (ArrayValueImpl) falseBranchValue;
+			
+			Set<Value> keySet = new HashSet<Value>();
+			keySet.addAll(lArray.keySet());
+			keySet.addAll(rArray.keySet());
+			
+	    	ArrayValueImpl array = new ArrayValueImpl();
+	    	for (Value key : keySet) {
+		        Value lValue = lArray.get(key);
+		        Value rValue = rArray.get(key);
+		        
+				if (lValue instanceof NullValue)	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
+					lValue = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
+													// @see com.caucho.quercus.env.ArrayValue.Entry.set(Value)
+				
+				if (rValue instanceof NullValue)	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
+					rValue = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
+													// @see com.caucho.quercus.env.ArrayValue.Entry.set(Value)
+			        
+			    array.appendWithNoScoping(key, MultiValue.createChoiceValue(constraint, lValue, rValue)); // Use 'setWithNoScoping' instead of 'set' to avoid attaching scoping information
+		    }
+		    
+	    	return array;
+		}
+		*/
+		
+		/*
 		 * Check #7: Handle objects of the same entries (similar to arrays of the same keys)
 		 * @see com.caucho.quercus.env.ObjectValue.cmpObject(ObjectValue)
 		 */
@@ -414,25 +447,42 @@ public abstract class MultiValue extends Value {
 			    	Iterator<Map.Entry<Value,Value>> iterA = aTree.iterator();
 			    	Iterator<Map.Entry<Value,Value>> iterB = bTree.iterator();
 			      
-			    	boolean sameEntries = true;
+			    	boolean sameKeys = true;
+			    	boolean sameValues = true;
 	
 			    	while (iterA.hasNext()) {
 			    		Map.Entry<Value,Value> a = iterA.next();
 			    		Map.Entry<Value,Value> b = iterB.next();
 	
 			    		if (a.getKey() != b.getKey()) {
-			    			sameEntries = false;
+			    			sameKeys = false;
 			    			break;
 			    		}
 	
-			    		if (a.getValue() != b.getValue()) {
-			    			sameEntries = false;
-			    			break;
-			    		}
+			    		if (a.getValue() != b.getValue())
+			    			sameValues = false;
 			    	}
 			      
-			    	if (sameEntries)
-			    		return trueBranchValue;
+			    	if (sameKeys) {
+			    		if (sameValues)
+			    			return trueBranchValue;
+			    		
+			    		ObjectExtValue object = new ObjectExtValue(lObject.getQuercusClass());
+			    		iterA = aTree.iterator();
+				    	iterB = bTree.iterator();
+				    	
+				    	while (iterA.hasNext()) {
+				    		Map.Entry<Value,Value> a = iterA.next();
+				    		Map.Entry<Value,Value> b = iterB.next();
+				    		
+				    		StringValue key = (StringValue) a.getKey();
+				    		Value multiValue = MultiValue.createChoiceValue(constraint, a.getValue(), b.getValue());
+				    		
+				    		object.putFieldWithNoScoping(Env.getInstance(), key, multiValue); // Use 'putFieldWithNoScoping' instead of 'putField' to avoid attaching scoping information
+				    	}
+				    	
+				    	return object;
+			    	}
 				}
 		    }
 		}
@@ -601,7 +651,17 @@ public abstract class MultiValue extends Value {
 				return value.getField(env, name);
 			}
 		});
-	}	
+	}
+	
+	@Override
+	public Value put(final Value index, final Value value) {
+		return operate(new IOperation() {
+			@Override
+			public Value operate(Value _this) {
+				return _this.put(index, value);
+			}
+		});
+	}
 	
 	  //
 	  // Properties
@@ -3916,16 +3976,16 @@ public abstract class MultiValue extends Value {
 	  /**
 	   * Sets the array ref and returns the value
 	   */
-	  @Override
-	  public Value put(Value index, Value value)
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    Env.getCurrent().warning(L.l("{0} cannot be used as an array",
-	                                 toDebugString()));
-	    
-	    return value;
-	  }
+//	  @Override
+//	  public Value put(Value index, Value value)
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    Env.getCurrent().warning(L.l("{0} cannot be used as an array",
+//	                                 toDebugString()));
+//	    
+//	    return value;
+//	  }
 
 	  /**
 	   * Sets the array ref.
