@@ -3,6 +3,7 @@ package edu.iastate.hungnv.shadow.lib;
 import com.caucho.quercus.env.ArrayValue;
 import com.caucho.quercus.env.ArrayValueImpl;
 import com.caucho.quercus.env.Callable;
+import com.caucho.quercus.env.ConstStringValue;
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.LongValue;
 import com.caucho.quercus.env.StringValue;
@@ -12,7 +13,10 @@ import com.caucho.quercus.lib.regexp.IllegalRegexpException;
 import com.caucho.quercus.lib.regexp.Regexp;
 import com.caucho.quercus.lib.regexp.RegexpState;
 
+import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.MultiValue;
+import edu.iastate.hungnv.value.Switch;
 
 /**
  * 
@@ -111,6 +115,25 @@ public class RegexpModule_ {
 	      }
 
 	      Value replacement = fun.call(env, regs);
+	      
+	      /*
+	       * Handle the case when replacement == CHOICE(sth, UNDEFINED)
+	       * Then, replacement should be CHOICE(sth, original_string)
+	       * For example, if "[calendar]" were to be replaced with CHOICE(CAL, "July 2013", UNDEFINED)
+	       * 	(the replacing function is available with CAL only),
+	       * 	then the result should be corrected as CHOICE(CAL, "July 2013", "[calendar]")
+	       */
+	      if (replacement instanceof MultiValue) {
+	    	  Switch switch_ = ((MultiValue) replacement).flatten();
+	    	  Constraint whenUndefined = MultiValue.whenUndefined(switch_);
+	    	  
+	    	  if (whenUndefined.isSatisfiable()) {
+	    		  Value originalString = regs.get(new ConstStringValue("0"));
+	    		  switch_.addCase(new Case(whenUndefined, originalString));
+	    		  
+	    		  replacement = MultiValue.createSwitchValue(switch_);
+	    	  }
+	      }
 
 	      if (result instanceof MultiValue || replacement instanceof MultiValue)
 	    	  result = MultiValue.createConcatValue(result, replacement, true);

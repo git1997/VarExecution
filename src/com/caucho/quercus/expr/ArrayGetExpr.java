@@ -34,6 +34,9 @@ import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
 import com.caucho.quercus.env.Var;
 
+import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.value.MultiValue;
+
 /**
  * Represents a PHP array reference expression.
  */
@@ -80,6 +83,19 @@ public class ArrayGetExpr extends AbstractVarExpr {
   @Override
   public Value eval(Env env)
   {
+	  // INST ADDED BY HUNG
+	  if (Env_.INSTRUMENT) {
+		    Value array = _expr.eval(env);
+		    Value index = _index.eval(env);
+
+		    Value retValue = array.get(index);
+		    if (retValue instanceof MultiValue)
+		    	retValue = ((MultiValue) retValue).simplify(env.getEnv_().getScope().getConstraint());
+		    
+		    return retValue;
+	  }
+	  // END OF ADDED CODE
+	  
     Value array = _expr.eval(env);
     Value index = _index.eval(env);
 
@@ -160,6 +176,18 @@ public class ArrayGetExpr extends AbstractVarExpr {
   @Override
   public Value evalArg(Env env, boolean isTop)
   {
+	  // INST ADDED BY HUNG
+	  if (Env_.INSTRUMENT) {
+		    Value value = _expr.evalArg(env, false); // php/0d2t
+		    Value retValue = value.getArg(_index.eval(env), isTop);
+
+		    if (retValue instanceof Var && ((Var) retValue).getRawValue() instanceof MultiValue)
+		    	((Var) retValue).setWithNoScoping(((MultiValue) ((Var) retValue).getRawValue()).simplify(env.getEnv_().getScope().getConstraint()));
+		    
+		    return retValue;
+	  }
+	  // END OF ADDED CODE
+	  
     Value value = _expr.evalArg(env, false); // php/0d2t
 
     return value.getArg(_index.eval(env), isTop);

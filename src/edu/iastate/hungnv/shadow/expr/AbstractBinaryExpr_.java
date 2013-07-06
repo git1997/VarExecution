@@ -42,7 +42,7 @@ public abstract class AbstractBinaryExpr_ {
 				switch_.addCase(new Case(constraint, value));
 		}
 		
-		return switch_;
+		return MultiValue.createSwitchValue(switch_);
 	}
 	
 	/**

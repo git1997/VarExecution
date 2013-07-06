@@ -2,7 +2,8 @@ package edu.iastate.hungnv.shadow;
 
 import com.caucho.quercus.env.Env;
 import com.caucho.quercus.env.Value;
-import com.caucho.quercus.statement.ForeachStatement;
+import com.caucho.quercus.expr.AbstractVarExpr;
+import com.caucho.quercus.statement.Statement;
 
 import edu.iastate.hungnv.value.MultiValue;
 
@@ -16,21 +17,17 @@ public class ForeachStatement_ {
 	/**
 	 * @see com.caucho.quercus.statement.ForeachStatement.execute(Env)
 	 */
-	public static Value execute(Env env, final ForeachStatement _this, Value origObj, Value obj) {		
-		if (! (obj instanceof MultiValue))
-			return _this.execute_basic(env, origObj, obj);
+	public static Value execute(Env env, Value value, final AbstractVarExpr _value, final Statement _block) {
+		if (!(value instanceof MultiValue)) {
+			_value.evalAssignValue(env, value);
+            return _block.execute(env);
+		}
 		
-		if (origObj != obj)
-			return _this.execute_basic(env, origObj, obj);
-		
-		Value simplifiedObj = ((MultiValue) obj).simplify(env.getEnv_().getScope().getConstraint());
-		if (! (simplifiedObj instanceof MultiValue))
-			return _this.execute_basic(env, simplifiedObj, simplifiedObj);
-		
-		return ShadowInterpreter.eval(obj, new ShadowInterpreter.IBasicCaseHandler() {
+		return ShadowInterpreter.eval(value, new ShadowInterpreter.IBasicCaseHandler() {
 			@Override
-			public Value evalBasicCase(Value flattenedObj, Env env) {
-				return _this.execute_basic(env, flattenedObj, flattenedObj);
+			public Value evalBasicCase(Value flattenedValue, Env env) {
+				_value.evalAssignValue(env, flattenedValue);
+	            return _block.execute(env);
 			}
 		}, env);
 	}

@@ -1694,6 +1694,13 @@ abstract public class ArrayValue extends Value {
 
     public Value getRawValue()
     {
+  	  // INST ADDED BY HUNG
+  	  
+  	  if (Env_.INSTRUMENT)
+  		  return Env_.removeScopedValue(_value);
+  	  
+  	  // END OF ADDED CODE
+  	  
       // return _var != null ? _var : _value;
       return _value;
     }

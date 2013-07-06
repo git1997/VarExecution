@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,14 +102,14 @@ public abstract class MultiValue extends Value {
 			
 				if (retValue instanceof MultiValue) {
 					Logging.LOGGER.fine("In MultiValue.java: retValue is a MultiValue. Please debug.");
-					retValue = null;
+					retValue = NullValue.NULL; // TODO Revise
 				}
 			}
 
 			combinedRetValue.addCase(new Case(constraint, retValue));
 		}
 		
-		return combinedRetValue.simplify();
+		return MultiValue.createSwitchValue(combinedRetValue);
 	}
 	
 	/*
@@ -269,103 +270,186 @@ public abstract class MultiValue extends Value {
 		 */
 		if (trueBranchValue instanceof Choice) {
 			if (constraint.equivalentTo(((Choice) trueBranchValue).getConstraint()))
-				trueBranchValue = ((Choice) trueBranchValue).getValue1();
-			else if (constraint.oppositeOf(((Choice) trueBranchValue).getConstraint()))
-				trueBranchValue = ((Choice) trueBranchValue).getValue2();
+				return MultiValue.createChoiceValue(constraint, ((Choice) trueBranchValue).getValue1(), falseBranchValue);
+			if (constraint.oppositeOf(((Choice) trueBranchValue).getConstraint()))
+				return MultiValue.createChoiceValue(constraint, ((Choice) trueBranchValue).getValue2(), falseBranchValue);
 		}
 		
 		if (falseBranchValue instanceof Choice) {
 			if (constraint.equivalentTo(((Choice) falseBranchValue).getConstraint()))
-				falseBranchValue = ((Choice) falseBranchValue).getValue2();
-			else if (constraint.oppositeOf(((Choice) falseBranchValue).getConstraint()))
-				falseBranchValue = ((Choice) falseBranchValue).getValue1();
+				return MultiValue.createChoiceValue(constraint, trueBranchValue, ((Choice) falseBranchValue).getValue2());
+			if (constraint.oppositeOf(((Choice) falseBranchValue).getConstraint()))
+				return MultiValue.createChoiceValue(constraint, trueBranchValue, ((Choice) falseBranchValue).getValue1());
 		}
 		
 		/*
-		 * Check #4: Handle one specific case. Currently this check is not very useful (not executed much).
-		 * Example: 
-		 * 		if (C)
-		 *			echo "Cats";
-		 * 		else
-		 *			echo "Dogs";
-		 * After executing both branches: OUTPUT = CHOICE(!C, CONCAT(CHOICE(C, Cats, ), Dogs), Cats)
-		 * => Simplify to: OUTPUT = CHOICE(!C, Dogs, Cats)
+		 * Check #4: Handle UNDEFINED Values in CHOICE branches
+		 * 	+ Case 1: CHOICE(A, CHOICE(B, b, UNDEFINED), UNDEFINED) => CHOICE(A, CHOICE( B, b, UNDEFINED), UNDEFINED) => CHOICE(A & B, b, UNDEFINED)
+		 * 	+ Case 2: CHOICE(A, CHOICE(B, UNDEFINED, b), UNDEFINED) => CHOICE(A, CHOICE(!B, b, UNDEFINED), UNDEFINED)
+		 * 	+ Case 3: CHOICE(A, a, CHOICE(B, b, UNDEFINED)) => CHOICE( A, a, CHOICE( B, b, UNDEFINED)) => CHOICE(A || B, CHOICE(A, a, b), UNDEFINED)
+		 * 	+ Case 4: CHOICE(A, a, CHOICE(B, UNDEFINED, b)) => CHOICE( A, a, CHOICE(!B, b, UNDEFINED))
+		 * 	+ Case 5: CHOICE(A, CHOICE(B, b, UNDEFINED), a) => CHOICE(!A, a, CHOICE( B, b, UNDEFINED))
+		 * 	+ Case 6: CHOICE(A, CHOICE(B, UNDEFINED, b), a) => CHOICE(!A, a, CHOICE(!B, b, UNDEFINED)) 
 		 */
-		/*
-		if (trueBranchValue instanceof Concat) {
-			List<Value> childNodes = ((Concat) trueBranchValue).getChildNodes();
-			Value firstPartOfConcat = childNodes.get(0);
-			if (firstPartOfConcat instanceof Choice) {
-				if (constraint.oppositeOf(((Choice) firstPartOfConcat).getConstraint())) {
-					trueBranchValue = ((Choice) firstPartOfConcat).getValue2();
-					for (int i = 1; i < childNodes.size(); i++)
-						trueBranchValue = MultiValue.createConcatValue(trueBranchValue, childNodes.get(i));
-				}
-			}
-		}
-		*/
-		
-		/*
-		 * Check #5: Handle Choice(Concat, Concat)
-		 * Example:
-		 * 		CHOICE(COND, CONCAT(A, B), CONCAT(A, C)) => CONCAT(A, CHOICE(COND, B, C)) 
-		 */
-		if (trueBranchValue instanceof Concat && falseBranchValue instanceof Concat) {
-			List<Value> items1 = ((Concat) trueBranchValue).getChildNodes();
-			List<Value> items2 = ((Concat) falseBranchValue).getChildNodes();
-			
-			int sharedPartLen = 0;
-			while (sharedPartLen < items1.size() 
-					&& sharedPartLen < items2.size() 
-					&& items1.get(sharedPartLen) == items2.get(sharedPartLen)) {
-				sharedPartLen++;
+		if (trueBranchValue instanceof Choice && (falseBranchValue instanceof NullValue || falseBranchValue instanceof Undefined)) {
+			// Case 1
+			if (((Choice) trueBranchValue).getValue2() instanceof NullValue || ((Choice) trueBranchValue).getValue2() instanceof Undefined) {
+				Constraint condA = constraint;
+				Constraint condB = ((Choice) trueBranchValue).getConstraint();
+				
+				Value bValue = ((Choice) trueBranchValue).getValue1();
+				Value undefinedValue = falseBranchValue;
+				
+				return MultiValue.createChoiceValue(
+							Constraint.createAndConstraint(condA, condB), 
+							bValue, 
+							undefinedValue);
 			}
 			
-			if (sharedPartLen > 0) {
-				Value sharedPart;
-				if (sharedPartLen == 1)
-					sharedPart = items1.get(0);
-				else
-					sharedPart = new Concat(items1.subList(0, sharedPartLen));
-				
-				Value part1;
-				if (sharedPartLen == items1.size())
-					part1 = null;
-				else if (sharedPartLen == items1.size() - 1)
-					part1 = items1.get(items1.size() - 1);
-				else
-					part1 = new Concat(items1.subList(sharedPartLen, items1.size()));
-				
-				Value part2;
-				if (sharedPartLen == items2.size())
-					part2 = null;
-				else if (sharedPartLen == items2.size() - 1)
-					part2 = items2.get(items2.size() - 1);
-				else
-					part2 = new Concat(items2.subList(sharedPartLen, items2.size()));
-				
-				if (part1 == null && part2 == null)
-					return sharedPart;
-				
-				if (part1 == null)
-					part1 = new ConstStringValue("");
-				if (part2 == null)
-					part2 = new ConstStringValue("");
-				
-				return createConcatValue(sharedPart, createChoiceValue(constraint, part1, part2));
+			// Case 2
+			if (((Choice) trueBranchValue).getValue1() instanceof NullValue || ((Choice) trueBranchValue).getValue1() instanceof Undefined) {
+				return MultiValue.createChoiceValue(
+							constraint, 
+							((Choice) trueBranchValue).getInverse(), 
+							falseBranchValue);
 			}
 		}
 		
-		/*
-		 * Check #6: Handle arrays of the same keys.
-		 * For example, CHOICE(COND, Array(0 => 'x', 1 => 'y'), Array(0 => 'x', 1 => 'z')) becomes Array(0 => 'x', 1 => CHOICE(COND, 'y', 'z')) 
-		 */
-		if (trueBranchValue instanceof ArrayValueImpl && falseBranchValue instanceof ArrayValueImpl
-			&& ((ArrayValueImpl) trueBranchValue).size() == ((ArrayValueImpl) falseBranchValue).size()) {
+		if (falseBranchValue instanceof Choice) {
+			// Case 3
+			if (((Choice) falseBranchValue).getValue2() instanceof NullValue || ((Choice) falseBranchValue).getValue2() instanceof Undefined) {
+				Constraint condA = constraint;
+				Constraint condB = ((Choice) falseBranchValue).getConstraint();
+				
+				Value aValue = trueBranchValue;
+				Value bValue = ((Choice) falseBranchValue).getValue1();
+				Value undefinedValue = ((Choice) falseBranchValue).getValue2();
 
-			ArrayValueImpl lArray = (ArrayValueImpl) trueBranchValue;
-			ArrayValueImpl rArray = (ArrayValueImpl) falseBranchValue;
+				return MultiValue.createChoiceValue(
+							Constraint.createOrConstraint(condA, condB), 
+							MultiValue.createChoiceValue(condA, aValue, bValue), 
+							undefinedValue);
+			}
 			
+			// Case 4
+			if (((Choice) falseBranchValue).getValue1() instanceof NullValue || ((Choice) falseBranchValue).getValue1() instanceof Undefined) {
+				return MultiValue.createChoiceValue(
+							constraint, 
+							trueBranchValue,
+							((Choice) falseBranchValue).getInverse());
+			}
+		}
+		
+		if (trueBranchValue instanceof Choice) {
+			// Case 5
+			if (((Choice) trueBranchValue).getValue2() instanceof NullValue || ((Choice) trueBranchValue).getValue2() instanceof Undefined) {
+				return MultiValue.createChoiceValue(
+							Constraint.createNotConstraint(constraint), 
+							falseBranchValue, 
+							trueBranchValue);
+			}
+			
+			// Case 6
+			if (((Choice) trueBranchValue).getValue1() instanceof NullValue || ((Choice) trueBranchValue).getValue1() instanceof Undefined) {
+				return MultiValue.createChoiceValue(
+							Constraint.createNotConstraint(constraint), 
+							falseBranchValue, 
+							trueBranchValue);
+			}
+		}
+		
+		/*
+		 * Handle Choice of the same types
+		 */
+		if (trueBranchValue instanceof Var || falseBranchValue instanceof Var)
+			return createChoiceOfVars(constraint, trueBranchValue, falseBranchValue);
+		
+		if (trueBranchValue instanceof Concat && falseBranchValue instanceof Concat)
+			return createChoiceOfConcats(constraint, (Concat) trueBranchValue, (Concat) falseBranchValue);
+		
+		if (trueBranchValue instanceof ArrayValueImpl && falseBranchValue instanceof ArrayValueImpl)
+			return createChoiceOfArrays(constraint, (ArrayValueImpl) trueBranchValue, (ArrayValueImpl) falseBranchValue);
+		
+		if (trueBranchValue instanceof ObjectExtValue && falseBranchValue instanceof ObjectExtValue)
+			return createChoiceOfObjects(constraint, (ObjectExtValue) trueBranchValue, (ObjectExtValue) falseBranchValue);
+		
+		/*
+		 * Return a Choice Value
+		 */
+		return new Choice(constraint, trueBranchValue, falseBranchValue);
+	}
+		
+	/**
+	 * Handles Choice of Vars.
+	 */
+	private static Value createChoiceOfVars(Constraint constraint, Value var1, Value var2) {
+		if (var1 instanceof Var)
+			var1 = ((Var) var1).getRawValue();
+		
+		if (var2 instanceof Var)
+			var2 = ((Var) var2).getRawValue();
+			
+		return new Var(MultiValue.createChoiceValue(constraint, var1, var2));
+	}
+	
+	/**
+	 * Handles Choice of Concats.
+	 * For example,	CHOICE(COND, CONCAT(A, B), CONCAT(A, C)) => CONCAT(A, CHOICE(COND, B, C)) 
+	 */
+	private static Value createChoiceOfConcats(Constraint constraint, Concat concat1, Concat concat2) {
+		List<Value> items1 = concat1.getChildNodes();
+		List<Value> items2 = concat2.getChildNodes();
+		
+		int sharedPartLen = 0;
+		while (sharedPartLen < items1.size() 
+				&& sharedPartLen < items2.size() 
+				&& items1.get(sharedPartLen) == items2.get(sharedPartLen)) {
+			sharedPartLen++;
+		}
+		
+		if (sharedPartLen > 0) {
+			Value sharedPart;
+			if (sharedPartLen == 1)
+				sharedPart = items1.get(0);
+			else
+				sharedPart = new Concat(items1.subList(0, sharedPartLen));
+			
+			Value part1;
+			if (sharedPartLen == items1.size())
+				part1 = null;
+			else if (sharedPartLen == items1.size() - 1)
+				part1 = items1.get(items1.size() - 1);
+			else
+				part1 = new Concat(items1.subList(sharedPartLen, items1.size()));
+			
+			Value part2;
+			if (sharedPartLen == items2.size())
+				part2 = null;
+			else if (sharedPartLen == items2.size() - 1)
+				part2 = items2.get(items2.size() - 1);
+			else
+				part2 = new Concat(items2.subList(sharedPartLen, items2.size()));
+			
+			if (part1 == null && part2 == null)
+				return sharedPart;
+			
+			if (part1 == null)
+				part1 = new ConstStringValue("");
+			if (part2 == null)
+				part2 = new ConstStringValue("");
+			
+			return createConcatValue(sharedPart, createChoiceValue(constraint, part1, part2));
+		}
+		
+		return new Choice(constraint, concat1, concat2);
+	}
+		
+	/**
+	 * Handles Choice of Arrays.
+	 * For example, CHOICE(COND, Array(0 => 'x', 1 => 'y'), Array(0 => 'x', 1 => 'z')) becomes Array(0 => 'x', 1 => CHOICE(COND, 'y', 'z')) 
+	 */
+	private static Value createChoiceOfArrays(Constraint constraint, ArrayValueImpl lArray, ArrayValueImpl rArray) {
+		if (lArray.size() == rArray.size()) {
 			boolean sameKeys = true;
 			boolean sameValues = true;
 			
@@ -380,7 +464,7 @@ public abstract class MultiValue extends Value {
 			    
 		    if (sameKeys) {
 		    	if (sameValues)
-		    		return trueBranchValue;
+		    		return lArray;
 		    	
 		    	ArrayValueImpl array = new ArrayValueImpl(lArray);
 		    	for (Map.Entry<Value,Value> entry : array.entrySet()) {
@@ -395,115 +479,97 @@ public abstract class MultiValue extends Value {
 		    }
 		}
 		
-		/*
-		 * TODO EXPERIMENTAL
-		 * Revise later
-		 */
-		/*
-		if (trueBranchValue instanceof ArrayValueImpl && falseBranchValue instanceof ArrayValueImpl) {
-			ArrayValueImpl lArray = (ArrayValueImpl) trueBranchValue;
-			ArrayValueImpl rArray = (ArrayValueImpl) falseBranchValue;
-			
-			Set<Value> keySet = new HashSet<Value>();
-			keySet.addAll(lArray.keySet());
-			keySet.addAll(rArray.keySet());
-			
-	    	ArrayValueImpl array = new ArrayValueImpl();
-	    	for (Value key : keySet) {
-		        Value lValue = lArray.get(key);
-		        Value rValue = rArray.get(key);
-		        
-				if (lValue instanceof NullValue)	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
-					lValue = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
-													// @see com.caucho.quercus.env.ArrayValue.Entry.set(Value)
-				
-				if (rValue instanceof NullValue)	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
-					rValue = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
-													// @see com.caucho.quercus.env.ArrayValue.Entry.set(Value)
-			        
-			    array.appendWithNoScoping(key, MultiValue.createChoiceValue(constraint, lValue, rValue)); // Use 'setWithNoScoping' instead of 'set' to avoid attaching scoping information
-		    }
-		    
-	    	return array;
+		List<Value> keyList = new LinkedList<Value>(); // Use a keyList to preserve the order of array elements
+		for (Iterator<Map.Entry<Value, Value>> lIter = lArray.getIterator(); lIter.hasNext(); ) {
+			Value key = lIter.next().getKey();
+			keyList.add(key);
 		}
-		*/
 		
-		/*
-		 * Check #7: Handle objects of the same entries (similar to arrays of the same keys)
-		 * @see com.caucho.quercus.env.ObjectValue.cmpObject(ObjectValue)
-		 */
-		if (trueBranchValue instanceof ObjectExtValue && falseBranchValue instanceof ObjectExtValue) {
-			ObjectExtValue lObject = (ObjectExtValue) trueBranchValue;
-			ObjectExtValue rObject = (ObjectExtValue) falseBranchValue;
+		Set<Value> lKeySet = lArray.keySet();
+		for (Iterator<Map.Entry<Value, Value>> rIter = rArray.getIterator(); rIter.hasNext(); ) {
+			Value key = rIter.next().getKey();
+			if (!lKeySet.contains(key)) {
+				keyList.add(key);
+			}
+		}
+		
+    	ArrayValueImpl array = new ArrayValueImpl();
+    	for (Value key : keyList) {
+	        Value lValue = lArray.get(key);
+	        Value rValue = rArray.get(key);
+	        
+			if (lValue instanceof NullValue)	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
+				lValue = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
+												// @see com.caucho.quercus.env.ArrayValue.Entry.set(Value)
 			
-			if (lObject.getName().equals(rObject.getName())) {
-				Set<? extends Map.Entry<Value,Value>> lSet = lObject.entrySet();
-				Set<? extends Map.Entry<Value,Value>> rSet = rObject.entrySet();
+			if (rValue instanceof NullValue)	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used
+				rValue = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
+												// @see com.caucho.quercus.env.ArrayValue.Entry.set(Value)
+		        
+			Value value = MultiValue.createChoiceValue(constraint, lValue, rValue);
+			if (!(value instanceof Undefined))
+				array.appendWithNoScoping(key, value); // Use 'setWithNoScoping' instead of 'set' to avoid attaching scoping information
+	    }
 		    
-			    if (lSet.size() == rSet.size()) {
-			    	TreeSet<Map.Entry<Value,Value>> aTree = new TreeSet<Map.Entry<Value,Value>>(lSet);
-			    	TreeSet<Map.Entry<Value,Value>> bTree = new TreeSet<Map.Entry<Value,Value>>(rSet);
+	    return array;
+	}
 	
-			    	Iterator<Map.Entry<Value,Value>> iterA = aTree.iterator();
-			    	Iterator<Map.Entry<Value,Value>> iterB = bTree.iterator();
-			      
-			    	boolean sameKeys = true;
-			    	boolean sameValues = true;
-	
+	/**
+	 * Handles Choice of Objects.
+	 * @see com.caucho.quercus.env.ObjectValue.cmpObject(ObjectValue)
+	 */
+	private static Value createChoiceOfObjects(Constraint constraint, ObjectExtValue lObject, ObjectExtValue rObject) {
+		if (lObject.getName().equals(rObject.getName())) {
+			Set<? extends Map.Entry<Value,Value>> lSet = lObject.entrySet();
+			Set<? extends Map.Entry<Value,Value>> rSet = rObject.entrySet();
+	    
+		    if (lSet.size() == rSet.size()) {
+		    	TreeSet<Map.Entry<Value,Value>> aTree = new TreeSet<Map.Entry<Value,Value>>(lSet);
+		    	TreeSet<Map.Entry<Value,Value>> bTree = new TreeSet<Map.Entry<Value,Value>>(rSet);
+
+		    	Iterator<Map.Entry<Value,Value>> iterA = aTree.iterator();
+		    	Iterator<Map.Entry<Value,Value>> iterB = bTree.iterator();
+		      
+		    	boolean sameKeys = true;
+		    	boolean sameValues = true;
+
+		    	while (iterA.hasNext()) {
+		    		Map.Entry<Value,Value> a = iterA.next();
+		    		Map.Entry<Value,Value> b = iterB.next();
+
+		    		if (a.getKey() != b.getKey()) {
+		    			sameKeys = false;
+		    			break;
+		    		}
+
+		    		if (a.getValue() != b.getValue())
+		    			sameValues = false;
+		    	}
+		      
+		    	if (sameKeys) {
+		    		if (sameValues)
+		    			return lObject;
+		    		
+		    		ObjectExtValue object = new ObjectExtValue(lObject.getQuercusClass());
+		    		iterA = aTree.iterator();
+			    	iterB = bTree.iterator();
+			    	
 			    	while (iterA.hasNext()) {
 			    		Map.Entry<Value,Value> a = iterA.next();
 			    		Map.Entry<Value,Value> b = iterB.next();
-	
-			    		if (a.getKey() != b.getKey()) {
-			    			sameKeys = false;
-			    			break;
-			    		}
-	
-			    		if (a.getValue() != b.getValue())
-			    			sameValues = false;
-			    	}
-			      
-			    	if (sameKeys) {
-			    		if (sameValues)
-			    			return trueBranchValue;
 			    		
-			    		ObjectExtValue object = new ObjectExtValue(lObject.getQuercusClass());
-			    		iterA = aTree.iterator();
-				    	iterB = bTree.iterator();
-				    	
-				    	while (iterA.hasNext()) {
-				    		Map.Entry<Value,Value> a = iterA.next();
-				    		Map.Entry<Value,Value> b = iterB.next();
-				    		
-				    		StringValue key = (StringValue) a.getKey();
-				    		Value multiValue = MultiValue.createChoiceValue(constraint, a.getValue(), b.getValue());
-				    		
-				    		object.putFieldWithNoScoping(Env.getInstance(), key, multiValue); // Use 'putFieldWithNoScoping' instead of 'putField' to avoid attaching scoping information
-				    	}
-				    	
-				    	return object;
+			    		StringValue key = (StringValue) a.getKey();
+			    		Value multiValue = MultiValue.createChoiceValue(constraint, a.getValue(), b.getValue());
+			    		
+			    		object.putFieldWithNoScoping(Env.getInstance(), key, multiValue); // Use 'putFieldWithNoScoping' instead of 'putField' to avoid attaching scoping information
 			    	}
-				}
-		    }
-		}
+			    	
+			    	return object;
+		    	}
+			}
+	    }
 		
-		/*
-		 * Check #8: Handle Choice of Vars
-		 */
-		if (trueBranchValue instanceof Var || falseBranchValue instanceof Var) {
-			if (trueBranchValue instanceof Var)
-				trueBranchValue = ((Var) trueBranchValue).getRawValue();
-			
-			if (falseBranchValue instanceof Var)
-				falseBranchValue = ((Var) falseBranchValue).getRawValue();
-			
-			return new Var(MultiValue.createChoiceValue(constraint, trueBranchValue, falseBranchValue));
-		}
-		
-		/*
-		 * Return a Choice Value
-		 */
-		return new Choice(constraint, trueBranchValue, falseBranchValue);
+		return new Choice(constraint, lObject, rObject);
 	}
 	
 	/**
@@ -530,6 +596,17 @@ public abstract class MultiValue extends Value {
 	 * @return	A regular Value (usually a Concat Value)
 	 */
 	public static Value createConcatValue(Value value1, Value value2, boolean enableMerging) {
+		/*
+		 * Check #1: Remove empty-string child elements
+		 */
+		if (value1 instanceof NullValue
+				|| value1 instanceof StringValue && ((StringValue) value1).isEmpty())
+			return value2;
+		
+		if (value2 instanceof NullValue
+				|| value2 instanceof StringValue && ((StringValue) value2).isEmpty())
+			return value1;
+		
 		List<Value> items1;
 		List<Value> items2;
 		
@@ -566,6 +643,25 @@ public abstract class MultiValue extends Value {
 			return items1.get(0);
 		else
 			return new Concat(items1);
+	}
+	
+	/**
+	 * Returns a regular Value (usually a Switch Value)
+	 * @param switch_	A Switch value, not null
+	 * @return	A regular Value (usually a Switch Value)
+	 */
+	public static Value createSwitchValue(Switch switch_) {
+		List<Case> cases = switch_.getCases();
+		
+		if (cases.size() == 1)
+			return createChoiceValue(cases.get(0).getConstraint(), cases.get(0).getValue(), Undefined.UNDEFINED);
+		
+		if (cases.size() == 2) {
+			if (cases.get(0).getConstraint().oppositeOf(cases.get(1).getConstraint()))
+				return createChoiceValue(cases.get(0).getConstraint(), cases.get(0).getValue(), cases.get(1).getValue());
+		}
+		
+		return switch_;
 	}
 	
 	/*
@@ -659,6 +755,16 @@ public abstract class MultiValue extends Value {
 			@Override
 			public Value operate(Value _this) {
 				return _this.put(index, value);
+			}
+		});
+	}
+	
+	@Override
+	public Value get(final Value index) {
+		return operate(new IOperation() {
+			@Override
+			public Value operate(Value _this) {
+				return _this.get(index);
 			}
 		});
 	}
@@ -1156,9 +1262,9 @@ public abstract class MultiValue extends Value {
 	  @Override
 	  public boolean eq(Value rValue)
 	  {
-		Value simplified = this.simplify(Env.getInstance().getEnv_().getScope().getConstraint());
-		if (!(simplified instanceof MultiValue))
-		  return simplified.eq(rValue);
+		  Value simplified = this.simplify(Env.getInstance().getEnv_().getScope().getConstraint());
+		  if (!(simplified instanceof MultiValue))
+			  return simplified.eq(rValue);
 		  
 		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
 
@@ -1180,6 +1286,19 @@ public abstract class MultiValue extends Value {
 	  @Override
 	  public boolean eql(Value rValue)
 	  {
+	      /*
+	       * Used by com.caucho.quercus.lib.ArrayModule.in_array(Value, ArrayValue, boolean)
+	       *	 and com.caucho.quercus.env.ArrayValueImpl.containsStrict(Value)
+	       * 
+	       * Example: class.wp-dependencies.php @ Line 79
+	       *			$queued = in_array($handle, $this->to_do, true);
+	       *				where $handle == 'foo', $this->to_do[0] == CHOICE(CAR, 'foo', UNDEFINED) and Env_.Scope = CAR
+	       *				then $this->to_do[0] can be simplified to 'foo'
+	       */
+		  Value simplified = this.simplify(Env.getInstance().getEnv_().getScope().getConstraint());
+		  if (!(simplified instanceof MultiValue))
+			  return simplified.eql(rValue);
+			
 		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
 
 	    return this == rValue.toValue();
@@ -3839,13 +3958,13 @@ public abstract class MultiValue extends Value {
 	  /**
 	   * Returns the array ref.
 	   */
-	  @Override
-	  public Value get(Value index)
-	  {
-		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
-
-	    return UnsetValue.UNSET;
-	  }
+//	  @Override
+//	  public Value get(Value index)
+//	  {
+//		Logging.LOGGER.fine("Unsupported operation for a MultiValue.");
+//
+//	    return UnsetValue.UNSET;
+//	  }
 
 	  /**
 	   * Returns a reference to the array value.

@@ -91,6 +91,14 @@ public class Choice extends MultiValue {
 		return MultiValue.createChoiceValue(this.constraint, trueBranchValue, falseBranchValue);
 	}
 	
+	/**
+	 * Returns the inverse of this Choice value.
+	 * For example, CHOICE(A, x, y) => CHOICE(!A, y, x)
+	 */
+	public Choice getInverse() {
+		return new Choice(Constraint.createNotConstraint(constraint), value2, value1);
+	}
+	
 	/*
 	 * Shadowed methods of the Value class
 	 */

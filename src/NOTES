@@ -1,6 +1,10 @@
-ArrayValue			set			toValue		// Handle arrays				x
-ObjectExtValue		putField	getField	// Handle objects				x	
-Var					set...		toValue...	// Handle variables' values		x
+Var					set...			toValue...				// Handle scopes for variables	x
+ArrayValue			set				getRawValue				// Handle scopes for arrays		x
+ObjectExtValue		putField		getFieldExt				// Handle scopes for objects	x	
+
+Env					getValue								// Simplify for variables		x
+ArrayGetExpr		eval, evalArg							// Simplify for arrays			x
+ObjectExtValue		getField, getThisField, getFieldExt		// Simplify for objects			x
 
 ArrayValue			toCallable	// Handle toCallable with multi values		x
 ArrayValueImpl		append		// Handle arrays with variational indexes	x

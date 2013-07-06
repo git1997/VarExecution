@@ -1432,10 +1432,16 @@ public class Var extends Value
   @Override
   public Value getArray()
   {
-	  // TODO Handle scoping
+	  // TODO Consider handling addScopedValue for the assignment below
 	  
     if (! _value.isset())
       _value = new ArrayValueImpl();
+    
+    // INST ADDED BY HUNG
+    if (Env_.INSTRUMENT) {
+    	return Env_.removeScopedValue(_value);
+    }
+    // END OF ADDED CODE
 
     return _value;
   }
@@ -1446,10 +1452,16 @@ public class Var extends Value
   @Override
   public Value getObject(Env env)
   {
-	  // TODO Handle scoping
+	// TODO Consider handling addScopedValue for the assignment below
 	  
     if (! _value.isset())
       _value = env.createObject();
+    
+    // INST ADDED BY HUNG
+    if (Env_.INSTRUMENT) {
+    	return Env_.removeScopedValue(_value);
+    }
+    // END OF ADDED CODE
 
     return _value;
   }

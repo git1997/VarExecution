@@ -77,7 +77,7 @@ public class ShadowInterpreter {
 		
 		// TODO Check if combinedReturnValue is an empty Switch and debug why this happens. 
 
-		return combinedReturnValue;
+		return MultiValue.createSwitchValue(combinedReturnValue);
 	}
 
 }

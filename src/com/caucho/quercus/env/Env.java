@@ -104,6 +104,7 @@ import com.caucho.vfs.i18n.EncodingReader;
 import edu.iastate.hungnv.scope.ScopedValue;
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.util.Logging;
+import edu.iastate.hungnv.value.MultiValue;
 
 /**
  * Represents the Quercus environment.
@@ -1913,6 +1914,19 @@ public class Env
                         boolean isOutputNotice)
   {
     EnvVar var = getEnvVar(name, isAutoCreate, isOutputNotice);
+    
+    	// INST ADDED BY HUNG
+    	if (Env_.INSTRUMENT) {
+    		if (var != null) {
+    			Value retValue = var.get();
+    			if (retValue instanceof MultiValue)
+    				retValue = ((MultiValue) retValue).simplify(this.getEnv_().getScope().getConstraint());
+    			return retValue;
+    		}
+    		else
+    			return NullValue.NULL;
+	  }
+	  // END OF ADDED CODE
     
     if (var != null)
       return var.get();

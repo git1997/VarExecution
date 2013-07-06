@@ -37,6 +37,7 @@ import com.caucho.util.Alarm;
 import com.caucho.vfs.WriteStream;
 
 import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.value.MultiValue;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -208,13 +209,6 @@ public class ObjectExtValue extends ObjectValue
   {
     Value returnValue = getFieldExt(env, name);
     
-    // INST ADDED BY HUNG
-    
-    if (Env_.INSTRUMENT)
-    	returnValue = Env_.removeScopedValue(returnValue);
-    
-    // END OF ADDED CODE
-    
     if(returnValue == UnsetValue.UNSET)
     {
         // __get didn't work, lets look in the class itself
@@ -226,6 +220,13 @@ public class ObjectExtValue extends ObjectValue
           if (name == entryKey || name.equals(entryKey)) {
             // php/09ks vs php/091m
             returnValue = entry._value.toValue();
+      	  
+        	  // INST ADDED BY HUNG
+        	  if (Env_.INSTRUMENT) {
+       		    if (returnValue instanceof MultiValue)
+       		    	returnValue = ((MultiValue) returnValue).simplify(env.getEnv_().getScope().getConstraint());
+        	  }
+        	  // END OF ADDED CODE
           }
         }
     }
@@ -242,6 +243,17 @@ public class ObjectExtValue extends ObjectValue
     Entry entry = getThisEntry(name);
 
     if (entry != null) {
+    	
+  	  // INST ADDED BY HUNG
+  	  if (Env_.INSTRUMENT) {
+  		    Value retValue = entry._value.toValue();
+  		    if (retValue instanceof MultiValue)
+  		    	retValue = ((MultiValue) retValue).simplify(env.getEnv_().getScope().getConstraint());
+  		    
+  		    return retValue;
+  	  }
+  	  // END OF ADDED CODE
+  	  
       return entry._value.toValue();
     }
 
@@ -254,6 +266,30 @@ public class ObjectExtValue extends ObjectValue
   protected Value getFieldExt(Env env, StringValue name)
   {
       Entry e = this.getEntry(env, name);
+      
+      // INST ADDED BY HUNG
+      
+      if (Env_.INSTRUMENT) {
+    	  Value retValue = null;
+    	  
+    	  // Handle scoping
+    	  if (e != null) {
+   			  Value eValue = Env_.removeScopedValue(e._value);
+   			  if (eValue != NullValue.NULL && eValue != UnsetValue.UNSET)
+   				  retValue = eValue;
+    	  }
+    	  
+          if (retValue != null) {
+        	  if (retValue instanceof MultiValue)
+        		  retValue = ((MultiValue) retValue).simplify(env.getEnv_().getScope().getConstraint());
+        	  return retValue;
+          }
+
+          return _quercusClass.getField(env, this, name);
+      }
+      
+      // END OF ADDED CODE
+      
       if(e != null && e._value != NullValue.NULL && e._value != UnsetValue.UNSET)
         return e._value;
 
@@ -1693,6 +1729,12 @@ public class ObjectExtValue extends ObjectValue
       if (_entry != null) {
         Entry entry = _entry;
         _entry = entry._next;
+        
+        // INST ADDED BY HUNG
+        if (Env_.INSTRUMENT) {
+        	return Env_.removeScopedValue(entry._value);
+        }
+        // END OF ADDED CODE
 
         return entry._value;
       }
@@ -1706,6 +1748,12 @@ public class ObjectExtValue extends ObjectValue
       Entry entry = _list[_index++];
       _entry = entry._next;
 
+      // INST ADDED BY HUNG
+      if (Env_.INSTRUMENT) {
+      	return Env_.removeScopedValue(entry._value);
+      }
+      // END OF ADDED CODE
+      
       return entry._value;
     }
 
@@ -1818,6 +1866,12 @@ public class ObjectExtValue extends ObjectValue
 
     public Value getRawValue()
     {
+        // INST ADDED BY HUNG
+        if (Env_.INSTRUMENT) {
+        	return Env_.removeScopedValue(_value);
+        }
+        // END OF ADDED CODE
+        
       return _value;
     }
 

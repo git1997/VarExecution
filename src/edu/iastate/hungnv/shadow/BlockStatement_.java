@@ -24,7 +24,7 @@ public class BlockStatement_ {
 		for (int i = 0; i < _statements.length; i++) {
 			Statement statement = _statements[i];
 	
-	        Logging.LOGGER.info("Executing " + statement.getLocation().prettyPrint());
+	        Logging.LOGGER.info("Executing " + statement.getLocation().prettyPrint() + " (Constraint = " + env.getEnv_().getScope().getConstraint() + ")");
 	        
 	        Debugger.inst.checkBreakpoint(statement.getLocation());
 	        
