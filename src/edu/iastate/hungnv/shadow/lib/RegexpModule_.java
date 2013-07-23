@@ -127,7 +127,7 @@ public class RegexpModule_ {
 	    	  Switch switch_ = ((MultiValue) replacement).flatten();
 	    	  Constraint whenUndefined = MultiValue.whenUndefined(switch_);
 	    	  
-	    	  if (whenUndefined.isSatisfiable()) {
+	    	  if (whenUndefined.isSatisfiable()) { // This check is required
 	    		  Value originalString = regs.get(new ConstStringValue("0"));
 	    		  switch_.addCase(new Case(whenUndefined, originalString));
 	    		  

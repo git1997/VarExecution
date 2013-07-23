@@ -641,6 +641,9 @@ abstract public class JavaInvoker
 		  if (_name.equals(Functions.is_null.class.getSimpleName()))
 			  return Functions.is_null.eval(args[0]);
 
+		  else if (_name.equals(Functions.in_array.class.getSimpleName()))
+			  return Functions.in_array.eval(args);
+
 		  return JavaInvoker_.callMethod(env, qClass, qThis, args, this);
 	  }
 	  

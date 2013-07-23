@@ -5,9 +5,13 @@ import com.caucho.quercus.env.Value;
 import com.caucho.quercus.statement.BlockStatement;
 import com.caucho.quercus.statement.Statement;
 
+import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.constraint.Constraint.Result;
 import edu.iastate.hungnv.debug.Debugger;
 import edu.iastate.hungnv.util.Logging;
+import edu.iastate.hungnv.value.Case;
 import edu.iastate.hungnv.value.MultiValue;
+import edu.iastate.hungnv.value.Switch;
 
 /**
  * 
@@ -20,6 +24,13 @@ public class BlockStatement_ {
 	 * @see com.caucho.quercus.statement.BlockStatement.execute(Env)
 	 */
 	public static Value execute(Env env, BlockStatement _this, Statement[] _statements) {
+		
+		/*
+		 * These are used to handle continue, break, return.
+		 */
+		Switch combinedReturnValue = null; // The combined return value
+		Constraint combinedConstraint = Constraint.TRUE; // The combined constraint each time the execution enters a new scope
+		int timesEnteringScope = 0; // The number of times the execution enters a new scope
 
 		for (int i = 0; i < _statements.length; i++) {
 			Statement statement = _statements[i];
@@ -28,17 +39,62 @@ public class BlockStatement_ {
 	        
 	        Debugger.inst.checkBreakpoint(statement.getLocation());
 	        
-	        Value value = statement.execute(env);
+	        Value retValue = statement.execute(env);
 	
-	        if (value != null) {
-	        	// TODO Handle return, continue, break here
+	        if (retValue != null) {
+	        	/*
+	        	 * Handle the trivial case
+	        	 */
+	        	if (combinedReturnValue == null && !(retValue instanceof MultiValue))
+	        		return retValue;
 	        	
-	        	if (MultiValue.whenNull(value).isContradiction())
-	        		return value;
+	        	/*
+	        	 * Handle more complex cases
+	        	 */
+	        	if (combinedReturnValue == null)
+	        		combinedReturnValue = new Switch();
+	        	
+	        	for (Case case_ : MultiValue.flatten(retValue)) {
+	        		Constraint newConstraint = Constraint.createAndConstraint(combinedConstraint, case_.getConstraint());
+	        		Value newValue = case_.getValue();
+	        		if (newValue != null && newConstraint.isSatisfiable()) // This check is required
+	        			combinedReturnValue.addCase(new Case(newConstraint, newValue));
+	        	}
+	        	
+	        	Constraint whenNull = MultiValue.whenNull(retValue);
+				combinedConstraint = Constraint.createAndConstraint(combinedConstraint, whenNull);
+	        	
+				Constraint aggregatedConstraint = env.getEnv_().getScope().getConstraint();
+				Constraint.Result result = aggregatedConstraint.tryAddingConstraint(whenNull);
+				boolean constraintAlwaysTrue = (result == Result.THE_SAME);
+				boolean constraintAlwaysFalse = (result == Result.ALWAYS_FALSE);
+	        		
+				if (constraintAlwaysFalse)
+					break;
+				
+				if (!constraintAlwaysTrue) {
+					timesEnteringScope++;
+					env.getEnv_().enterNewScope(whenNull);
+				}
 	        }
 		}
-
-		return null;
+		
+    	/*
+    	 * Handle the trivial case
+    	 */
+		if (combinedReturnValue == null)
+			return null;
+		
+    	/*
+    	 * Handle more complex cases
+    	 */
+		for (int i = 1; i <= timesEnteringScope; i++)
+			env.getEnv_().exitScope();
+		
+		if (combinedConstraint.isSatisfiable()) // This check is required
+			combinedReturnValue.addCase(new Case(combinedConstraint, null));
+		
+		return MultiValue.createSwitchValue(combinedReturnValue);
 	}
 
 }
