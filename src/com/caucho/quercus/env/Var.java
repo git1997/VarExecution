@@ -57,11 +57,25 @@ public class Var extends Value
 
   public Var()
   {
+	    // INST ADDED BY HUNG
+	    
+	  	// Don't handle ScopedValue here because ScopedValue will be handled somewhere else
+	    // (e.g., in com.caucho.quercus.env.Var.set(Value))  
+	    	
+	    // END OF ADDED CODE 
+	    
     _value = NullValue.NULL;
   }
 
   public Var(Value value)
   {
+	    // INST ADDED BY HUNG
+	    
+	  	// Don't handle ScopedValue here because ScopedValue will be handled somewhere else
+	    // (e.g., in com.caucho.quercus.env.Var.set(Value))  
+	    	
+	    // END OF ADDED CODE
+	    
     _value = value;
   }
 

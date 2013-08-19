@@ -36,6 +36,7 @@ import com.caucho.vfs.WriteStream;
 
 import edu.iastate.hungnv.shadow.ArrayValue_;
 import edu.iastate.hungnv.shadow.Env_;
+import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.MultiValue;
 import edu.iastate.hungnv.value.Undefined;
 
@@ -1359,6 +1360,28 @@ abstract public class ArrayValue extends Value {
     serializeMap.incrementIndex();
 
     for (Entry entry = getHead(); entry != null; entry = entry._next) {
+      
+      // INST ADDED BY HUNG
+      // Handle MultiValue.serialize()
+      if (Env_.INSTRUMENT) {
+    	  if (entry.getKey() instanceof MultiValue || entry.getRawValue() instanceof MultiValue) {
+    		  Value simplifiedKey = MultiValue.simplify(entry.getKey(), env.getEnv_().getScope().getConstraint());
+    		  Value simplifiedValue = MultiValue.simplify(entry.getRawValue(), env.getEnv_().getScope().getConstraint());
+    		 
+    		  if (!(simplifiedKey instanceof MultiValue) && !(simplifiedValue instanceof MultiValue)) {
+    			  simplifiedKey.serialize(env, sb);
+    			  simplifiedValue.serialize(env, sb, serializeMap);
+    			  continue;
+    		  }
+    		  else {
+    			  // TODO Don't know how to handle this
+    			  Logging.LOGGER.fine("In ArrayValue.java: [serialize] Unsupported operation for a MultiValue.");
+    			  continue;
+    		  }
+    	  }
+      }
+      // END OF ADDED CODE
+      
       entry.getKey().serialize(env, sb);
       entry.getRawValue().serialize(env, sb, serializeMap);
     }
@@ -1782,6 +1805,28 @@ abstract public class ArrayValue extends Value {
     	if (Env_.INSTRUMENT && Env.getInstance() != null) {
     		if (value instanceof ArrayValueImpl) {
     			// TODO Fix this: For some reason, it doesn't work if value is an array
+    			
+    			// Attempted to use the following fix, but some errors occurred.
+    			// It could be fixed with more effort, but it's not worth it
+    			// since this case is generally rare.
+
+    			/*
+				if (_value instanceof NullValue) 	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used.
+					_value = Undefined.UNDEFINED;	// On the other hand, if Array[i] == CHOICE(value, UNDEFINED), flatten(Array[i]) will return only one value.
+ 
+				Value oldValue = _value;
+		
+				if (_value instanceof MultiValue) {
+					// TODO Must use 'value' instead of '_value.set(value)'. 
+					// Complex errors occur if '_value.set(value)' is used and _value is MultiValue
+					
+					_value = Env.getInstance().getEnv_().addScopedValue(_value, value);
+				}
+				else
+					_value = Env.getInstance().getEnv_().addScopedValue(_value, _value.set(value));
+				 
+				return oldValue;
+				*/
     		}
     		else {
 				if (_value instanceof NullValue) 	// Use UNDEFINED instead of NULL because if Array[i] == CHOICE(value, NULL), flatten(Array[i]) returns two values and it will cause a NULL exception if Array[i] is used.

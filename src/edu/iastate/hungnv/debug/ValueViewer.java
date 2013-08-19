@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.caucho.quercus.env.ArrayValueImpl;
+import com.caucho.quercus.env.NullValue;
 import com.caucho.quercus.env.ObjectExtValue;
 import com.caucho.quercus.env.ObjectExtValue.EntrySet;
 import com.caucho.quercus.env.Value;
@@ -153,7 +154,7 @@ public class ValueViewer {
 		else {
 			value = MultiValue.simplify(value);
 		}
-		if (value == Undefined.UNDEFINED)
+		if (value == Undefined.UNDEFINED || value instanceof NullValue)
 			return null;
 		
 		Element element = xmlDocument.createElement(XML_NAME_VALUE);

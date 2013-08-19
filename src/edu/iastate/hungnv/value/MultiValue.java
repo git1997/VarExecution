@@ -237,6 +237,27 @@ public abstract class MultiValue extends Value {
 	}
 	
 	/**
+	 * Replaces UNDEFINED in a value with some other value.
+	 * @param value			A regular value, not null
+	 * @param replacement	A Quercus value, not null - used as replacement for UNDEFINED
+	 * @return
+	 */
+	public static Value replaceUndefined(Value value, Value replacement) {
+		if (value instanceof MultiValue) {
+			Constraint whenUndefined = MultiValue.whenUndefined(value);
+			if (whenUndefined.isSatisfiable()) { // This check is required
+				Switch switch_ = ((MultiValue) value).flatten();
+				switch_.addCase(new Case(whenUndefined, replacement));
+				return MultiValue.createSwitchValue(switch_);
+			}
+			else
+				return value;
+		}
+		else
+			return value;
+	}
+	
+	/**
 	 * Returns a regular Value (usually a Choice Value)
 	 * @param constraint
 	 * @param trueBranchValue	A regular value, not null

@@ -42,6 +42,7 @@ import com.caucho.util.L10N;
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.shadow.Functions;
 import edu.iastate.hungnv.shadow.JavaInvoker_;
+import edu.iastate.hungnv.value.MultiValue;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -644,7 +645,17 @@ abstract public class JavaInvoker
 		  else if (_name.equals(Functions.in_array.class.getSimpleName()))
 			  return Functions.in_array.eval(args);
 
-		  return JavaInvoker_.callMethod(env, qClass, qThis, args, this);
+		  Value retValue = JavaInvoker_.callMethod(env, qClass, qThis, args, this);
+		  
+		  /*
+		   * Handle UNDEFINED retValue
+		   */
+		  if (_name.equals("is_a")) {
+			  // Consider UNDEFINED retValue as FALSE  
+			  return MultiValue.replaceUndefined(retValue, BooleanValue.FALSE);
+		  }
+		  
+		  return retValue;
 	  }
 	  
 	  // END OF ADDED CODE  

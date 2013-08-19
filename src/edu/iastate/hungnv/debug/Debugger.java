@@ -19,31 +19,33 @@ public class Debugger {
 //    		{"script-loader.php", "608"},
 //    		{"class.wp-scripts.php", "182"},
 //    		{"class.wp-dependencies.php", "39"},
-//    		{"class.wp-dependencies.php", "78"}
+//    		{"class.wp-dependencies.php", "78"},
     		
     		// Print footer scripts
 //    		{"script-loader.php", "630"},
 //    		{"class.wp-scripts.php", "187"},
 //    		{"class.wp-dependencies.php", "39"},
 //    		{"class.wp-dependencies.php", "41"},
-//    		{"class.wp-dependencies.php", "81"}
+//    		{"class.wp-dependencies.php", "81"},
     		
     		// Register styles
 //    		{"functions.wp-styles.php", "146"},
-//    		{"class.wp-dependencies.php", "179"}
+//    		{"class.wp-dependencies.php", "179"},
     		
     		// Print styles
 //    		{"functions.wp-styles.php", "39"},
 //    		{"class.wp-dependencies.php", "39"},
-//    		{"class.wp-dependencies.php", "90"}    	
+//    		{"class.wp-dependencies.php", "90"}, 	
     	
     		// Content
-    		{"post-template.php", "166"},
-//    		{"plugin.php", "170"}
-    		{"formatting.php", "3210"}
-//    		{"shortcodes.php", "151"}	
+//    		{"post-template.php", "166"},
+//    		{"plugin.php", "170"},
+// 		   	{"formatting.php", "3210"},
 //    		{"shortcodes.php", "151"},
-//    		{"shortcodes.php", "233"}
+//    		{"shortcodes.php", "151"},
+//    		{"shortcodes.php", "233"},
+    	
+//    		{"", ""},
     	};
 	
 	private int currentDebugLocation = 0;
@@ -62,7 +64,8 @@ public class Debugger {
 	    	&& location.getLineNumber() == Integer.valueOf(debugLocations[currentDebugLocation][1]))
 	    {
 	    	System.out.println("Break point #" + currentDebugLocation + ": " + location);
-	    	currentDebugLocation++;
+	    	if (currentDebugLocation < 0)
+	    		currentDebugLocation++;
 	    }
     }
 

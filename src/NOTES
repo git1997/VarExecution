@@ -6,15 +6,15 @@ Env					getValue								// Simplify for variables		x
 ArrayGetExpr		eval, evalArg							// Simplify for arrays			x
 ObjectExtValue		getField, getThisField, getFieldExt		// Simplify for objects			x
 
-ArrayValue			toCallable	// Handle toCallable with multi values		x
-ArrayValueImpl		append		// Handle arrays with variational indexes	x
-BlockStatement		execute		// Handle return, continue, break			x
-CallExpr			evalImpl	// Handle user-defined function calls		x
-ForeachStatement	execute		// Handle loops								x	
-FunIncludeExpr		eval		// Handle includes							x	
-FunIncludeOnceExpr	eval		// Handle includes							x	
-IfStatement			execute		// Handle branching							x	
-JavaInvoker			callMethod	// Handle library function calls			x			
+ArrayValue			toCallable, serialize	// Handle toCallable, serialize with multi values		x
+ArrayValueImpl		append					// Handle arrays with variational indexes				x
+BlockStatement		execute					// Handle return, continue, break						x
+CallExpr			evalImpl				// Handle user-defined function calls					x
+ForeachStatement	execute					// Handle loops											x	
+FunIncludeExpr		eval					// Handle includes										x	
+FunIncludeOnceExpr	eval					// Handle includes										x	
+IfStatement			execute					// Handle branching										x	
+JavaInvoker			callMethod				// Handle library function calls						x			
 
 com.caucho.quercus.expr.*			// Handle expressions		
 	BinaryAndExpr		eval			// Handle &&			x	

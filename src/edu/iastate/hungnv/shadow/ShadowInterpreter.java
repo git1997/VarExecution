@@ -61,18 +61,19 @@ public class ShadowInterpreter {
 				return retValue;
 
 			/*
-			 * Handle the case where retValue is a MultiValue
+			 * Handle retValue
 			 */
 			if (retValue instanceof MultiValue) {
-				retValue = ((MultiValue) retValue).simplify(constraint);
-			
-				if (retValue instanceof MultiValue) {
-					Logging.LOGGER.fine("In ShadowInterpreter.java: retValue is a MultiValue. Please debug.");
-					retValue = null;
+				for (Case c : ((MultiValue) retValue).flatten()) {
+					Constraint con = Constraint.createAndConstraint(constraint, c.getConstraint());
+					Value val = c.getValue();
+					
+					if (con.isSatisfiable()) // This check is required
+						combinedReturnValue.addCase(new Case(con, val));
 				}
 			}
-			
-			combinedReturnValue.addCase(new Case(constraint, retValue));
+			else
+				combinedReturnValue.addCase(new Case(constraint, retValue));
 		}
 		
 		// TODO Check if combinedReturnValue is an empty Switch and debug why this happens. 

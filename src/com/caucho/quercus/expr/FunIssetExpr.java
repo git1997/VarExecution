@@ -36,6 +36,7 @@ import com.caucho.quercus.env.BooleanValue;
 
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.shadow.expr.FunIssetExpr_;
+import edu.iastate.hungnv.value.MultiValue;
 
 /**
  * Represents a PHP isset call
@@ -70,8 +71,12 @@ public class FunIssetExpr extends AbstractUnaryExpr {
   {
 	  // INST ADDED BY HUNG
 	  
-	  if (Env_.INSTRUMENT)
-		  return new FunIssetExpr_().eval(env, _expr);
+	  if (Env_.INSTRUMENT) {
+		  Value retValue = new FunIssetExpr_().eval(env, _expr);
+	
+		  // Consider UNDEFINED retValue as FALSE
+		  return MultiValue.replaceUndefined(retValue, BooleanValue.FALSE);
+	  }
 	  
 	  // END OF ADDED CODE
 		  
