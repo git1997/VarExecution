@@ -20,6 +20,7 @@ import edu.iastate.hungnv.util.XmlDocument;
 public class TraceViewer {
 	
 	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\trace.xml";
+	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\trace-all.xml";
 	
 	public static final String XML_ROOT 		= "ROOT";
 	public static final String XML_NUM_ATTRS 	= "NumAttrs";

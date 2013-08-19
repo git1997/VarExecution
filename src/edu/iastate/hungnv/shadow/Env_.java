@@ -82,7 +82,14 @@ public class Env_ {
 		/*
 		 * TraceViewer
 		 */
-		TraceViewer.inst.writeToXmlFile(TraceViewer.xmlFile);
+		if (REGRESSION_TESTING) {
+			// Do nothing
+		}
+		else if (INSTRUMENT) {
+			TraceViewer.inst.writeToXmlFile(TraceViewer.xmlFileAll);
+		}
+		else
+			TraceViewer.inst.writeToXmlFile(TraceViewer.xmlFile);
 		
 		/*
 		 * OutputViewer
