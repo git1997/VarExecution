@@ -71,6 +71,14 @@ public class Constraint {
 	public boolean oppositeOf(Constraint constraint) {
 		return (this.featureExpr.equivalentTo(constraint.featureExpr.not()));
 	}
+	
+	/**
+	 * Returns the FeatureExpr representing this constraint.
+	 * Should be used by edu.iastate.hungnv.empiricalstudy.EmpiricalStudy only.
+	 */
+	public FeatureExpr getFeatureExpr() {
+		return featureExpr;
+	}
 
 	/**
 	 * @return A string describing the constraint
