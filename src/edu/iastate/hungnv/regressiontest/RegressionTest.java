@@ -12,6 +12,7 @@ import edu.iastate.hungnv.debug.OutputViewer;
 import edu.iastate.hungnv.debug.ValueViewer;
 import edu.iastate.hungnv.shadow.Env_;
 import edu.iastate.hungnv.util.FileIO;
+import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.MultiValue;
 import edu.iastate.hungnv.wpplugins.Plugin;
 import edu.iastate.hungnv.wpplugins.PluginManager;
@@ -39,7 +40,7 @@ public class RegressionTest {
 	 * ADHOC This file is used as a means of communication with the client browser
 	 * to identify what test config is being executed
 	 */
-	public static final String testConfigFile 	= "C:/Eclipse/workspace/javaEE/quercus/src/resources/temp/testconfig";
+	public static final String testConfigFile 	= Logging.WORKSPACE + "src/resources/temp/testconfig";
 	
 	/**
 	 * This variable must be set before the concrete plugins are loaded.

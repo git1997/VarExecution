@@ -9,6 +9,7 @@ import com.caucho.quercus.env.Var;
 
 import edu.iastate.hungnv.constraint.Constraint;
 import edu.iastate.hungnv.util.FileIO;
+import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.MultiValue;
 
 /**
@@ -18,9 +19,9 @@ import edu.iastate.hungnv.value.MultiValue;
  */
 public class OutputViewer {
 	
-	public static final String txtFile 			= "C:\\Users\\HUNG\\Desktop\\output.txt";
-	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\output-all.xml";
-	public static final String txtFileDerived 	= "C:\\Users\\HUNG\\Desktop\\output-derived.txt";
+	public static final String txtFile 			= Logging.WORKSPACE_LOGS + "output.txt";
+	public static final String xmlFileAll		= Logging.WORKSPACE_LOGS + "output-all.xml";
+	public static final String txtFileDerived 	= Logging.WORKSPACE_LOGS + "output-derived.txt";
 	
 	// Used to simulate the expression $GLOBAL["__OUTPUT__"]
 	private static final StringValue GLOBALS 	= new CompiledConstStringValue("GLOBALS");

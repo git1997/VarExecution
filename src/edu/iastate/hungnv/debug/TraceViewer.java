@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 import com.caucho.quercus.Location;
 
 import edu.iastate.hungnv.constraint.Constraint;
+import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.util.XmlDocument;
 
 /**
@@ -19,8 +20,8 @@ import edu.iastate.hungnv.util.XmlDocument;
  */
 public class TraceViewer {
 	
-	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\trace.xml";
-	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\trace-all.xml";
+	public static final String xmlFile 			= Logging.WORKSPACE_LOGS + "trace.xml";
+	public static final String xmlFileAll		= Logging.WORKSPACE_LOGS + "trace-all.xml";
 	
 	public static final String XML_ROOT 		= "ROOT";
 	public static final String XML_NUM_ATTRS 	= "NumAttrs";

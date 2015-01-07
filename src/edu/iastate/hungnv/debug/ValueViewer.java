@@ -34,9 +34,9 @@ import edu.iastate.hungnv.value.Undefined;
  */
 public class ValueViewer {
 	
-	public static final String xmlFile 			= "C:\\Users\\HUNG\\Desktop\\heap.xml";
-	public static final String xmlFileAll		= "C:\\Users\\HUNG\\Desktop\\heap-all.xml";
-	public static final String xmlFileDerived 	= "C:\\Users\\HUNG\\Desktop\\heap-derived.xml";
+	public static final String xmlFile 			= Logging.WORKSPACE_LOGS + "heap.xml";
+	public static final String xmlFileAll		= Logging.WORKSPACE_LOGS + "heap-all.xml";
+	public static final String xmlFileDerived 	= Logging.WORKSPACE_LOGS + "heap-derived.xml";
 	
 	public static final String XML_ROOT 		= "ROOT";
 	public static final String XML_NUM_ATTRS 	= "NumAttrs";
