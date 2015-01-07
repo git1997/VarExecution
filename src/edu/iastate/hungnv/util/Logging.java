@@ -22,7 +22,7 @@ public class Logging {
 	
 	private static final Level LOG_LEVEL = Level.ALL;
 	
-	private static final String LOG_FILE = "C:/Eclipse/workspace/javaEE/quercus/logs/log.txt";
+	private static final String LOG_FILE = "/Users/HUNG/Desktop/log.txt";
 	
 	private static final boolean SHOW_LOCATION = true;
 	
