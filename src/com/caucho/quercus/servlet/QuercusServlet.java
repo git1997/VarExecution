@@ -418,7 +418,10 @@ public class QuercusServlet
    */
   public void setLicenseDirectory(String relPath)
   {
-    _licenseDirectory = new File(getServletContext().getRealPath("") + "/" + relPath);
+	  // INST MODIFIED BY HUNG Fix null pointer exception
+	  // Original code: _licenseDirectory = new File(getServletContext().getRealPath(relPath));
+	  _licenseDirectory = new File(getServletContext().getRealPath("") + "/" + relPath);
+	  // END OF MODIFIED CODE
   }
 
   /**
