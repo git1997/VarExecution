@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="quercus">
+    <wb-module deploy-name="quercus-4.0.25 [Varex 2013]">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="quercus"/>
-        <property name="java-output-path" value="/quercus/build/classes"/>
+        <property name="java-output-path" value="/quercus-4.0.25 [Varex 2013]/build/classes"/>
+        <property name="context-root" value="quercus-4.0.25 [Varex 2013]"/>
     </wb-module>
 </project-modules>
