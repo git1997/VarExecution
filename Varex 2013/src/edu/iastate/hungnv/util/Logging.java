@@ -1,5 +1,6 @@
 package edu.iastate.hungnv.util;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
@@ -20,7 +21,7 @@ public class Logging {
 	 * Logging properties
 	 */
 	
-	public static final String WORKSPACE = "/Work/Eclipse/workspace/javaEE/Varex/quercus/";
+	public static final String WORKSPACE = "/Users/HUNG/Desktop/Varex/";
 	
 	public static final String WORKSPACE_LOGS = WORKSPACE + "logs/";
 	
@@ -29,6 +30,10 @@ public class Logging {
 	private static final String LOG_FILE = WORKSPACE_LOGS + "log.txt";
 	
 	private static final boolean SHOW_LOCATION = true;
+	
+	static {
+		checkFilePaths();
+	}
 	
 	/*
 	 * Logging objects
@@ -118,6 +123,18 @@ public class Logging {
 			return buf.toString();
 		}
 		
+	}
+	
+	/**
+	 * Checks file paths
+	 */
+	private static void checkFilePaths() {
+		if (!new File(WORKSPACE).exists()) {
+			System.err.println("ERROR: edu.iastate.hungnv.util.Logging.WORKSPACE is not set properly. Please resolve before continue.");
+		}
+		else if (!new File(WORKSPACE_LOGS).exists()) {
+			new File(WORKSPACE_LOGS).mkdir();
+		}
 	}
 		
 }

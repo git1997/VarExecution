@@ -13,7 +13,7 @@ import edu.iastate.hungnv.scope.Scope;
 import edu.iastate.hungnv.scope.ScopedValue;
 import edu.iastate.hungnv.util.Logging;
 import edu.iastate.hungnv.value.MultiValue;
-import edu.iastate.hungnv.wpplugins.TestConfig;
+//import edu.iastate.hungnv.wpplugins.TestConfig;
 
 /**
  * 
@@ -99,7 +99,7 @@ public class Env_ {
 		}
 		else if (INSTRUMENT) {
 			OutputViewer.inst.writeToXmlFile(OutputViewer.xmlFileAll);
-			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFileDerived, new TestConfig(testConfig).getConstraint());
+			//OutputViewer.inst.writeToTxtFile(OutputViewer.txtFileDerived, new TestConfig(testConfig).getConstraint());
 		}
 		else
 			OutputViewer.inst.writeToTxtFile(OutputViewer.txtFile);
@@ -119,7 +119,7 @@ public class Env_ {
 		}
 		if (INSTRUMENT) {
 			viewer.writeToXmlFile(ValueViewer.xmlFileAll);
-			viewer.writeToXmlFile(ValueViewer.xmlFileDerived, new TestConfig(testConfig).getConstraint());
+			//viewer.writeToXmlFile(ValueViewer.xmlFileDerived, new TestConfig(testConfig).getConstraint());
 		}
 		else
 			viewer.writeToXmlFile(ValueViewer.xmlFile);
@@ -127,7 +127,7 @@ public class Env_ {
 		/*
 		 * Tests
 		 */
-//		Tester.inst.test(OutputViewer.inst.getFinalOutputValue());
+		//Tester.inst.test(OutputViewer.inst.getFinalOutputValue());
 
 		Logging.LOGGER.info("Env closed.");
 	}
